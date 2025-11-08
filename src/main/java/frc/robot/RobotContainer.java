@@ -37,12 +37,18 @@
     import frc.robot.subsystems.drive.Drive;
     import frc.robot.subsystems.drive.DriveConstants;
     import frc.robot.subsystems.drive.TunerConstants;
-    import frc.robot.subsystems.superstructure.Superstructure;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.endeffector.EndEffector;
+import frc.robot.subsystems.pivot.Pivot;
+import frc.robot.subsystems.superstructure.Superstructure;
 
     @Logged
     public class RobotContainer {
         private final Drive drive = new Drive();
-        private final Superstructure superstructure = new Superstructure();
+        private final Elevator elevator = new Elevator();
+        private final EndEffector endEffector = new EndEffector();
+        private final Pivot pivot = new Pivot(elevator);
+        private final Superstructure superstructure = new Superstructure(drive, elevator, endEffector, pivot);
 
         //private final ControlBoard controlBoard = ControlBoard.getInstance();
 
