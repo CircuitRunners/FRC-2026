@@ -41,6 +41,9 @@
     import frc.robot.subsystems.endeffector.EndEffector;
     import frc.robot.subsystems.pivot.Pivot;
     import frc.robot.subsystems.superstructure.Superstructure;
+    import frc.robot.subsystems.vision.Vision;
+    import frc.robot.subsystems.vision.VisionConstants;
+import frc.robot.subsystems.vision.VisionIOPhotonVision;
 
     @Logged
     public class RobotContainer {
@@ -51,6 +54,8 @@
         private final Superstructure superstructure = new Superstructure(drive, elevator, endEffector, pivot);
 
         //private final ControlBoard controlBoard = ControlBoard.getInstance();
+
+        
 
         private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
         private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
@@ -64,6 +69,24 @@
         
         private final SendableChooser<DriveHeadingState> headingStateChooser = new SendableChooser<>();
         private DriveHeadingState headingState = DriveHeadingState.NO_HEADING;
+
+        private final VisionIOPhotonVision leftCam =
+        new VisionIOPhotonVision(
+            "LeftCamera",
+            VisionConstants.robotToCamera0,
+            drive::getPose);
+
+        private final VisionIOPhotonVision rightCam =
+            new VisionIOPhotonVision(
+                "RightCamera",
+                VisionConstants.robotToCamera1,
+                drive::getPose);
+
+        private final Vision vision =
+            new Vision(
+                drive.getDrivetrain().getVisionConsumer(),
+                leftCam,
+                rightCam);
 
         public RobotContainer() {
             //controlBoard.configureBindings(drive, superstructure);
