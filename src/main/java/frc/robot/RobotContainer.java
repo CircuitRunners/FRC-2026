@@ -48,7 +48,6 @@ import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
-import frc.robot.subsystems.vision.VisionSubsystem;
 
 @Logged
 public class RobotContainer {
@@ -72,12 +71,7 @@ public class RobotContainer {
 
     private final CommandXboxController joystick = new CommandXboxController(0);
     
-    
-    
-    
-    
-    
-    VisionSubsystem vision = new VisionSubsystem(drive);
+    Vision vision = new Vision(drive);
 
     public RobotContainer() {
         //controlBoard.configureBindings(drive, superstructure);
