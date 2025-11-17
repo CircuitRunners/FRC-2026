@@ -9,7 +9,10 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.util.FieldLayout;
 import frc.lib.util.MathHelpers;
 import frc.lib.util.Util;
@@ -41,6 +44,9 @@ public class DriveMaintainingHeading extends Command{
             return name();
         }
     }
+
+    private final SendableChooser<DriveHeadingState> headingStateChooser = new SendableChooser<>();
+    private DriveHeadingState headingState = DriveHeadingState.NO_HEADING;
     
     private final SwerveRequest.FieldCentric driveNoHeading = 
         new SwerveRequest.FieldCentric()
@@ -83,6 +89,12 @@ public class DriveMaintainingHeading extends Command{
             driveNoHeading.DriveRequestType = SwerveModule.DriveRequestType.OpenLoopVoltage;
             driveWithHeading.DriveRequestType = SwerveModule.DriveRequestType.OpenLoopVoltage;
         }
+
+        headingStateChooser.setDefaultOption("Reef Heading", DriveHeadingState.REEF_HEADING);
+        headingStateChooser.addOption("Barge Heading", DriveHeadingState.BARGE_HEADING);
+        headingStateChooser.addOption("Processor Heading", DriveHeadingState.PROCESSOR_HEADING);
+        headingStateChooser.addOption("Manual Heading", DriveHeadingState.NO_HEADING);
+        SmartDashboard.putData("Heading State Selector", headingStateChooser);
     }
 
     @Override
@@ -97,8 +109,8 @@ public class DriveMaintainingHeading extends Command{
         double turnFieldFrame = mTurnSupplier.getAsDouble();
         double throttleFieldFrame = RobotConstants.isRedAlliance ? throttle : -throttle;
         double strafeFieldFrame = RobotConstants.isRedAlliance ? strafe : -strafe;
-        mRobotContainer.updateHeadingState();
-        mDriveMode = mRobotContainer.getHeadingState();
+        updateHeadingState();
+        mDriveMode = headingState;
 
         if (Math.abs(turnFieldFrame) > DriveConstants.kSteerJoystickDeadband) {
             mJoystickLastTouched = Timer.getFPGATimestamp();
@@ -188,11 +200,8 @@ public class DriveMaintainingHeading extends Command{
         return false;
     }
 
-
-    
+    public void updateHeadingState() {
+        headingState = headingStateChooser.getSelected();
+    }
+   
 }
-
-
-
-
-
