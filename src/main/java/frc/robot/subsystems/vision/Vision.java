@@ -1,3 +1,16 @@
+// Copyright 2021-2025 FRC 6328
+// http://github.com/Mechanical-Advantage
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// version 3 as published by the Free Software Foundation or
+// available in the root directory of this project.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+
 package frc.robot.subsystems.vision;
 
 import static frc.robot.subsystems.vision.VisionConstants.*;
@@ -31,8 +44,6 @@ public class Vision extends SubsystemBase {
   private double lastTargetSeenTime = 0;
   private final VisionIO.VisionIOInputs[] inputs;
 
-
-
   public Vision(VisionConsumer consumer, VisionIO... io) {
     this.consumer = consumer;
     this.io = io;
@@ -50,18 +61,6 @@ public class Vision extends SubsystemBase {
           new Alert(
               "Vision camera " + Integer.toString(i) + " is disconnected.", AlertType.kWarning);
     }
-  }
-
-  public Vision(Drive drive) {
-    this(
-      drive.getDrivetrain().getVisionConsumer(),
-      (RobotBase.isSimulation())
-      ? new VisionIOPhotonVisionSim(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose)
-      : new VisionIOPhotonVision(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose),
-      (RobotBase.isSimulation())
-      ? new VisionIOPhotonVisionSim(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
-      : new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
-    );
   }
 
   @Override
@@ -190,13 +189,6 @@ public class Vision extends SubsystemBase {
 
     // Single tag results can provide more errors than multi-tag
     if (observation.tagCount() == 1) {
-      // Single tag results have ambiguity which can cause the estimator to pick the wrong
-      // location. The higher the ambiguity, the closer together the two abiguous poses
-      // tend to be, and the harder it is to choose correctly. We use the 'closest to last
-      // estimated pose' strategy, but even this can fall apart.
-      // See:
-      // https://docs.wpilib.org/en/stable/docs/software/vision-processing/apriltag/apriltag-intro.html#d-to-3d-ambiguity
-      // TODO: Maybe directly check if poses would have been close to eachother?
       if (observation.ambiguity() > maxAmbiguity) {
         return true;
       }

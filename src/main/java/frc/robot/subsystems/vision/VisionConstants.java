@@ -1,3 +1,16 @@
+// Copyright 2021-2025 FRC 6328
+// http://github.com/Mechanical-Advantage
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// version 3 as published by the Free Software Foundation or
+// available in the root directory of this project.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -16,18 +29,23 @@ public class VisionConstants {
   public static String camera0Name = "camera_0";
   public static String camera1Name = "camera_1";
 
-  public static Transform3d robotToCamera0 =
-      new Transform3d(
-          Units.inchesToMeters(12.564),
-          Units.inchesToMeters(8.0),
-          Units.inchesToMeters(7.523),
-          new Rotation3d(0.0, Units.degreesToRadians(-20.0), 0.0));
-  public static Transform3d robotToCamera1 =
-      new Transform3d(
-          Units.inchesToMeters(-11.564),
-          Units.inchesToMeters(0.0),
-          Units.inchesToMeters(7.523),
-          new Rotation3d(0.0, Units.degreesToRadians(-20.0), Units.degreesToRadians(180.0)));
+  // public static Transform3d robotToCamera0 =
+  //     new Transform3d(
+  //         Units.inchesToMeters(12.564),
+  //         Units.inchesToMeters(8.0),
+  //         Units.inchesToMeters(7.523),
+  //         new Rotation3d(0.0, Units.degreesToRadians(-20.0), 0.0));
+  // public static Transform3d robotToCamera1 =
+  //     new Transform3d(
+  //         Units.inchesToMeters(-11.564),
+  //         Units.inchesToMeters(0.0),
+  //         Units.inchesToMeters(7.523),
+  //         new Rotation3d(0.0, Units.degreesToRadians(-20.0), Units.degreesToRadians(180.0)));
+
+  public static Transform3d robotToCamera0 = new Transform3d(.159, -.272, 0.284988,
+    new Rotation3d(0, 0, Math.toRadians(15)));
+  public static Transform3d robotToCamera1 = new Transform3d(.159, .272, 0.284988,
+    new Rotation3d(0, 0, -Math.toRadians(16)));
 
 
   public static double maxAmbiguity = 0.3;

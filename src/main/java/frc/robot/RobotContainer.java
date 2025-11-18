@@ -25,9 +25,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.lib.drive.AutoAlignToReefCommand;
 import frc.lib.drive.DriveMaintainingHeading;
 import frc.lib.drive.DriveToPose;
 import frc.lib.drive.FollowSyncedPIDToPose;
@@ -71,20 +73,25 @@ public class RobotContainer {
 
     private final CommandXboxController joystick = new CommandXboxController(0);
     
-    Vision vision = new Vision(drive);
+    private final Vision vision = new Vision(
+        drive.getDrivetrain().getVisionConsumer(),
+        (RobotBase.isSimulation())
+        ? new VisionIOPhotonVisionSim(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose)
+        : new VisionIOPhotonVision(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose),
+        (RobotBase.isSimulation())
+        ? new VisionIOPhotonVisionSim(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
+        : new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
+    );
 
     public RobotContainer() {
         //controlBoard.configureBindings(drive, superstructure);
-        configureHeadingStateChooser();
         configureBindings();
     }
-    
-    //configures heading state chooser
-    private void configureHeadingStateChooser() {
-        
-    }
+
     private void configureBindings() {
-        joystick.a().whileTrue(pidToPoseTest);
+        // joystick.a().whileTrue(pidToPoseTest);
+        joystick.leftTrigger().whileTrue(autoAlignToLeftBranch);
+        joystick.rightTrigger().whileTrue(autoAlignToRightBranch);
         drive.setDefaultCommand(
             driveCommand
         );
@@ -131,6 +138,14 @@ public class RobotContainer {
     
     private final Command pidToPoseTest =
         new PIDToPoseCommand(drive, superstructure, new Pose2d(2.0, 0, Rotation2d.fromDegrees(0)));
+
+    private final Command autoAlignToLeftBranch =
+        new AutoAlignToReefCommand(drive, superstructure, true);
+    
+    private final Command autoAlignToRightBranch =
+        new AutoAlignToReefCommand(drive, superstructure, false);
+
+
     
     
 
