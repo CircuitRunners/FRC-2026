@@ -5,28 +5,16 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.io.BeamBreakIO;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.endeffector.EndEffector;
-import frc.robot.subsystems.pivot.Pivot;
-import frc.robot.subsystems.superstructure.SuperstructureConstants.BeamBreakConstants;
 
 public class Superstructure {
     private final Drive drive;
-    private final Elevator elevator;
-    private final EndEffector endEffector;
-    private final Pivot pivot;
     public static BeamBreakIO endEffectorVelocityDip;
 
-    public Superstructure(Drive drive, Elevator elevator, EndEffector endEffector, Pivot pivot) {
+    public Superstructure(Drive drive) {
         this.drive = drive;
-        this.elevator = elevator;
-        this.endEffector = endEffector;
-        this.pivot = pivot;
-        this.endEffectorVelocityDip = BeamBreakConstants.getEndEffectorVelocityDip(endEffector);
     }
 
 
-    public static BeamBreakIO endEffectorCoralBreak = BeamBreakConstants.getEndEffectorCoralBeamBreak();
     private boolean isPathFollowing = false;
     private boolean superstructureDone = false;
     private boolean driveReady = false;
@@ -34,19 +22,6 @@ public class Superstructure {
     public boolean readyToRaiseElevator = false;
 
     private State state = State.TUCK;
-
-
-    public Command spit() {
-      return Commands.parallel(
-              endEffector.setpointCommand(EndEffector.SPIT),
-              setState(State.SPIT),
-              setHasAlgaeCommand(false),
-              Commands.waitUntil(() -> false))
-          .handleInterrupt(() -> {
-            endEffector.applySetpoint(EndEffector.IDLE);
-          })
-          .withName("Spit");
-    }
 
     // public Command stowCoralHold() {
     //   return Commands.sequence(
@@ -99,10 +74,6 @@ public class Superstructure {
     public void setSuperstructureDone(boolean valToSet) {
 		  superstructureDone = valToSet;
 	  }
-
-    public boolean getEndEffectorCoralBreak() {
-      return endEffectorCoralBreak.get();
-    }
 
     public void setDriveReady(boolean valToSet) {
 		  driveReady = valToSet;

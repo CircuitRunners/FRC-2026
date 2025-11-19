@@ -17,9 +17,6 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.lib.util.FieldLayout.Level;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
-import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.endeffector.EndEffector;
-import frc.robot.subsystems.pivot.Pivot;
 import frc.robot.subsystems.superstructure.Superstructure;
 import java.util.function.Supplier;
 

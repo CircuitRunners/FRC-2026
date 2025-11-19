@@ -41,9 +41,6 @@ import frc.lib.drive.DriveMaintainingHeading.DriveHeadingState;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.drive.TunerConstants;
-import frc.robot.subsystems.elevator.Elevator;
-import frc.robot.subsystems.endeffector.EndEffector;
-import frc.robot.subsystems.pivot.Pivot;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
@@ -54,10 +51,7 @@ import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 @Logged
 public class RobotContainer {
     private final Drive drive = new Drive();
-    private final Elevator elevator = new Elevator();
-    private final EndEffector endEffector = new EndEffector();
-    private final Pivot pivot = new Pivot(elevator);
-    private final Superstructure superstructure = new Superstructure(drive, elevator, endEffector, pivot);
+    private final Superstructure superstructure = new Superstructure(drive);
 
     //private final ControlBoard controlBoard = ControlBoard.getInstance();
 
@@ -89,7 +83,7 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        // joystick.a().whileTrue(pidToPoseTest);
+        joystick.a().whileTrue(pidToPoseTest);
         joystick.leftTrigger().whileTrue(autoAlignToLeftBranch);
         joystick.rightTrigger().whileTrue(autoAlignToRightBranch);
         drive.setDefaultCommand(

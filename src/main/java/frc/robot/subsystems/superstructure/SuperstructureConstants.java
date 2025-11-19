@@ -17,45 +17,9 @@ import frc.lib.util.FieldLayout.Level;
 import frc.robot.Ports;
 import frc.robot.Robot;
 import frc.robot.controlboard.ControlBoardConstants;
-import frc.robot.subsystems.endeffector.EndEffector;
 
 public class SuperstructureConstants {
 	public static final CANrangeConfiguration CANRangeConfig = new CANrangeConfiguration();
-	public static class BeamBreakConstants {
-		public static BeamBreakIO getEndEffectorCoralBeamBreak() {
-			if (Robot.isReal()) {
-				try {
-					return new BeamBreakIOCANRange(
-							Ports.END_EFFECTOR_CORAL_BREAMBREAK,
-							SuperstructureConstants.CANRangeConfig,
-							SuperstructureConstants.kEndEffectorCoralDebounce,
-							"Coral End Effector Break",
-							2500);
-				} catch (Exception e) {
-					SmartDashboard.putString("End Effector Beam Break", "Failed");
-					return new BeamBreakIOSim(
-							() -> false, SuperstructureConstants.kEndEffectorCoralDebounce, "Coral End Effector Break");
-				}
-			} else {
-				return new BeamBreakIOSim(
-						ControlBoardConstants.mOperatorController.povDownRight().or(() -> Robot.isSimulation()),
-						SuperstructureConstants.kEndEffectorCoralDebounce,
-						"Coral End Effector Break");
-			}
-		}
-
-		public static BeamBreakIO getEndEffectorVelocityDip(EndEffector endeffector) {
-			if (Robot.isReal()) {
-				return new BeamBreakIOSim(
-						() -> endeffector.getVelocity().abs(Units.DegreesPerSecond)
-								< kEndEffectorVelocityDip.in(Units.DegreesPerSecond),
-						Units.Seconds.of(0.05),
-						"End Effector Velocity Dip");
-			} else {
-				return new BeamBreakIOSim(() -> true, Units.Seconds.of(0.05), "End Effector Velocity Dip");
-			}
-		}
-	}
 
 	public static final Angle kReefHeadingGenerationDeadband = Units.Degrees.of(0.0);
 	public static final Angle kProcessorAlgaeHeadingGenerationDeadband = Units.Degrees.of(0.0);
