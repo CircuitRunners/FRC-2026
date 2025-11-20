@@ -22,7 +22,7 @@ public class AutoAlignToReefCommand extends Command {
         this.superstructure = superstructure;
         this.isLeft = isLeft;
         addRequirements(drive);
-        SmartDashboard.putNumber("Autoalign reef offset", 0);
+        SmartDashboard.putNumber("Autoalign reef offset", 0.5);
     }
 
     @Override
@@ -63,13 +63,18 @@ public class AutoAlignToReefCommand extends Command {
 
         Pose2d branchPose = Branch.handleAllianceFlip(Branch.getCoralScoringPose(branch), RobotConstants.isRedAlliance);
 
-        double offset = SmartDashboard.getNumber("Autoalign reef offset", 0);
+        if (RobotConstants.isRedAlliance) {
+            branchPose = Branch.handleAllianceFlip(Branch.getCoralScoringPose(branch), RobotConstants.isRedAlliance);
+        }
 
+        double offset = SmartDashboard.getNumber("Autoalign reef offset", 0);
+        if (!RobotConstants.isRedAlliance) offset*=-1;
         Rotation2d rot = Branch.getBranchFaceRotation(branch);
 
         double dx = rot.getCos() * offset;
         double dy = rot.getSin() * offset;
-
-        return new Pose2d(branchPose.getX() + dx, branchPose.getY() + dy, rot);
+        
+        //branchPose = new Pose2d(branchPose.getTranslation(), new Rotation2d(branchPose.getRotation().getDegrees()+ 180));
+        return new Pose2d(branchPose.getX() + dx, branchPose.getY() + dy, branchPose.getRotation());
     }
 }

@@ -71,10 +71,10 @@ public class RobotContainer {
         drive.getDrivetrain().getVisionConsumer(),
         (RobotBase.isSimulation())
         ? new VisionIOPhotonVisionSim(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose)
-        : new VisionIOPhotonVision(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose),
-        (RobotBase.isSimulation())
-        ? new VisionIOPhotonVisionSim(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
-        : new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
+        : new VisionIOPhotonVision(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose)
+        // (RobotBase.isSimulation())
+        // ? new VisionIOPhotonVisionSim(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
+        // : new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
     );
 
     public RobotContainer() {
@@ -125,7 +125,7 @@ public class RobotContainer {
 
 
     private final DriveMaintainingHeading driveCommand = 
-        new DriveMaintainingHeading(drive, this, () -> joystick.getLeftY(), () -> joystick.getLeftX(), () -> joystick.getRightX());
+        new DriveMaintainingHeading(drive, () -> joystick.getLeftY(), () -> joystick.getLeftX(), () -> -joystick.getRightX());
 
     private final Command syncedPIDToPoseTest =
         new FollowSyncedPIDToPose(drive, superstructure, new Pose2d(5.0, 2.8, Rotation2d.fromDegrees(270)), Level.NET);

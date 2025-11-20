@@ -18,13 +18,11 @@ import frc.lib.util.MathHelpers;
 import frc.lib.util.Util;
 import frc.robot.Robot;
 import frc.robot.RobotConstants;
-import frc.robot.RobotContainer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.superstructure.Superstructure;
 
 public class DriveMaintainingHeading extends Command{
-    private final RobotContainer mRobotContainer;
     protected Drive mDrivetrain;
     private final DoubleSupplier mThrottleSupplier;
     private final DoubleSupplier mStrafeSupplier;
@@ -64,14 +62,12 @@ public class DriveMaintainingHeading extends Command{
 
     public DriveMaintainingHeading(
         Drive drivetrain,
-        RobotContainer robotContainer,
         DoubleSupplier throttle,
         DoubleSupplier strafe,
         DoubleSupplier turn
         ) 
     {
         mDrivetrain = drivetrain;
-        mRobotContainer = robotContainer;
         mThrottleSupplier = throttle;
         mStrafeSupplier = strafe;
         mTurnSupplier = turn;
@@ -107,8 +103,8 @@ public class DriveMaintainingHeading extends Command{
         double throttle = mThrottleSupplier.getAsDouble() * DriveConstants.kDriveMaxSpeed;
         double strafe = mStrafeSupplier.getAsDouble() * DriveConstants.kDriveMaxSpeed;
         double turnFieldFrame = mTurnSupplier.getAsDouble();
-        double throttleFieldFrame = RobotConstants.isRedAlliance ? throttle : -throttle;
-        double strafeFieldFrame = RobotConstants.isRedAlliance ? strafe : -strafe;
+        double throttleFieldFrame = RobotConstants.isRedAlliance ? -throttle : throttle;
+        double strafeFieldFrame = RobotConstants.isRedAlliance ? -strafe : strafe;
         updateHeadingState();
         mDriveMode = headingState;
 
