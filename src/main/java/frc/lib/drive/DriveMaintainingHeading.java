@@ -49,7 +49,7 @@ public class DriveMaintainingHeading extends Command{
     private final SwerveRequest.FieldCentric driveNoHeading = 
         new SwerveRequest.FieldCentric()
             .withDeadband(
-                DriveConstants.kDriveMaxSpeed * 0.05
+                DriveConstants.kDriveMaxSpeed * DriveConstants.kDriveJoystickDeadband
             )
             .withRotationalDeadband(
                 DriveConstants.kDriveMaxAngularRate * DriveConstants.kSteerJoystickDeadband
@@ -57,7 +57,7 @@ public class DriveMaintainingHeading extends Command{
             .withDriveRequestType(SwerveModule.DriveRequestType.Velocity);
     private final SwerveRequest.FieldCentricFacingAngle driveWithHeading = 
         new SwerveRequest.FieldCentricFacingAngle()
-        .withDeadband(DriveConstants.kDriveMaxSpeed * 0.05)
+        .withDeadband(DriveConstants.kDriveMaxSpeed * DriveConstants.kDriveJoystickDeadband)
         .withDriveRequestType(SwerveModule.DriveRequestType.Velocity);
 
     public DriveMaintainingHeading(
@@ -103,8 +103,9 @@ public class DriveMaintainingHeading extends Command{
         double throttle = mThrottleSupplier.getAsDouble() * DriveConstants.kDriveMaxSpeed;
         double strafe = mStrafeSupplier.getAsDouble() * DriveConstants.kDriveMaxSpeed;
         double turnFieldFrame = mTurnSupplier.getAsDouble();
-        double throttleFieldFrame = RobotConstants.isRedAlliance ? -throttle : throttle;
-        double strafeFieldFrame = RobotConstants.isRedAlliance ? -strafe : strafe;
+        double throttleFieldFrame = RobotConstants.isRedAlliance ? throttle : -throttle;
+        double strafeFieldFrame = RobotConstants.isRedAlliance ? strafe : -strafe;
+        //if (Robot.isSimulation()) {throttleFieldFrame = -throttleFieldFrame; strafeFieldFrame = -strafeFieldFrame;}
         updateHeadingState();
         mDriveMode = headingState;
 

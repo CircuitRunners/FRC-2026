@@ -35,7 +35,8 @@ public class DriveConstants {
 	public static final LinearVelocity kMaxSpeedTippy = kMaxSpeed.div(2.0);
     public static final LinearVelocity kMaxSpeedVeryTippy = kMaxSpeed.div(2.9);
     public static final double kMaxAccelerationMetersPerSecondSquared = 10.0;
-    public static final double kSteerJoystickDeadband = 0.05;
+    public static final double kSteerJoystickDeadband = 0.10;
+	public static final double kDriveJoystickDeadband = 0.10;
     public static final double kHeadingControllerP = 5.0;
     public static final double kHeadingControllerI = 0;
     public static final double kHeadingControllerD = 0;

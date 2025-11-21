@@ -44,7 +44,7 @@ public class VisionIOPhotonVision implements VisionIO {
     this.robotPoseSupplier = robotPoseSupplier;
 
     poseEstimator =
-        new PhotonPoseEstimator(aprilTagLayout, PoseStrategy.CONSTRAINED_SOLVEPNP, robotToCamera);
+        new PhotonPoseEstimator(aprilTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, robotToCamera);
     poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.CLOSEST_TO_REFERENCE_POSE);
   }
 
