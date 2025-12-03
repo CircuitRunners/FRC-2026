@@ -70,11 +70,11 @@ public class RobotContainer {
     private final Vision vision = new Vision(
         drive.getDrivetrain().getVisionConsumer(),
         (RobotBase.isSimulation())
-        ? new VisionIOPhotonVisionSim(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose)
-        : new VisionIOPhotonVision(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose)
+        ? new VisionIOPhotonVisionSim(VisionConstants.leftCameraName, VisionConstants.robotToLeftCamera, drive::getPose)
+        : new VisionIOPhotonVision(VisionConstants.leftCameraName, VisionConstants.robotToLeftCamera, drive::getPose)
         // (RobotBase.isSimulation())
-        // ? new VisionIOPhotonVisionSim(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
-        // : new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
+        // ? new VisionIOPhotonVisionSim(VisionConstants.rightCameraName, VisionConstants.robotToRightCamera, drive::getPose)
+        // : new VisionIOPhotonVision(VisionConstants.rightCameraName, VisionConstants.robotToRightCamera, drive::getPose)
     );
 
     public RobotContainer() {

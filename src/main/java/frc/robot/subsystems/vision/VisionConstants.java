@@ -26,8 +26,8 @@ public class VisionConstants {
   public static AprilTagFieldLayout aprilTagLayout =
       AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
 
-  public static String camera0Name = "camera_0";
-  public static String camera1Name = "camera_1";
+  public static String leftCameraName = "leftCamera";
+  public static String rightCameraName = "rightCamera";
 
   // public static Transform3d robotToCamera0 =
   //     new Transform3d(
@@ -42,9 +42,9 @@ public class VisionConstants {
   //         Units.inchesToMeters(7.523),
   //         new Rotation3d(0.0, Units.degreesToRadians(-20.0), Units.degreesToRadians(180.0)));
 
-  public static Transform3d robotToCamera0 = new Transform3d(.159, -.272, 0.284988,
+  public static Transform3d robotToRightCamera = new Transform3d(.159, -.272, 0.284988,
     new Rotation3d(0, 0, Math.toRadians(15)));
-  public static Transform3d robotToCamera1 = new Transform3d(.159, .272, 0.284988,
+  public static Transform3d robotToLeftCamera = new Transform3d(.159, .272, 0.284988,
     new Rotation3d(0, 0, -Math.toRadians(16)));
 
 
