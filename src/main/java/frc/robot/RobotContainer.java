@@ -37,7 +37,8 @@ import frc.lib.drive.FollowTrajectoryCommand;
 import frc.lib.drive.PIDToPoseCommand;
 import frc.lib.util.FieldLayout.Level;
 import frc.lib.drive.DriveMaintainingHeading.DriveHeadingState;
-//import frc.robot.controlboard.ControlBoard;
+import frc.robot.controlboard.ControlBoard;
+import frc.robot.controlboard.ControlBoardConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.drive.TunerConstants;
@@ -53,7 +54,7 @@ public class RobotContainer {
     private final Drive drive = new Drive();
     private final Superstructure superstructure = new Superstructure(drive);
 
-    //private final ControlBoard controlBoard = ControlBoard.getInstance();
+    private final ControlBoard controlBoard = ControlBoard.getInstance(drive, superstructure);
 
     
 
@@ -64,8 +65,6 @@ public class RobotContainer {
     private final SwerveRequest.FieldCentric driveRequest = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
-
-    private final CommandXboxController joystick = new CommandXboxController(0);
     
     private final Vision vision = new Vision(
         drive.getDrivetrain().getVisionConsumer(),
@@ -83,9 +82,9 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        joystick.a().whileTrue(pidToPoseTest);
-        joystick.leftTrigger().whileTrue(autoAlignToLeftBranch);
-        joystick.rightTrigger().whileTrue(autoAlignToRightBranch);
+        ControlBoardConstants.mDriverController.a().whileTrue(pidToPoseTest);
+        ControlBoardConstants.mDriverController.leftTrigger().whileTrue(autoAlignToLeftBranch);
+        ControlBoardConstants.mDriverController.rightTrigger().whileTrue(autoAlignToRightBranch);
         drive.setDefaultCommand(
             driveCommand
         );
@@ -94,9 +93,9 @@ public class RobotContainer {
         // drive.getDrivetrain().setDefaultCommand(
         //     // Drivetrain will execute this command periodically
         //     drive.getDrivetrain().applyRequest(() ->
-        //     driveRequest.withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-        //             .withVelocityY(-joystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-        //             .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+        //     driveRequest.withVelocityX(-ControlBoardConstants.mDriverController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+        //             .withVelocityY(-ControlBoardConstants.mDriverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+        //             .withRotationalRate(-ControlBoardConstants.mDriverController.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
         //     )
         // );
 
@@ -109,13 +108,13 @@ public class RobotContainer {
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
-        // joystick.back().and(joystick.y()).whileTrue(drive.getDrivetrain().sysIdDynamic(Direction.kForward));
-        // joystick.back().and(joystick.x()).whileTrue(drive.getDrivetrain().sysIdDynamic(Direction.kReverse));
-        // joystick.start().and(joystick.y()).whileTrue(drive.getDrivetrain().sysIdQuasistatic(Direction.kForward));
-        // joystick.start().and(joystick.x()).whileTrue(drive.getDrivetrain().sysIdQuasistatic(Direction.kReverse));
+        // ControlBoardConstants.mDriverController.back().and(ControlBoardConstants.mDriverController.y()).whileTrue(drive.getDrivetrain().sysIdDynamic(Direction.kForward));
+        // ControlBoardConstants.mDriverController.back().and(ControlBoardConstants.mDriverController.x()).whileTrue(drive.getDrivetrain().sysIdDynamic(Direction.kReverse));
+        // ControlBoardConstants.mDriverController.start().and(ControlBoardConstants.mDriverController.y()).whileTrue(drive.getDrivetrain().sysIdQuasistatic(Direction.kForward));
+        // ControlBoardConstants.mDriverController.start().and(ControlBoardConstants.mDriverController.x()).whileTrue(drive.getDrivetrain().sysIdQuasistatic(Direction.kReverse));
 
         // reset the field-centric heading on left bumper press
-        joystick.start().onTrue(drive.getDrivetrain().runOnce(() -> drive.getDrivetrain().seedFieldCentric()));
+        ControlBoardConstants.mDriverController.start().onTrue(drive.getDrivetrain().runOnce(() -> drive.getDrivetrain().seedFieldCentric()));
     }
 
 
@@ -125,7 +124,7 @@ public class RobotContainer {
 
 
     private final DriveMaintainingHeading driveCommand = 
-        new DriveMaintainingHeading(drive, () -> joystick.getLeftY(), () -> joystick.getLeftX(), () -> -joystick.getRightX());
+        new DriveMaintainingHeading(drive, () -> ControlBoardConstants.mDriverController.getLeftY(), () -> ControlBoardConstants.mDriverController.getLeftX(), () -> -ControlBoardConstants.mDriverController.getRightX());
 
     private final Command syncedPIDToPoseTest =
         new FollowSyncedPIDToPose(drive, superstructure, new Pose2d(5.0, 2.8, Rotation2d.fromDegrees(270)), Level.NET);

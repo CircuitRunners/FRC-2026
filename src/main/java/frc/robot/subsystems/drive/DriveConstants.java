@@ -158,7 +158,7 @@ public class DriveConstants {
 
     public static final SwerveRequest.FieldCentric PIDToPoseRequest = new SwerveRequest.FieldCentric()
 			.withDeadband(DriveConstants.kMaxSpeed
-					.times(kSteerJoystickDeadband)
+					.times(kDriveJoystickDeadband)
 					.div(10.0))
 			.withRotationalDeadband(DriveConstants.kMaxAngularRate
 					.times(kSteerJoystickDeadband)
