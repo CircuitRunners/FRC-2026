@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.logging.LogUtil;
 import frc.lib.util.DelayedBoolean;
-import frc.lib.util.FieldLayout.Level;
 import frc.lib.util.SynchronousPIDF;
 import frc.lib.util.Util;
 import frc.robot.subsystems.drive.Drive;
@@ -116,14 +115,14 @@ public class PIDToPoseCommand extends Command {
 	 * Boolean param was added to avoid confusion with the constructor that would transform a scoring pose from a branch.
 	 * For example, this is used for our auto align to L1.
 	 */
-	public PIDToPoseCommand(Drive drive, Superstructure superstructure, Pose2d rawEndPose, Level level, boolean useRaw) {
+	public PIDToPoseCommand(Drive drive, Superstructure superstructure, Pose2d rawEndPose, boolean useRaw) {
 		this(
                 drive,
                 superstructure,
 				rawEndPose.transformBy(new Transform2d(new Translation2d(), Rotation2d.k180deg)),
-				SuperstructureConstants.getAutoAlignScoringDistanceEpsilon(level),
-				SuperstructureConstants.getAutoAlignScoringAngleEpsilon(level),
-				SuperstructureConstants.getAutoAlignScoringDelay(level),
+				SuperstructureConstants.getAutoAlignScoringDistanceEpsilon(),
+				SuperstructureConstants.getAutoAlignScoringAngleEpsilon(),
+				SuperstructureConstants.getAutoAlignScoringDelay(),
 				rawEndPose.getRotation(),
 				DriveConstants.mAutoAlignTranslationController,
 				DriveConstants.mAutoAlignHeadingController);

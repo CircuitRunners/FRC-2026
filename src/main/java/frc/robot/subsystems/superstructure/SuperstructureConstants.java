@@ -72,40 +72,16 @@ public class SuperstructureConstants {
 	public static final Time kEndEffectorCoralDebounce = Units.Seconds.of(0.04);
 	public static final AngularVelocity kEndEffectorVelocityDip = Units.DegreesPerSecond.of(2000);
 
-    public static Distance getAutoAlignScoringDistanceEpsilon(Level level) {
-		return switch (level) {
-			case L1 -> kL1ScoringDistanceEpsilon;
-			case L2 -> kL2ScoringDistanceEpsilon;
-			case L3 -> kL3ScoringDistanceEpsilon;
-			case L4 -> kL4ScoringDistanceEpsilon;
-			case PROCESSOR_ALGAE -> kProcessorAlgaeScoringDistanceEpsilon;
-			case NET -> kNetScoringDistanceEpsilon;
-			default -> kReefScoringDistanceEpsilon;
-		};
+    public static Distance getAutoAlignScoringDistanceEpsilon() {
+		return kL1ScoringDistanceEpsilon;
 	}
 
-	public static Angle getAutoAlignScoringAngleEpsilon(Level level) {
-		return switch (level) {
-			case L1 -> kL1ScoringAngleEpsilon;
-			case L2 -> kL2ScoringAngleEpsilon;
-			case L3 -> kL3ScoringAngleEpsilon;
-			case L4 -> kL4ScoringAngleEpsilon;
-			case PROCESSOR_ALGAE -> kProcessorAlgaeScoringAngleEpsilon;
-			case NET -> kNetScoringAngleEpsilon;
-			default -> kReefScoringAngleEpsilon;
-		};
+	public static Angle getAutoAlignScoringAngleEpsilon() {
+		return kL1ScoringAngleEpsilon;
 	}
 
-	public static Time getAutoAlignScoringDelay(Level level) {
-		return switch (level) {
-			case L1 -> kL1ScoringDelay;
-			case L2 -> kL2ScoringDelay;
-			case L3 -> kL3ScoringDelay;
-			case L4 -> kL4ScoringDelay;
-			case PROCESSOR_ALGAE -> kProcessorAlgaeScoringDelay;
-			case NET -> kNetScoringDelay;
-			default -> kReefScoringDelay;
-		};
+	public static Time getAutoAlignScoringDelay() {
+		return kL1ScoringDelay;
 	}
 
 	public static Time getAutoAlignLookaheadTime(Level level) {
