@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.lib.io.BeamBreakIO;
 import frc.lib.io.BeamBreakIOCANRange;
 import frc.lib.io.BeamBreakIOSim;
-import frc.lib.util.FieldLayout.Level;
+
 import frc.robot.Ports;
 import frc.robot.Robot;
 import frc.robot.controlboard.ControlBoardConstants;
@@ -84,25 +84,7 @@ public class SuperstructureConstants {
 		return kL1ScoringDelay;
 	}
 
-	public static Time getAutoAlignLookaheadTime(Level level) {
-		return switch (level) {
-			case L2 -> kL2LookaheadTime;
-			case L3 -> kL3LookaheadTime;
-			case L4 -> kL4LookaheadTime;
-			case PROCESSOR_ALGAE -> kProcessorAlgaeLookaheadTime;
-			default -> kReefLookaheadTime;
-		};
-	}
 
-	public static Angle getAutoAlignHeadingGenerationDeadband(Level level) {
-		return switch (level) {
-			case L2 -> kL2HeadingGenerationDeadband;
-			case L3 -> kL3HeadingGenerationDeadband;
-			case L4 -> kL4HeadingGenerationDeadband;
-			case PROCESSOR_ALGAE -> kProcessorAlgaeHeadingGenerationDeadband;
-			default -> kReefHeadingGenerationDeadband;
-		};
-	}
 
 	/**
 	 * Gets the distance to offset scoring from the center of the robot based on the level you're trying to score at.
@@ -111,15 +93,5 @@ public class SuperstructureConstants {
 	 * @param level The wanted level (L1, L2, L3, L4).
 	 * @return The distance offset to add to the elevator offset to get where your drivetrain should be relative to a pose.
 	 */
-	public static Distance getGamepieceOffsetFactor(Level level) {
-		return switch (level) {
-			case L4 -> SuperstructureConstants.kL4CoralOffsetFactor;
-			case L3 -> SuperstructureConstants.kL3CoralOffsetFactor;
-			case L2 -> SuperstructureConstants.kL2CoralOffsetFactor;
-			case L1 -> SuperstructureConstants.kL1CoralOffsetFactor;
-			case L3_ALGAE, L2_ALGAE -> SuperstructureConstants.kAlgaeOffsetFactor;
-			case ALGAE_READY -> SuperstructureConstants.kAlgaeReadyOffsetFactor;
-			default -> kL4CoralOffsetFactor;
-		};
-	}
+
 }

@@ -6,7 +6,6 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Time;
-import frc.lib.util.FieldLayout.Level;
 import frc.lib.util.SynchronousPIDF;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
@@ -30,8 +29,8 @@ public class FollowSyncedTrajectory extends FollowTrajectoryCommand{
 		this.superstructure.setDriveReady(false);
 	}
 
-    public FollowSyncedTrajectory(Drive drive, Superstructure superstructure, Trajectory trajectory, Level level) {
-		super(drive, trajectory, level);
+    public FollowSyncedTrajectory(Drive drive, Superstructure superstructure, Trajectory trajectory) {
+		super(drive, trajectory);
         this.superstructure = superstructure;
 		superstructure.setSuperstructureDone(false);
 		superstructure.setDriveReady(false);
@@ -51,51 +50,27 @@ public class FollowSyncedTrajectory extends FollowTrajectoryCommand{
 		superstructure.setDriveReady(false);
 	}
 
-    public FollowSyncedTrajectory(Drive drive, Trajectory trajectory) {
-		super(drive,
-				trajectory,
-				trajectory
-						.getStates()
-						.get(trajectory.getStates().size() - 1)
-						.poseMeters
-						.getRotation());
-        this.superstructure = superstructure;
-		superstructure.setSuperstructureDone(false);
-		superstructure.setDriveReady(false);
-	}
+    // public FollowSyncedTrajectory(Drive drive, Superstructure superstructure, Trajectory trajectory) {
+	// 	super(drive,
+	// 			trajectory,
+	// 			trajectory
+	// 					.getStates()
+	// 					.get(trajectory.getStates().size() - 1)
+	// 					.poseMeters
+	// 					.getRotation());
+    //     this.superstructure = superstructure;
+	// 	superstructure.setSuperstructureDone(false);
+	// 	superstructure.setDriveReady(false);
+	// }
 
     public boolean driveDone() {
 		return super.isFinished();
 	}
 
-	public boolean closeEnoughToRaiseElevator() {
-		return distanceFromEnd().lte(DriveConstants.distanceToRaiseElevatorL4);
-	}
-
-	public boolean slowEnoughToRaiseElevator() {
-		return Math.hypot(
-						drive.getState().Speeds.vxMetersPerSecond,
-						drive.getState().Speeds.vxMetersPerSecond)
-				< DriveConstants.kMaxSpeedTippy.times(1.1).in(Units.MetersPerSecond);
-	}
-
     @Override
 	public void execute() {
-
-		boolean shouldStartSlowing = distanceFromEnd().lte(DriveConstants.distanceToStartSlowingL4);
-		if (shouldStartSlowing) {
-			drive.getDrivetrain().setControl(DriveConstants.getPIDToPoseRequestUpdater(drive,
-							finalPose,
-							DriveConstants.mAutoAlignTippyTranslationController,
-							DriveConstants.mAutoAlignTippyHeadingController)
-					.apply(DriveConstants.PIDToPoseRequest));
-		} else {
-			super.execute();
-		}
+		super.execute();
 		superstructure.setDriveReady(driveDone());
-		boolean closeEnoughToRaiseElevator = closeEnoughToRaiseElevator();
-		boolean slowEnoughToRaiseElevator = slowEnoughToRaiseElevator();
-		superstructure.setReadyToRaiseElevator(closeEnoughToRaiseElevator && slowEnoughToRaiseElevator);
 	}
 
 	@Override

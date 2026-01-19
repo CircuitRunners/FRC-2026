@@ -158,34 +158,10 @@ public class PIDToPoseCommand extends Command {
 	}
 
     /* AUTO ALIGN PID TO POSE COMMANDS */
-	public PIDToPoseCommand(
-        Drive drive, Superstructure superstructure, Pose2d finalPose, Level level, SynchronousPIDF translationController, SynchronousPIDF headingController) {
-    this(
-            drive,
-            superstructure,
-            TrajectoryHelpers.getDriveTargetPose(
-                            drive, finalPose, SuperstructureConstants.getAutoAlignHeadingGenerationDeadband(level), level)
-                    .plus(new Transform2d(Translation2d.kZero, Rotation2d.k180deg)),
-            SuperstructureConstants.getAutoAlignScoringDistanceEpsilon(level),
-            SuperstructureConstants.getAutoAlignScoringAngleEpsilon(level),
-            SuperstructureConstants.getAutoAlignScoringDelay(level),
-            finalPose.getRotation(),
-            translationController,
-            headingController);
-    }
+	
 
-    public PIDToPoseCommand(Drive drive, Superstructure superstructure, Pose2d finalPose, Level level, SynchronousPIDF translationController) {
-		this(drive, superstructure, finalPose, level, translationController, DriveConstants.mAutoAlignHeadingController);
-	}
-
-	public PIDToPoseCommand(Drive drive, Superstructure superstructure, Pose2d finalPose, Level level) {
-		this(
-                drive,
-                superstructure,
-				finalPose,
-				level,
-				DriveConstants.mAutoAlignTranslationController,
-				DriveConstants.mAutoAlignHeadingController);
+    public PIDToPoseCommand(Drive drive, Superstructure superstructure, Pose2d finalPose, SynchronousPIDF translationController) {
+		this(drive, superstructure, finalPose, translationController, DriveConstants.mAutoAlignHeadingController);
 	}
 
     @Override
@@ -255,7 +231,4 @@ public class PIDToPoseCommand extends Command {
     public Superstructure getSuperstructure() {
         return superstructure;
     }
-
-
-
 }

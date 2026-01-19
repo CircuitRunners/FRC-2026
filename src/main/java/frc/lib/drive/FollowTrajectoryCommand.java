@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.logging.LogUtil;
 import frc.lib.util.DelayedBoolean;
-import frc.lib.util.FieldLayout.Level;
 import frc.lib.util.SynchronousPIDF;
 import frc.lib.util.Util;
 import frc.robot.subsystems.drive.Drive;
@@ -122,44 +121,43 @@ public class FollowTrajectoryCommand extends Command{
 				headingController);
 	}
 
-    public FollowTrajectoryCommand(
-            Drive drive,
-			Trajectory trajectory,
-			Level level,
-			SynchronousPIDF translationController,
-			SynchronousPIDF headingController) {
-		this(
-                drive,
-				trajectory,
-				SuperstructureConstants.getAutoAlignScoringDistanceEpsilon(level),
-				SuperstructureConstants.getAutoAlignScoringAngleEpsilon(level),
-				SuperstructureConstants.getAutoAlignScoringDelay(level),
-				SuperstructureConstants.getAutoAlignLookaheadTime(level),
-				trajectory
-						.getStates()
-						.get(trajectory.getStates().size() - 1)
-						.poseMeters
-						.getRotation(),
-				translationController,
-				headingController);
-	}
+    // public FollowTrajectoryCommand(
+    //         Drive drive,
+	// 		Trajectory trajectory,
+	// 		SynchronousPIDF translationController,
+	// 		SynchronousPIDF headingController) {
+	// 	this(
+    //             drive,
+	// 			trajectory,
+	// 			SuperstructureConstants.getAutoAlignScoringDistanceEpsilon(level),
+	// 			SuperstructureConstants.getAutoAlignScoringAngleEpsilon(level),
+	// 			SuperstructureConstants.getAutoAlignScoringDelay(level),
+	// 			SuperstructureConstants.getAutoAlignLookaheadTime(level),
+	// 			trajectory
+	// 					.getStates()
+	// 					.get(trajectory.getStates().size() - 1)
+	// 					.poseMeters
+	// 					.getRotation(),
+	// 			translationController,
+	// 			headingController);
+	// }
 
-	public FollowTrajectoryCommand(Drive drive, Trajectory trajectory, Level level) {
-		this(
-                drive,
-				trajectory,
-				SuperstructureConstants.getAutoAlignScoringDistanceEpsilon(level),
-				SuperstructureConstants.getAutoAlignScoringAngleEpsilon(level),
-				SuperstructureConstants.getAutoAlignScoringDelay(level),
-				SuperstructureConstants.getAutoAlignLookaheadTime(level),
-				trajectory
-						.getStates()
-						.get(trajectory.getStates().size() - 1)
-						.poseMeters
-						.getRotation(),
-				DriveConstants.mAutoAlignTranslationController,
-				DriveConstants.mAutoAlignHeadingController);
-	}
+	// public FollowTrajectoryCommand(Drive drive, Trajectory trajectory, Level level) {
+	// 	this(
+    //             drive,
+	// 			trajectory,
+	// 			SuperstructureConstants.getAutoAlignScoringDistanceEpsilon(level),
+	// 			SuperstructureConstants.getAutoAlignScoringAngleEpsilon(level),
+	// 			SuperstructureConstants.getAutoAlignScoringDelay(level),
+	// 			SuperstructureConstants.getAutoAlignLookaheadTime(level),
+	// 			trajectory
+	// 					.getStates()
+	// 					.get(trajectory.getStates().size() - 1)
+	// 					.poseMeters
+	// 					.getRotation(),
+	// 			DriveConstants.mAutoAlignTranslationController,
+	// 			DriveConstants.mAutoAlignHeadingController);
+	// }
 
 	public FollowTrajectoryCommand(
             Drive drive,

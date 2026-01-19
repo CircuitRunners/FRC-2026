@@ -6,7 +6,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
-import frc.lib.util.FieldLayout.Level;
 import frc.lib.util.Util;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.superstructure.SuperstructureConstants;
@@ -54,16 +53,16 @@ public class TrajectoryHelpers {
      * @param level the level to score on
      * @return the offsetted pose
      */
-    public static Pose2d getDriveTargetPose(Drive drive, Pose2d endEffectorPose, Angle idealApproachDeadband, Level level) {
-		Rotation2d angle =
-				angleToApproach(drive, endEffectorPose.getTranslation(), endEffectorPose.getRotation(), idealApproachDeadband);
-		Pose2d transformedTargetPose = transformWantedGamepieceToDrivePose(
-				new Pose2d(endEffectorPose.getTranslation(), angle),
-				SuperstructureConstants.kElevatorCenterOffset.plus(
-						SuperstructureConstants.getGamepieceOffsetFactor(level)));
+  // public static Pose2d getDriveTargetPose(Drive drive, Pose2d endEffectorPose, Angle idealApproachDeadband) {
+	// 	Rotation2d angle =
+	// 			angleToApproach(drive, endEffectorPose.getTranslation(), endEffectorPose.getRotation(), idealApproachDeadband);
+	// 	// Pose2d transformedTargetPose = transformWantedGamepieceToDrivePose(
+	// 	// 		new Pose2d(endEffectorPose.getTranslation(), angle),
+	// 	// 		SuperstructureConstants.kElevatorCenterOffset.plus(
+	// 	// 				SuperstructureConstants.getGamepieceOffsetFactor(level)));
 
-		return transformedTargetPose;
-	}
+	// 	return transformedTargetPose;
+	// }
 
     /** Offsets the target pose by the coral's distance from the center of the robot
      * @param wantedFinalPose the pose you want to score at
