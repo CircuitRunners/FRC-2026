@@ -1,28 +1,33 @@
 package frc.robot.shooting;
 
-import frc.lib.util.team254_2022.InterpolatingDouble;
-import frc.lib.util.team254_2022.InterpolatingTreeMap;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 
 public class RegressionMaps {
-	public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kHoodAutoAimMap =
-			new InterpolatingTreeMap<>();
+	public static InterpolatingTreeMap<Double, Double> kHoodAutoAimMap =
+			new InterpolatingDoubleTreeMap();
 
 	static {
 		for (double[] pair : HubRegression.kHoodManualAngle) {
-			kHoodAutoAimMap.put(new InterpolatingDouble(pair[0]), new InterpolatingDouble(pair[1]));
+			kHoodAutoAimMap.put(pair[0], pair[1]);
 		}
 	}
 
-	public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kFlywheelAutoAimMap =
-			new InterpolatingTreeMap<>();
+	public static InterpolatingTreeMap<Double, Double> kFlywheelAutoAimMap =
+			new InterpolatingDoubleTreeMap();
 
 	static {
 		for (double[] pair : HubRegression.kFlywheelManualRPM) {
-			kFlywheelAutoAimMap.put(new InterpolatingDouble(pair[0]), new InterpolatingDouble(pair[1]));
+			kFlywheelAutoAimMap.put(pair[0], pair[1]);
 		}
 	}
 
-	public static InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> kShooterCurveOffsetMap =
-			new InterpolatingTreeMap<>();
+	public static InterpolatingTreeMap<Double, Double> kTimeOfFlightMap =
+			new InterpolatingDoubleTreeMap();
 
+	static {
+		for (double[] pair : HubRegression.ktimeOfFlightMap) {
+			kTimeOfFlightMap.put(pair[0], pair[1]);
+		}
+	}
 }

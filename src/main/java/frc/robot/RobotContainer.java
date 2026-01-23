@@ -1,12 +1,7 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
-import java.util.List;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -35,6 +30,7 @@ import frc.lib.drive.FollowTrajectoryCommand;
 import frc.lib.drive.PIDToPoseCommand;
 import frc.robot.controlboard.ControlBoard;
 import frc.robot.controlboard.ControlBoardConstants;
+import frc.robot.shooting.ShotCalculator;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.drive.TunerConstants;
@@ -51,6 +47,11 @@ public class RobotContainer {
     private final Superstructure superstructure = new Superstructure(drive);
 
     private final ControlBoard controlBoard = ControlBoard.getInstance(drive, superstructure);
+    private final ShotCalculator shotCalculator = ShotCalculator.getInstance(drive);
+
+    public ShotCalculator getShotCalculator() {
+        return shotCalculator;
+    }
 
     
 
@@ -75,7 +76,7 @@ public class RobotContainer {
     );
 
     public RobotContainer() {
-        //controlBoard.configureBindings(drive, superstructure);
+        controlBoard.configureBindings(drive, superstructure);
         configureBindings();
     }
 
@@ -90,7 +91,7 @@ public class RobotContainer {
             drive.getDrivetrain().applyRequest(() ->
             driveRequest.withVelocityX(-ControlBoardConstants.mDriverController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
                     .withVelocityY(-ControlBoardConstants.mDriverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(-ControlBoardConstants.mDriverController.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+                    .withRotationalRate(-ControlBoardConstants.mDriverController.getRightX() * MaxAngularRate).withDeadband(MaxSpeed * 0.15).withRotationalDeadband(MaxAngularRate*0.15) // Drive counterclockwise with negative X (left)
             )
         );
 

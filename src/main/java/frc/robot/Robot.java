@@ -30,6 +30,9 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run(); 
+
+    // Clear shooting parameters
+    m_robotContainer.getShotCalculator().clearShootingParameters();
   }
 
   @Override
