@@ -2,6 +2,8 @@ package frc.robot.subsystems.intakeDeploy;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
@@ -11,10 +13,14 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
-
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Distance;
 import frc.lib.bases.ServoMotorSubsystem.ServoHomingConfig;
 import frc.lib.io.MotorIOTalonFX;
+import frc.lib.io.MotorIOTalonFXSim;
+import frc.lib.sim.PivotSim;
+import frc.lib.sim.PivotSim.PivotSimConstants;
 import frc.lib.io.MotorIOTalonFX.MotorIOTalonFXConfig;
 import frc.robot.Robot;
 
@@ -27,6 +33,8 @@ public class IntakeDeployConstants {
     public static final Angle kEmptyStoragePos = Degrees.of(10); // PH
     public static final Angle kHoldPos = Degrees.of(10); // PH
     public static final Angle kOuttakePos = kDeployPos;
+
+    public static final Distance kArmLength = Inches.of(6); // PH
 
     public static final Angle kEpsilonThreshold = Degrees.of(6); // PH
 
@@ -77,9 +85,23 @@ public class IntakeDeployConstants {
         if (Robot.isReal()) {
             return new MotorIOTalonFX(getIOConfig());
         } else {
-            return new MotorIOTalonFX(null); // PH?
+            return new MotorIOTalonFXSim(getIOConfig(), new PivotSim(getSimConstants()));
         }
     }
+
+    public static PivotSimConstants getSimConstants() {
+		PivotSimConstants simConstants = new PivotSimConstants();
+		simConstants.gearing = kGearing;
+		simConstants.armLength = kArmLength;
+		simConstants.momentOfInertia = KilogramSquareMeters.of(0.6046665376);
+		simConstants.motor = DCMotor.getKrakenX60Foc(1);
+		simConstants.mechanismMaxHardStop = kFullStoragePos;
+		simConstants.mechanismMinHardStop = kDeployPos;
+		simConstants.simGravity = false;
+		simConstants.mechanismStartPos = kFullStoragePos;
+
+		return simConstants;
+	}
 
     public static ServoHomingConfig getServoHomingConfig() {
 		ServoHomingConfig nConfig = new ServoHomingConfig();
