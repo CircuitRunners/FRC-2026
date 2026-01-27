@@ -14,6 +14,7 @@ import frc.lib.io.MotorIOTalonFX.MotorIOTalonFXConfig;
 import frc.lib.io.MotorIOTalonFXSim;
 import frc.lib.sim.RollerSim;
 import frc.lib.sim.RollerSim.RollerSimConstants;
+import frc.robot.Ports;
 import frc.robot.Robot;
 
 //PH -> PlaceHolder
@@ -25,35 +26,35 @@ public class IntakeRollerConstants {
     public static final Voltage kPeliVoltage = Volts.of(2); // PH
     public static final Voltage kOuttakeVoltage = Volts.of(12); // PH
 
-    public static TalonFXConfiguration getTlnFXConfig() {
-        TalonFXConfiguration nConfig = new TalonFXConfiguration();
+    public static TalonFXConfiguration getFXConfig() {
+        TalonFXConfiguration config = new TalonFXConfiguration();
 
-        nConfig.CurrentLimits.StatorCurrentLimitEnable = Robot.isReal();
-        nConfig.CurrentLimits.StatorCurrentLimit = 120; // PH?
+        config.CurrentLimits.StatorCurrentLimitEnable = Robot.isReal();
+        config.CurrentLimits.StatorCurrentLimit = 120; // PH?
 
-        nConfig.CurrentLimits.SupplyCurrentLimitEnable = Robot.isReal();
-		nConfig.CurrentLimits.SupplyCurrentLimit = 60.0; // PH
-		nConfig.CurrentLimits.SupplyCurrentLowerLimit = 60.0; // PH
-		nConfig.CurrentLimits.SupplyCurrentLowerTime = 0.1; // PH
+        config.CurrentLimits.SupplyCurrentLimitEnable = Robot.isReal();
+		    config.CurrentLimits.SupplyCurrentLimit = 60.0; // PH
+		    config.CurrentLimits.SupplyCurrentLowerLimit = 60.0; // PH
+		    config.CurrentLimits.SupplyCurrentLowerTime = 0.1; // PH
 
-		nConfig.Voltage.PeakForwardVoltage = 12.0; // PH
-		nConfig.Voltage.PeakReverseVoltage = -12.0; // PH
+		    config.Voltage.PeakForwardVoltage = 12.0; // PH
+		    config.Voltage.PeakReverseVoltage = -12.0; // PH
 
-		nConfig.Feedback.SensorToMechanismRatio = kGearing;
+		    config.Feedback.SensorToMechanismRatio = kGearing;
 
-		nConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+		    config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
-		return nConfig;
+		    return config;
     }
 
     public static MotorIOTalonFXConfig getIOConfig() {
-        MotorIOTalonFXConfig nConfig = new MotorIOTalonFXConfig();
-        nConfig.mainConfig = getTlnFXConfig();
-        nConfig.time = Minute;
-        nConfig.unit = Rotations;
-        nConfig.mainID = 0; // PH
-        nConfig.mainBus = ""; // PH
-        return nConfig;
+        MotorIOTalonFXConfig config = new MotorIOTalonFXConfig();
+        config.mainConfig = getFXConfig();
+        config.time = Minute;
+        config.unit = Rotations;
+        config.mainID = Ports.INTAKE_ROLLERS.id; // PH
+        config.mainBus = Ports.INTAKE_ROLLERS.bus; // PH
+        return config;
     }
 
     public static MotorIOTalonFX getMotorIO() {

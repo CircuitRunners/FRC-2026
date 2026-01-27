@@ -1,12 +1,15 @@
 package frc.lib.io;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.MotionMagicExpoTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
+import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
@@ -27,6 +30,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.function.UnaryOperator;
+import com.ctre.phoenix6.controls.compound.Diff_MotionMagicExpoTorqueCurrentFOC_Velocity;
 
 /**
  * Class used to control a main TalonFX and any number of followers for a real mechanism.
@@ -222,7 +226,7 @@ public class MotorIOTalonFX extends MotorIO {
 		public AngleUnit unit = Units.Rotations;
 		public TimeUnit time = Units.Seconds;
 		public int mainID = -1;
-		public String mainBus = "ASSIGN_BUS";
+		public CANBus mainBus = new CANBus("ASSIGN_BUS");
 		public TalonFXConfiguration mainConfig = new TalonFXConfiguration();
 		public int[] followerIDs = new int[0];
 		public String[] followerBuses = new String[0];
@@ -245,7 +249,7 @@ public class MotorIOTalonFX extends MotorIO {
 		}
 
 		public ControlRequest getVelocityRequest(AngularVelocity mechanismVelocity) {
-			return new VelocityTorqueCurrentFOC(mechanismVelocity).withSlot(1);
+			return new MotionMagicVelocityTorqueCurrentFOC(mechanismVelocity).withSlot(1);
 		}
 
 		public ControlRequest getPositionRequest(Angle mechanismPosition) {

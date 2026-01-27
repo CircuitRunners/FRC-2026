@@ -16,8 +16,6 @@ public class IntakeDeploy extends ServoMotorSubsystem<MotorIOTalonFX> {
     public static final Setpoint OUTTAKE = Setpoint.withMotionMagicSetpoint(IntakeDeployConstants.kOuttakePos);
     public static final Setpoint HOLD = Setpoint.withMotionMagicSetpoint(IntakeDeployConstants.kHoldPos);
 
-    public static final IntakeDeploy mInstance = new IntakeDeploy();
-
     private final StructPublisher<Pose3d> poweredBarPublisher = NetworkTableInstance.getDefault()
 			.getStructTopic("Mechanisms/Coral Deploy Powered Bar", Pose3d.struct)
 			.publish();

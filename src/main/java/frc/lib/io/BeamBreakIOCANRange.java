@@ -1,5 +1,6 @@
 package frc.lib.io;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CANrangeConfiguration;
 import com.ctre.phoenix6.hardware.CANrange;
 import edu.wpi.first.units.measure.Time;
@@ -15,7 +16,7 @@ public class BeamBreakIOCANRange extends BeamBreakIO {
 
 	public static BeamBreakIOCANRange makeInverted(
 			int channel,
-			String canbus,
+			CANBus canbus,
 			CANrangeConfiguration config,
 			Time debounce,
 			String name,
@@ -35,7 +36,7 @@ public class BeamBreakIOCANRange extends BeamBreakIO {
 
 	public BeamBreakIOCANRange(
 			int channel,
-			String canbus,
+			CANBus canbus,
 			CANrangeConfiguration config,
 			Time debounce,
 			String name,

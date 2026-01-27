@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.lib.drive.DriveMaintainingHeading;
 import frc.lib.drive.DriveToPose;
 import frc.lib.drive.FollowSyncedPIDToPose;
 import frc.lib.drive.FollowTrajectoryCommand;
@@ -62,18 +63,16 @@ public class RobotContainer {
     private final SwerveRequest.FieldCentric driveRequest = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
-
-    private final CommandXboxController joystick = new CommandXboxController(0);
     
-    private final Vision vision = new Vision(
-        drive.getDrivetrain().getVisionConsumer(),
-        (RobotBase.isSimulation())
-        ? new VisionIOPhotonVisionSim(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose)
-        : new VisionIOPhotonVision(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose),
-        (RobotBase.isSimulation())
-        ? new VisionIOPhotonVisionSim(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
-        : new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
-    );
+    // private final Vision vision = new Vision(
+    //     drive.getDrivetrain().getVisionConsumer(),
+    //     (RobotBase.isSimulation())
+    //     ? new VisionIOPhotonVisionSim(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose)
+    //     : new VisionIOPhotonVision(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose),
+    //     (RobotBase.isSimulation())
+    //     ? new VisionIOPhotonVisionSim(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
+    //     : new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
+    // );
 
     public RobotContainer() {
         controlBoard.configureBindings(drive, superstructure);
@@ -81,19 +80,19 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        // drive.setDefaultCommand(
-        //     driveCommand
-        // );
+        drive.setDefaultCommand(
+            driveCommand
+        );
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
-        drive.getDrivetrain().setDefaultCommand(
-            // Drivetrain will execute this command periodically
-            drive.getDrivetrain().applyRequest(() ->
-            driveRequest.withVelocityX(-ControlBoardConstants.mDriverController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(-ControlBoardConstants.mDriverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(-ControlBoardConstants.mDriverController.getRightX() * MaxAngularRate).withDeadband(MaxSpeed * 0.15).withRotationalDeadband(MaxAngularRate*0.15) // Drive counterclockwise with negative X (left)
-            )
-        );
+        // drive.getDrivetrain().setDefaultCommand(
+        //     // Drivetrain will execute this command periodically
+        //     drive.getDrivetrain().applyRequest(() ->
+        //     driveRequest.withVelocityX(-ControlBoardConstants.mDriverController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+        //             .withVelocityY(-ControlBoardConstants.mDriverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+        //             .withRotationalRate(-ControlBoardConstants.mDriverController.getRightX() * MaxAngularRate).withDeadband(MaxSpeed * 0.15).withRotationalDeadband(MaxAngularRate*0.15) // Drive counterclockwise with negative X (left)
+        //     )
+        // );
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
@@ -110,7 +109,7 @@ public class RobotContainer {
         // joystick.start().and(joystick.x()).whileTrue(drive.getDrivetrain().sysIdQuasistatic(Direction.kReverse));
 
         // reset the field-centric heading on left bumper press
-        joystick.start().onTrue(drive.getDrivetrain().runOnce(() -> drive.getDrivetrain().seedFieldCentric()));
+        ControlBoardConstants.mDriverController.start().onTrue(drive.getDrivetrain().runOnce(() -> drive.getDrivetrain().seedFieldCentric()));
     }
 
 
@@ -119,8 +118,8 @@ public class RobotContainer {
     }
 
 
-    // private final DriveMaintainingHeading driveCommand = 
-    //     new DriveMaintainingHeading(drive, this, () -> joystick.getLeftY(), () -> joystick.getLeftX(), () -> joystick.getRightX());
+    private final DriveMaintainingHeading driveCommand = 
+        new DriveMaintainingHeading(drive, () -> ControlBoardConstants.mDriverController.getLeftY(), () -> ControlBoardConstants.mDriverController.getLeftX(), () -> ControlBoardConstants.mDriverController.getRightX());
 
 
 

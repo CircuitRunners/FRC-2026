@@ -22,6 +22,7 @@ import frc.lib.io.MotorIOTalonFXSim;
 import frc.lib.sim.PivotSim;
 import frc.lib.sim.PivotSim.PivotSimConstants;
 import frc.lib.io.MotorIOTalonFX.MotorIOTalonFXConfig;
+import frc.robot.Ports;
 import frc.robot.Robot;
 
 // PH -> PlaceHolder
@@ -38,47 +39,47 @@ public class IntakeDeployConstants {
 
     public static final Angle kEpsilonThreshold = Degrees.of(6); // PH
 
-    public static TalonFXConfiguration getTlnFXConfig() {
-        TalonFXConfiguration nConfig = new TalonFXConfiguration();
-        nConfig.Slot0.kP = 1; // PH
-        nConfig.Slot0.kD = 1; // PH
-        nConfig.Slot0.kS = 1; // PH
-        nConfig.Slot0.kG = 1; // PH
+    public static TalonFXConfiguration getFXConfig() {
+        TalonFXConfiguration config = new TalonFXConfiguration();
+        config.Slot0.kP = 1; // PH
+        config.Slot0.kD = 1; // PH
+        config.Slot0.kS = 1; // PH
+        config.Slot0.kG = 1; // PH
 
-        nConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
-        nConfig.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
+        config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
+        config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
 
-        nConfig.MotionMagic.MotionMagicCruiseVelocity = 5; // PH
-        nConfig.MotionMagic.MotionMagicAcceleration = 7; // PH
+        config.MotionMagic.MotionMagicCruiseVelocity = 5; // PH
+        config.MotionMagic.MotionMagicAcceleration = 7; // PH
 
-        nConfig.Voltage.PeakForwardVoltage = 6; // PH
-        nConfig.Voltage.PeakReverseVoltage = -6; // PH
+        config.Voltage.PeakForwardVoltage = 6; // PH
+        config.Voltage.PeakReverseVoltage = -6; // PH
 
-        nConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-        nConfig.CurrentLimits.SupplyCurrentLimit = 40; // PH
+        config.CurrentLimits.SupplyCurrentLimitEnable = true;
+        config.CurrentLimits.SupplyCurrentLimit = 40; // PH
 
-        nConfig.Feedback.SensorToMechanismRatio = kGearing;
+        config.Feedback.SensorToMechanismRatio = kGearing;
 
-        nConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
-        nConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-        nConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = kFullStoragePos.in(Rotations);
+        config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+        config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = kFullStoragePos.in(Rotations);
 
-        nConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-        nConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = kDeployPos.in(Rotations);
+        config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+        config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = kDeployPos.in(Rotations);
 
-        return nConfig;
+        return config;
 
     }
 
     public static MotorIOTalonFXConfig getIOConfig() {
-        MotorIOTalonFXConfig nConfig = new MotorIOTalonFXConfig();
-        nConfig.mainConfig = getTlnFXConfig();
-        nConfig.mainID = 0; // PH
-        nConfig.mainBus = ""; // PH
-        nConfig.time = Seconds;
-        nConfig.unit = Degrees;
-        return nConfig;
+        MotorIOTalonFXConfig config = new MotorIOTalonFXConfig();
+        config.mainConfig = getFXConfig();
+        config.mainID = Ports.INTAKE_DEPLOY.id; // PH
+        config.mainBus = Ports.INTAKE_DEPLOY.bus; // PH
+        config.time = Seconds;
+        config.unit = Degrees;
+        return config;
     }
 
     public static MotorIOTalonFX getMotorIO() {
@@ -104,12 +105,12 @@ public class IntakeDeployConstants {
 	}
 
     public static ServoHomingConfig getServoHomingConfig() {
-		ServoHomingConfig nConfig = new ServoHomingConfig();
-		nConfig.kHomePosition = kDeployPos;
-		nConfig.kHomingTimeout = Seconds.of(0.2); 
-		nConfig.kHomingVoltage = Volts.of(-1); // PH
-		nConfig.kSetHomedVelocity = DegreesPerSecond.of(1.0); // PH
+		ServoHomingConfig config = new ServoHomingConfig();
+		config.kHomePosition = kDeployPos;
+		config.kHomingTimeout = Seconds.of(0.2); 
+		config.kHomingVoltage = Volts.of(-1); // PH
+		config.kSetHomedVelocity = DegreesPerSecond.of(1.0); // PH
 
-		return nConfig;
+		return config;
 	}
 }

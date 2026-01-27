@@ -11,8 +11,6 @@ public class IntakeRollers extends MotorSubsystem<MotorIOTalonFX> {
 	public static final Setpoint PELICAN = Setpoint.withVoltageSetpoint(IntakeRollerConstants.kPeliVoltage);
 	public static final Setpoint START = Setpoint.withVoltageSetpoint(IntakeRollerConstants.kStartVoltage);
 
-    public static final IntakeRollers mInstance = new IntakeRollers();
-
     public IntakeRollers() {
         super(IntakeRollerConstants.getMotorIO(), "Intake Rollers");
     }

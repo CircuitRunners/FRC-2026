@@ -26,7 +26,7 @@ import edu.wpi.first.units.measure.Distance;
 public class FieldLayout {
     public static Distance kFieldLength = Units.Inches.of(651.22);
 	public static Distance kFieldWidth = Units.Inches.of(317.69);
-	public static Distance kAliianceZoneX = Units.Inches.of(158.61);
+	public static Distance kAllianceZoneX = Units.Inches.of(158.61);
     public static AprilTagFieldLayout kAprilTagMap =
 			AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
 	public static Distance kAprilTagWidth = Units.Inches.of(6.5);
