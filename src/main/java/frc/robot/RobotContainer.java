@@ -6,6 +6,7 @@ import static edu.wpi.first.units.Units.*;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import choreo.auto.AutoFactory;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -41,7 +42,8 @@ import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
-
+import frc.robot.auto.AutoHelpers;
+import frc.robot.auto.AutoModeSelector;
 @Logged
 public class RobotContainer {
     private final Drive drive = new Drive();
@@ -54,8 +56,13 @@ public class RobotContainer {
         return shotCalculator;
     }
 
-    
 
+
+    private AutoModeSelector mAutoModeSelector;
+    private static String mPreviousAutoName;
+    public AutoModeSelector getAutoModeSelector() {
+        return mAutoModeSelector;
+    }
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
@@ -77,6 +84,24 @@ public class RobotContainer {
     public RobotContainer() {
         controlBoard.configureBindings(drive, superstructure);
         configureBindings();
+        RobotConstants.mAutoFactory = new AutoFactory(
+				drive::getPose,
+				drive.getDrivetrain()::resetPose,
+				drive::followChoreoTrajectory,
+				true,
+				drive);
+
+        // AutoHelpers.bindEventMarkers(RobotConstants.mAutoFactory)
+        mAutoModeSelector = new AutoModeSelector(drive, superstructure, RobotConstants.mAutoFactory);
+		mPreviousAutoName = "[CENTER] Net GH IJ KL";
+        SmartDashboard.putData("Auto Chooser", mAutoModeSelector.getAutoChooser());
+
+
+        RobotModeTriggers.autonomous()
+				.onFalse(Commands.runOnce(() -> drive.getDrivetrain().setControl(new SwerveRequest.ApplyFieldSpeeds()))
+						.ignoringDisable(true));
+
+
     }
 
     private void configureBindings() {
