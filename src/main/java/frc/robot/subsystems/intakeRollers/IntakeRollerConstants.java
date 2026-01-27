@@ -21,10 +21,10 @@ import frc.robot.Robot;
 public class IntakeRollerConstants {
     private static final double kGearing = (6 / 9);
 
-    public static final Voltage kStartVoltage = Volts.of(3); // PH
-    public static final Voltage kIntakeVoltage = Volts.of(2); // PH
-    public static final Voltage kPeliVoltage = Volts.of(2); // PH
-    public static final Voltage kOuttakeVoltage = Volts.of(12); // PH
+    public static final Voltage kStartVoltage = Volts.of(3.0); // PH
+    public static final Voltage kIntakeVoltage = Volts.of(12.0); // PH
+    public static final Voltage kPelicanVoltage = Volts.of(2.0); // PH
+    public static final Voltage kExhaustVoltage = Volts.of(12); // PH
 
     public static TalonFXConfiguration getFXConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();

@@ -1,7 +1,9 @@
 package frc.robot.subsystems.shooter;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -56,10 +58,13 @@ public class ShooterConstants {
     public static MotorIOTalonFXConfig getIOConfig() {
 		MotorIOTalonFXConfig config = new MotorIOTalonFXConfig();
 		config.mainConfig = getFXConfig();
-		config.time = Units.Minute;
+		config.time = Units.Second;
 		config.unit = Units.Rotations;
 		config.mainID = Ports.SHOOTER.id;
 		config.mainBus = Ports.SHOOTER.bus;
+		config.followerConfig = getFXConfig();
+		config.followerMotorAlignment = new MotorAlignmentValue[] {MotorAlignmentValue.Opposed};
+		config.followerBuses = new CANBus[] {Ports.SHOOTER_FOLLOWER.bus};
 		return config;
 	}
 

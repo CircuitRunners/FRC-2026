@@ -35,6 +35,7 @@ import frc.robot.shooting.ShotCalculator;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.drive.TunerConstants;
+import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionConstants;
@@ -45,6 +46,7 @@ import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 @Logged
 public class RobotContainer {
     private final Drive drive = new Drive();
+    private final Shooter shooter = new Shooter();
     private final Superstructure superstructure = new Superstructure(drive);
 
     private final ControlBoard controlBoard = ControlBoard.getInstance(drive, superstructure);
@@ -77,6 +79,8 @@ public class RobotContainer {
     public RobotContainer() {
         controlBoard.configureBindings(drive, superstructure);
         configureBindings();
+
+        shooter.setDefaultCommand(shooter.trackTargetCommand());
     }
 
     private void configureBindings() {
@@ -119,7 +123,7 @@ public class RobotContainer {
 
 
     private final DriveMaintainingHeading driveCommand = 
-        new DriveMaintainingHeading(drive, () -> ControlBoardConstants.mDriverController.getLeftY(), () -> ControlBoardConstants.mDriverController.getLeftX(), () -> ControlBoardConstants.mDriverController.getRightX());
+        new DriveMaintainingHeading(drive, () -> ControlBoardConstants.mDriverController.getLeftY(), () -> ControlBoardConstants.mDriverController.getLeftX(), () -> -ControlBoardConstants.mDriverController.getRightX());
 
 
 
