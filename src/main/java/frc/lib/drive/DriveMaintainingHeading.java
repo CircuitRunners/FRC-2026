@@ -20,6 +20,7 @@ import frc.lib.util.Util;
 import frc.robot.Robot;
 import frc.robot.RobotConstants;
 import frc.robot.RobotContainer;
+import frc.robot.shooting.ShotCalculator;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.superstructure.Superstructure;
@@ -112,21 +113,14 @@ public class DriveMaintainingHeading extends Command{
                         Optional.of(mDrivetrain.getPose().getRotation());
             }
             if (FieldLayout.distanceFromAllianceWall(Units.Meters.of(mDrivetrain.getPose().getX()), RobotConstants.isRedAlliance).lte(FieldLayout.kAllianceZoneX.minus(Units.Inches.of(14)))) {
-                double targetAngle = 
-                        FieldLayout.handleAllianceFlip(FieldLayout.blueHubCenter, RobotConstants.isRedAlliance)
-                            .minus(
-                                mDrivetrain
-                                .getPose()
-                                .getTranslation())
-                                .getAngle()
-                                .getRadians();
+                Rotation2d targetAngle = ShotCalculator.getInstance(mDrivetrain).getParameters().heading();
 
                 mDrivetrain.getDrivetrain().setControl(
                     driveWithHeading
                             .withVelocityX(throttleFieldFrame)
                             .withVelocityY(strafeFieldFrame)
                             .withTargetDirection(
-                                new Rotation2d(targetAngle)
+                                targetAngle
                             )
                 );
                 mHeadingSetpoint = 
@@ -135,10 +129,12 @@ public class DriveMaintainingHeading extends Command{
 
              else {
                 mDrivetrain.getDrivetrain().setControl(
-                        driveWithHeading
+                        driveNoHeading
                                 .withVelocityX(throttleFieldFrame)
-                                .withVelocityY(strafeFieldFrame)
-                                .withTargetDirection(mHeadingSetpoint.get()));
+                            .withVelocityY(strafeFieldFrame)
+                            .withRotationalRate(
+                                    turnFieldFrame
+                                            * DriveConstants.kDriveMaxAngularRate));
             }
         }
     }

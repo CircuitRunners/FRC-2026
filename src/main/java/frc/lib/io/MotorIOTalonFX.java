@@ -229,7 +229,7 @@ public class MotorIOTalonFX extends MotorIO {
 		public CANBus mainBus = new CANBus("ASSIGN_BUS");
 		public TalonFXConfiguration mainConfig = new TalonFXConfiguration();
 		public int[] followerIDs = new int[0];
-		public String[] followerBuses = new String[0];
+		public CANBus[] followerBuses = new CANBus[0];
 		public TalonFXConfiguration followerConfig = new TalonFXConfiguration();
 		public MotorAlignmentValue[] followerMotorAlignment = new MotorAlignmentValue[0]; // either aligned or opposed
 		public ControlRequestGetter requestGetter = new ControlRequestGetter();

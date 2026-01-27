@@ -1,32 +1,16 @@
 package frc.robot.subsystems.intakeDeploy;
 
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StructPublisher;
 import frc.lib.bases.ServoMotorSubsystem;
-import frc.lib.io.MotorIO;
 import frc.lib.io.MotorIO.Setpoint;
 import frc.lib.io.MotorIOTalonFX;
 
 public class IntakeDeploy extends ServoMotorSubsystem<MotorIOTalonFX> {
     
-    public static final Setpoint FULL_STORE = Setpoint.withMotionMagicSetpoint(IntakeDeployConstants.kFullStoragePos);
-    public static final Setpoint EMPTY_STORE = Setpoint.withMotionMagicSetpoint(IntakeDeployConstants.kEmptyStoragePos);
-    public static final Setpoint DEPLOY = Setpoint.withMotionMagicSetpoint(IntakeDeployConstants.kDeployPos);
-    public static final Setpoint OUTTAKE = Setpoint.withMotionMagicSetpoint(IntakeDeployConstants.kOuttakePos);
-    public static final Setpoint HOLD = Setpoint.withMotionMagicSetpoint(IntakeDeployConstants.kHoldPos);
-
-    private final StructPublisher<Pose3d> poweredBarPublisher = NetworkTableInstance.getDefault()
-			.getStructTopic("Mechanisms/Coral Deploy Powered Bar", Pose3d.struct)
-			.publish();
-
-	private final StructPublisher<Pose3d> unpoweredBarPublisher = NetworkTableInstance.getDefault()
-			.getStructTopic("Mechanisms/Coral Deploy Unpowered Bar", Pose3d.struct)
-			.publish();
-
-	private final StructPublisher<Pose3d> mainIntakePublisher = NetworkTableInstance.getDefault()
-			.getStructTopic("Mechanisms/Coral Deploy Main", Pose3d.struct)
-			.publish();
+    public static final Setpoint STOW_FULL = Setpoint.withMotionMagicSetpoint(IntakeDeployConstants.kFullStowPosition);
+	public static final Setpoint STOW_CLEAR = Setpoint.withMotionMagicSetpoint(IntakeDeployConstants.kStowClearPosition);
+	public static final Setpoint DEPLOY = Setpoint.withMotionMagicSetpoint(IntakeDeployConstants.kDeployPosition);
+	public static final Setpoint EXHAUST = Setpoint.withMotionMagicSetpoint(IntakeDeployConstants.kExhaustPosition);
+	public static final Setpoint INDEXERHOLD = Setpoint.withMotionMagicSetpoint(IntakeDeployConstants.kIndexerHold);
 
     public IntakeDeploy() {
         super(
@@ -35,8 +19,8 @@ public class IntakeDeploy extends ServoMotorSubsystem<MotorIOTalonFX> {
             IntakeDeployConstants.kEpsilonThreshold,
             IntakeDeployConstants.getServoHomingConfig()
         );
-        setCurrentPosition(IntakeDeployConstants.kFullStoragePos);
-        applySetpoint(EMPTY_STORE);
+        setCurrentPosition(IntakeDeployConstants.kFullStowPosition);
+        applySetpoint(STOW_CLEAR);
     }
 
     @Override

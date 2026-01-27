@@ -1,5 +1,83 @@
 package frc.robot.subsystems.hood;
 
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
+
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Angle;
+import frc.lib.bases.ServoMotorSubsystem.ServoHomingConfig;
+import frc.lib.io.MotorIOTalonFX;
+import frc.lib.io.MotorIOTalonFX.MotorIOTalonFXConfig;
+import frc.lib.io.MotorIOTalonFXSim;
+import frc.lib.sim.PivotSim;
+import frc.lib.sim.PivotSim.PivotSimConstants;
+import frc.robot.Ports;
+import frc.robot.Robot;
+
 public class HoodConstants {
-    
+    public static final double kGearing = 1.0 / 1.0;
+
+    public static final Angle kKitbotPosition = Units.Degrees.of(10.0);
+    public static final Angle kMaxAngle = Units.Degrees.of(67.0);
+    public static final Angle kMinAngle = Units.Degrees.of(0.0);
+
+    public static final Angle kEpsilonThreshold = Units.Degrees.of(0.5);
+
+    public static TalonFXConfiguration getFXConfig() {
+        TalonFXConfiguration config = new TalonFXConfiguration();
+        config.Slot0.kP = 0.0;
+        config.Slot0.kD = 0.0;
+        config.Slot0.kS = 0.0;
+        config.Slot0.kG = 0.0;
+
+        config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
+		config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
+
+		config.MotionMagic.MotionMagicCruiseVelocity = 7.0;
+		config.MotionMagic.MotionMagicAcceleration = 15.0;
+
+		config.Voltage.PeakForwardVoltage = 12.0;
+		config.Voltage.PeakReverseVoltage = -12.0;
+
+		config.CurrentLimits.SupplyCurrentLimitEnable = true;
+		config.CurrentLimits.SupplyCurrentLimit = 40.0;
+
+		config.Feedback.SensorToMechanismRatio = kGearing;
+
+		config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
+		config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+		config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = kMaxAngle.in(Units.Rotations);
+
+		config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+		config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = kMinAngle.in(Units.Rotations);
+		return config;
+    }
+
+    public static MotorIOTalonFXConfig getIOConfig() {
+		MotorIOTalonFXConfig config = new MotorIOTalonFXConfig();
+		config.mainConfig = getFXConfig();
+		config.mainID = Ports.HOOD.id;
+		config.mainBus = Ports.HOOD.bus;
+		config.time = Units.Seconds;
+		config.unit = Units.Degrees;
+		return config;
+	}
+
+    public static MotorIOTalonFX getMotorIO() {
+		return new MotorIOTalonFX(getIOConfig());
+	}
+
+    public static ServoHomingConfig getServoHomingConfig() {
+		ServoHomingConfig config = new ServoHomingConfig();
+		config.kHomePosition = kMinAngle;
+		config.kHomingTimeout = Units.Seconds.of(0.2);
+		config.kHomingVoltage = Units.Volts.of(-1.0);
+		config.kSetHomedVelocity = Units.DegreesPerSecond.of(1.0);
+
+		return config;
+	}
 }
