@@ -36,6 +36,9 @@ import frc.robot.shooting.ShotCalculator;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.drive.TunerConstants;
+import frc.robot.subsystems.hood.Hood;
+import frc.robot.subsystems.intakeDeploy.IntakeDeploy;
+import frc.robot.subsystems.intakeRollers.IntakeRollers;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.vision.Vision;
@@ -49,6 +52,9 @@ import frc.robot.auto.AutoModeSelector;
 public class RobotContainer {
     private final Drive drive = new Drive();
     private final Shooter shooter = new Shooter();
+    private final Hood hood = new Hood();
+    private final IntakeDeploy intakeDeploy = new IntakeDeploy();
+    private final IntakeRollers intakeRollers = new IntakeRollers();
     private final Superstructure superstructure = new Superstructure(drive);
 
     private final ControlBoard controlBoard = ControlBoard.getInstance(drive, superstructure);
@@ -98,14 +104,15 @@ public class RobotContainer {
 		mPreviousAutoName = "[CENTER] Net GH IJ KL";
         SmartDashboard.putData("Auto Chooser", mAutoModeSelector.getAutoChooser());
 
-
-        RobotModeTriggers.autonomous()
-				.onFalse(Commands.runOnce(() -> drive.getDrivetrain().setControl(new SwerveRequest.ApplyFieldSpeeds()))
-						.ignoringDisable(true));
+        // pretty sure we dont need this, or we need to change it a bit cuz heading lock
+        // RobotModeTriggers.autonomous()
+		// 		.onFalse(Commands.runOnce(() -> drive.getDrivetrain().setControl(new SwerveRequest.ApplyFieldSpeeds()))
+		// 				.ignoringDisable(true));
 
 
 
         shooter.setDefaultCommand(shooter.trackTargetCommand());
+        hood.setDefaultCommand(hood.trackTargetCommand());
     }
 
     private void configureBindings() {

@@ -15,12 +15,12 @@ public class Shooter extends FlywheelMotorSubsystem<MotorIOTalonFX> {
     public static final Setpoint IDLE = Setpoint.withCoastSetpoint();
     public static final Setpoint STOP = Setpoint.withVelocitySetpoint(Units.RotationsPerSecond.of(0));
 
-    public void setShooterVelocity(AngularVelocity RPM) {
-        applySetpoint(Setpoint.withVelocitySetpoint(RPM));
+    public void setShooterVelocity(double RPM) {
+        applySetpoint(Setpoint.withVelocitySetpoint(Units.RotationsPerSecond.of(RPM)));
     }
 
-    public void incrementVelocity(AngularVelocity inc) {
-        applySetpoint(Setpoint.withVelocitySetpoint(getVelocity().plus(inc)));
+    public void incrementVelocity(double inc) {
+        applySetpoint(Setpoint.withVelocitySetpoint(Units.RotationsPerSecond.of(getVelocity().in(Units.RotationsPerSecond) + inc)));
     }
 
     public Command trackTargetCommand() {
@@ -36,6 +36,9 @@ public class Shooter extends FlywheelMotorSubsystem<MotorIOTalonFX> {
     }
 
     public Shooter() {
-        super(ShooterConstants.getMotorIO(), "Shooter", ShooterConstants.kEpsilonThreshold);
+        super(ShooterConstants.getMotorIO(),
+            "Shooter", 
+            ShooterConstants.kEpsilonThreshold
+        );
     }
 }
