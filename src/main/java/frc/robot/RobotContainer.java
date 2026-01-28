@@ -95,7 +95,7 @@ public class RobotContainer {
 
         // AutoHelpers.bindEventMarkers(RobotConstants.mAutoFactory)
         mAutoModeSelector = new AutoModeSelector(drive, superstructure, RobotConstants.mAutoFactory);
-		mPreviousAutoName = "[CENTER] Net GH IJ KL";
+		mPreviousAutoName = mAutoModeSelector.getSelectedCommand().getName();
         SmartDashboard.putData("Auto Chooser", mAutoModeSelector.getAutoChooser());
 
 
