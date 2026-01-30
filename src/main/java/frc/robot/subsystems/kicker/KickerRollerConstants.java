@@ -1,4 +1,4 @@
-package frc.robot.subsystems.intakeRollers;
+package frc.robot.subsystems.kicker;
 
 import static edu.wpi.first.units.Units.Minute;
 import static edu.wpi.first.units.Units.Rotations;
@@ -16,14 +16,13 @@ import frc.lib.sim.RollerSim;
 import frc.lib.sim.RollerSim.RollerSimConstants;
 import frc.robot.Robot;
 
-//PH -> PlaceHolder
-public class IntakeRollerConstants {
-    private static final double kGearing = (6 / 9);// PH
+public class KickerRollerConstants {
+    private static double kGearing = (42.0 / 12.0); // PH
 
-    public static final Voltage kStartVoltage = Volts.of(3); // PH
-    public static final Voltage kIntakeVoltage = Volts.of(2); // PH
-    public static final Voltage kPeliVoltage = Volts.of(2); // PH
-    public static final Voltage kOuttakeVoltage = Volts.of(12); // PH
+    // Voltages for the different states of the subsystem, currently PH so rename them or add more
+    public static final Voltage kPH_ONE = Volts.of(0); // PH
+    public static final Voltage kPH_TWO = Volts.of(0); // PH
+    public static final Voltage kPH_THREE = Volts.of(0); // PH
 
     public static TalonFXConfiguration getTlnFXConfig() {
       TalonFXConfiguration nConfig = new TalonFXConfiguration();
@@ -74,4 +73,5 @@ public class IntakeRollerConstants {
 
 		return simConstants;
 	}
+
 }

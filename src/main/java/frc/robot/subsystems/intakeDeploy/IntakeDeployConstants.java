@@ -26,7 +26,7 @@ import frc.robot.Robot;
 
 // PH -> PlaceHolder
 public class IntakeDeployConstants {
-    public static final double kGearing = 40.0;
+    public static final double kGearing = 40.0; // PH
     
     public static final Angle kDeployPos = Degrees.of(10); // PH
     public static final Angle kFullStoragePos = Degrees.of(10); // PH
