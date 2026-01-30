@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Conveyor;
+package frc.robot.subsystems.Kicker;
 
 import static edu.wpi.first.units.Units.Minute;
 import static edu.wpi.first.units.Units.Rotations;
@@ -18,7 +18,7 @@ import frc.robot.Ports;
 import frc.robot.Robot;
 
 //PH -> PlaceHolder
-public class ConveyorConstants {
+public class KickerConstants {
     private static final double kGearing = (6.0 / 9.0);
 
     public static final Voltage kStartVoltage = Volts.of(3.0); // PH
