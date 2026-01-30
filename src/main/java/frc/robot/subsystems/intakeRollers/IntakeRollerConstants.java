@@ -19,7 +19,7 @@ import frc.robot.Robot;
 
 //PH -> PlaceHolder
 public class IntakeRollerConstants {
-    private static final double kGearing = (6 / 9);
+    private static final double kGearing = (6.0 / 9.0);
 
     public static final Voltage kStartVoltage = Volts.of(3.0); // PH
     public static final Voltage kIntakeVoltage = Volts.of(12.0); // PH

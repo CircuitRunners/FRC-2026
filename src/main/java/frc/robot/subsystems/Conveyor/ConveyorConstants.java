@@ -19,7 +19,7 @@ import frc.robot.Robot;
 
 //PH -> PlaceHolder
 public class ConveyorConstants {
-    private static final double kGearing = (6 / 9);
+    private static final double kGearing = (6.0 / 9.0);
 
     public static final Voltage kStartVoltage = Volts.of(3.0); // PH
     public static final Voltage kFeedForwardVoltage = Volts.of(12.0); // PH
