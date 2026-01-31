@@ -19,7 +19,6 @@ public class FollowSyncedPIDToPose extends PIDToPoseCommand {
 
 		getSuperstructure().setSuperstructureDone(false);
 		getSuperstructure().setDriveReady(false);
-		getSuperstructure().setReadyToRaiseElevator(false);
 	}
 
     public FollowSyncedPIDToPose(Drive drive, Superstructure superstructure, Pose2d finalPose, SynchronousPIDF translationController) {
@@ -27,7 +26,6 @@ public class FollowSyncedPIDToPose extends PIDToPoseCommand {
 
 		getSuperstructure().setSuperstructureDone(false);
 		getSuperstructure().setDriveReady(false);
-		getSuperstructure().setReadyToRaiseElevator(false);
 	}
 
     public FollowSyncedPIDToPose(Drive drive, Superstructure superstructure, Pose2d finalPose) {
@@ -35,7 +33,6 @@ public class FollowSyncedPIDToPose extends PIDToPoseCommand {
 
 		getSuperstructure().setSuperstructureDone(false);
 		getSuperstructure().setDriveReady(false);
-		getSuperstructure().setReadyToRaiseElevator(false);
 	}
 
     public FollowSyncedPIDToPose(Drive drive, Superstructure superstructure, Pose2d rawEndPose, boolean diffParam) {
@@ -43,7 +40,6 @@ public class FollowSyncedPIDToPose extends PIDToPoseCommand {
 
 		getSuperstructure().setSuperstructureDone(false);
 		getSuperstructure().setDriveReady(false);
-		getSuperstructure().setReadyToRaiseElevator(false);
 	}
 
     public boolean driveDone() {

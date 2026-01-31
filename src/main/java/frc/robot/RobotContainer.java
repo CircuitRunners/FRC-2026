@@ -51,11 +51,20 @@ import frc.robot.auto.AutoModeSelector;
 @Logged
 public class RobotContainer {
     private final Drive drive = new Drive();
+    private final Vision vision = new Vision(
+        drive.getDrivetrain().getVisionConsumer(),
+        (RobotBase.isSimulation())
+        ? new VisionIOPhotonVisionSim(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose)
+        : new VisionIOPhotonVision(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose),
+        (RobotBase.isSimulation())
+        ? new VisionIOPhotonVisionSim(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
+        : new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
+    );
     private final Shooter shooter = new Shooter();
     private final Hood hood = new Hood();
     private final IntakeDeploy intakeDeploy = new IntakeDeploy();
     private final IntakeRollers intakeRollers = new IntakeRollers();
-    private final Superstructure superstructure = new Superstructure(drive);
+    private final Superstructure superstructure = new Superstructure(drive, vision, shooter, hood, intakeDeploy, intakeRollers);
 
     private final ControlBoard controlBoard = ControlBoard.getInstance(drive, superstructure);
     private final ShotCalculator shotCalculator = ShotCalculator.getInstance(drive);
@@ -79,15 +88,7 @@ public class RobotContainer {
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     
-    // private final Vision vision = new Vision(
-    //     drive.getDrivetrain().getVisionConsumer(),
-    //     (RobotBase.isSimulation())
-    //     ? new VisionIOPhotonVisionSim(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose)
-    //     : new VisionIOPhotonVision(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose),
-    //     (RobotBase.isSimulation())
-    //     ? new VisionIOPhotonVisionSim(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
-    //     : new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
-    // );
+    
 
     public RobotContainer() {
         controlBoard.configureBindings(drive, superstructure);
@@ -111,8 +112,8 @@ public class RobotContainer {
 
 
 
-        shooter.setDefaultCommand(shooter.trackTargetCommand());
-        hood.setDefaultCommand(hood.trackTargetCommand());
+        shooter.setDefaultCommand(shooter.trackTargetCommand(superstructure.shooterSetpoint));
+        hood.setDefaultCommand(hood.trackTargetCommand(superstructure.hoodSetpoint));
     }
 
     private void configureBindings() {

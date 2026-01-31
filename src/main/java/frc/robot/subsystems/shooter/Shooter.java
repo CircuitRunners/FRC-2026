@@ -20,11 +20,11 @@ public class Shooter extends FlywheelMotorSubsystem<MotorIOTalonFX> {
     }
 
     public void incrementVelocity(double inc) {
-        applySetpoint(Setpoint.withVelocitySetpoint(Units.RotationsPerSecond.of(getVelocity().in(Units.RotationsPerSecond) + inc)));
+        applySetpoint(Setpoint.withVelocitySetpoint(getVelocity().plus(Units.RotationsPerSecond.of(inc))));
     }
 
-    public Command trackTargetCommand() {
-        return followSetpointCommand(() -> Setpoint.withVelocitySetpoint(Units.RotationsPerSecond.of(ShotCalculator.getInstance(drive).getParameters().flywheelSpeed())));
+    public Command trackTargetCommand(Setpoint setpoint) {
+        return followSetpointCommand(() -> setpoint);
     }
 
     private void stop() {

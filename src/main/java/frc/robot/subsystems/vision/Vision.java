@@ -212,7 +212,6 @@ public class Vision extends SubsystemBase {
         || observation.pose().getY() > aprilTagLayout.getFieldWidth();
   }
 
-//   @AutoLogOutput
   public double timeSinceLastTargetSeen() {
     return Timer.getFPGATimestamp() - lastTargetSeenTime;
   }

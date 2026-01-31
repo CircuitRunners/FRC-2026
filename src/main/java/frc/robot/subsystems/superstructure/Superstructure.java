@@ -1,54 +1,77 @@
 package frc.robot.subsystems.superstructure;
 
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.lib.io.BeamBreakIO;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.io.MotorIO.Setpoint;
+import frc.robot.shooting.ShotCalculator;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.hood.Hood;
+import frc.robot.subsystems.intakeDeploy.IntakeDeploy;
+import frc.robot.subsystems.intakeRollers.IntakeRollers;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.vision.Vision;
 
-public class Superstructure {
+public class Superstructure extends SubsystemBase {
     private final Drive drive;
-    public static BeamBreakIO endEffectorVelocityDip;
+    private final Vision vision;
+    private final Shooter shooter;
+    private final Hood hood;
+    private final IntakeDeploy intakeDeploy;
+    private final IntakeRollers intakeRollers;
 
-    public Superstructure(Drive drive) {
+    public Superstructure(Drive drive, Vision vision, Shooter shooter, Hood hood, IntakeDeploy intakeDeploy, IntakeRollers intakeRollers) {
         this.drive = drive;
+        this.vision = vision;
+        this.shooter = shooter;
+        this.hood = hood;
+        this.intakeDeploy = intakeDeploy;
+        this.intakeRollers = intakeRollers;
     }
-
 
     private boolean isPathFollowing = false;
     private boolean superstructureDone = false;
     private boolean driveReady = false;
-    private boolean hasAlgae = false;
-    public boolean readyToRaiseElevator = false;
 
     private State state = State.TUCK;
 
-    // public Command stowCoralHold() {
-    //   return Commands.sequence(
-    //           Commands.parallel(
-    //               endEffector.setpointCommand(EndEffector.CORAL_HOLD),
-    //               MotionPlanner.safePivotAndElevatorToPosition(Pivot.CORAL_HOLD, Elevator.CORAL_HOLD)),
-    //           setState(State.HOLD_CORAL))
-    //       .withName("Stow Coral Hold");
-    // }
+    public Setpoint hoodSetpoint = Hood.ZERO;
+    public Setpoint shooterSetpoint = Shooter.STOP;
 
-    public Command setHasAlgaeCommand(boolean hasAlgae) {
-		  return Commands.runOnce(() -> setHasAlgae(hasAlgae));
-	  }
+    @Override
+    public void periodic() {
+      if (!isPathFollowing) {
+        updateShooterSetpoint();
+        updateHoodSetpoint();
+      }
+    }
+
+    public void updateShooterSetpoint() {
+      if (vision.timeSinceLastTargetSeen() < .5) {
+        shooterSetpoint = 
+            Setpoint.withVelocitySetpoint(
+            Units.RotationsPerSecond.of(
+            ShotCalculator.getInstance(drive)
+            .getParameters()
+            .flywheelSpeed()));
+      }
+    }
+
+    public void updateHoodSetpoint() {
+      if (vision.timeSinceLastTargetSeen() < .5) {
+        hoodSetpoint = 
+            Setpoint.withMotionMagicSetpoint(
+              Units.Degrees.of(
+              ShotCalculator.getInstance(drive)
+              .getParameters()
+              .flywheelSpeed()));
+      }
+    }
 
     public static enum State {
       TUCK,
-      SPIT,
-      STATION,
-      HOLD_CORAL,
-      HOLD_ALGAE,
-      L1_CORAL,
-      L2_CORAL,
-      L3_CORAL,
-      L4_CORAL,
-      L2_ALGAE,
-      L3_ALGAE,
-      GULP;
+      SHOOTING
     }
   
     public Command setState(State state) {
@@ -57,14 +80,6 @@ public class Superstructure {
   
     public State getState() {
       return state;
-    }
-
-    public boolean getHasAlgae() {
-      return hasAlgae;
-    }
-
-    public void setHasAlgae(boolean has) {
-      hasAlgae = has;
     }
 
     public void setPathFollowing(boolean isFollowing) {
@@ -79,15 +94,8 @@ public class Superstructure {
 		  driveReady = valToSet;
 	  }
 
-    public void setReadyToRaiseElevator(boolean valToSet) {
-      readyToRaiseElevator = valToSet;
-    }
-
     public boolean getSuperstructureDone() {
       return superstructureDone;
     }
 
-
-
-    
 }

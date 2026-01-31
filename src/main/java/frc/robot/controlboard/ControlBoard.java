@@ -71,10 +71,6 @@ public class ControlBoard {
 	// 	return Commands.runOnce(() -> overrideBehavior = behavior);
 	// }
 
-	public boolean getCoralMode() {
-		return !rightBumper.getAsBoolean() && !superstructure.getHasAlgae();
-	}
-
 	public void configureBindings(Drive drive, Superstructure superstructure) {
 		driver.start()
 				.onTrue(Commands.runOnce(

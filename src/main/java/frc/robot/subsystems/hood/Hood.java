@@ -19,13 +19,13 @@ public class Hood extends ServoMotorSubsystem<MotorIOTalonFX>{
     }
 
     public void incrementHoodAngle(double inc) {
-        applySetpoint(Setpoint.withMotionMagicSetpoint(Units.Degrees.of(getPosition().in(Units.Degrees) + inc)));
+        applySetpoint(Setpoint.withMotionMagicSetpoint(getPosition().plus(Units.Degrees.of(inc))));
     }
 
-    public Command trackTargetCommand() {
-        return followSetpointCommand(() -> Setpoint.withMotionMagicSetpoint(Units.Degrees.of(ShotCalculator.getInstance(drive).getParameters().hoodAngle())));
+    public Command trackTargetCommand(Setpoint setpoint) {
+        return followSetpointCommand(() -> setpoint);
     }
-
+    
     public Hood() {
         super(
             HoodConstants.getMotorIO(),
