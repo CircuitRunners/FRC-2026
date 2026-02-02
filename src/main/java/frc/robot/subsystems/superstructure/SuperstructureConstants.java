@@ -19,6 +19,8 @@ import frc.robot.Robot;
 import frc.robot.controlboard.ControlBoardConstants;
 
 public class SuperstructureConstants {
+	public static final Time lookaheadTrenchTime = Units.Milliseconds.of(100.0);
+
     public static Distance getAutoAlignScoringDistanceEpsilon() {
 		return Units.Inches.of(0);
 	}

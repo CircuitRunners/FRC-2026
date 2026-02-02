@@ -1,10 +1,16 @@
 package frc.robot.subsystems.superstructure;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.io.MotorIO.Setpoint;
+import frc.lib.util.FieldLayout;
+import frc.robot.RobotConstants;
 import frc.robot.shooting.ShotCalculator;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.hood.Hood;
@@ -33,6 +39,7 @@ public class Superstructure extends SubsystemBase {
     private boolean isPathFollowing = false;
     private boolean superstructureDone = false;
     private boolean driveReady = false;
+    private boolean kitbotMode = false;
 
     private State state = State.TUCK;
 
@@ -41,10 +48,8 @@ public class Superstructure extends SubsystemBase {
 
     @Override
     public void periodic() {
-      if (!isPathFollowing) {
         updateShooterSetpoint();
         updateHoodSetpoint();
-      }
     }
 
     public void updateShooterSetpoint() {
@@ -66,6 +71,16 @@ public class Superstructure extends SubsystemBase {
               ShotCalculator.getInstance(drive)
               .getParameters()
               .flywheelSpeed()));
+      }
+      ChassisSpeeds speeds = drive.getRobotRelativeChassisSpeeds();
+      Transform2d speedsPose = new Transform2d(
+						speeds.vxMetersPerSecond,
+						speeds.vyMetersPerSecond,
+						Rotation2d.fromRadians(speeds.omegaRadiansPerSecond))
+				.times(SuperstructureConstants.lookaheadTrenchTime.in(Units.Seconds));
+      Pose2d lookaheadPose = drive.getPose().transformBy(speedsPose);
+      if (FieldLayout.nearTrench(lookaheadPose, RobotConstants.isRedAlliance)) {
+        hoodSetpoint = Hood.KITBOT;
       }
     }
 

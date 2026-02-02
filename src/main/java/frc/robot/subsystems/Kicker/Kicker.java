@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Kicker;
+package frc.robot.subsystems.kicker;
 
     import frc.lib.bases.MotorSubsystem;
     import frc.lib.io.MotorIOTalonFX;

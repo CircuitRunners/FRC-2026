@@ -34,6 +34,8 @@ public class FieldLayout {
     public static final Translation2d blueHubCenter = new Translation2d(Units.Inches.of(182.11), kFieldWidth.div(2.0));
 	public static final Pose2d blueOutpostPose = kAprilTagMap.getTagPose(13).get().toPose2d();
 	public static final Translation2d blueDepotCenter = new Translation2d(Units.Inches.of(13.5), kFieldWidth.div(2.0).plus(Units.Inches.of(75.93)));
+	public static final Translation2d kInnerBottomTrenchEdge = new Translation2d(Units.Inches.of(blueHubCenter.getX()), Units.Inches.of(50.34));
+	public static final Translation2d kInnerTopTrenchEdge = new Translation2d(Units.Inches.of(blueHubCenter.getX()), kFieldWidth.minus(Units.Inches.of(50.34)));
 
 
 
@@ -64,6 +66,22 @@ public class FieldLayout {
 			return kFieldLength.minus(x_coordinate);
 		}
 		return x_coordinate;
+	}
+
+	public static boolean nearTrench(Pose2d pose, boolean is_red_alliance) {
+		Distance x = pose.getMeasureX();
+    	Distance y = pose.getMeasureY();
+
+    	boolean inTrenchY =
+            y.lte(kInnerBottomTrenchEdge.getMeasureY())
+         || y.gte(kInnerTopTrenchEdge.getMeasureY());
+
+    	Distance distFromWall = distanceFromAllianceWall(x, is_red_alliance);
+
+    	boolean nearTrenchX =
+            distFromWall.isNear(blueHubCenter.getMeasureX(), Units.Inches.of(0.75));
+
+    	return nearTrenchX && inTrenchY;
 	}
 
 	public static Translation2d mirrorAboutX(Translation2d t, Distance xValue) {
