@@ -1,4 +1,4 @@
-package frc.robot.subsystems.intakeRollers;
+package frc.robot.subsystems.Conveyor;
 
 import static edu.wpi.first.units.Units.Minute;
 import static edu.wpi.first.units.Units.Rotations;
@@ -18,13 +18,13 @@ import frc.robot.Ports;
 import frc.robot.Robot;
 
 //PH -> PlaceHolder
-public class IntakeRollerConstants {
+public class ConveyorConstants {
     private static final double kGearing = (6.0 / 9.0);
 
     public static final Voltage kStartVoltage = Volts.of(3.0); // PH
-    public static final Voltage kIntakeVoltage = Volts.of(12.0); // PH
-    public static final Voltage kPelicanVoltage = Volts.of(2.0); // PH
-    public static final Voltage kExhaustVoltage = Volts.of(12); // PH
+    public static final Voltage kFeedForwardVoltage = Volts.of(12.0); // PH
+    public static final Voltage kHoldVoltage = Volts.of(2.0); // PH
+    public static final Voltage kFeedBackwardVoltage = Volts.of(12); // PH
 
     public static TalonFXConfiguration getFXConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
@@ -51,7 +51,7 @@ public class IntakeRollerConstants {
         MotorIOTalonFXConfig config = new MotorIOTalonFXConfig();
         config.mainConfig = getFXConfig();
         config.time = Minute;
-        config.unit = Rotations;
+        config.unit = Rotations; 
         config.mainID = Ports.INTAKE_ROLLERS.id; // PH
         config.mainBus = Ports.INTAKE_ROLLERS.bus; // PH
         return config;
