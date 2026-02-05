@@ -24,6 +24,7 @@ import frc.robot.shooting.ShotCalculator;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.superstructure.Superstructure;
+import frc.robot.subsystems.superstructure.SuperstructureConstants;
 
 public class DriveMaintainingHeading extends Command{
     public DriveMaintainingHeading(
@@ -126,11 +127,24 @@ public class DriveMaintainingHeading extends Command{
                 mHeadingSetpoint = 
                         Optional.of(mDrivetrain.getPose().getRotation());
             }
+            // dont get stuck in trench
+            if (FieldLayout.nearTrench(mDrivetrain.getLookaheadPose(SuperstructureConstants.lookaheadTrenchTime), RobotConstants.isRedAlliance)) {
+                Rotation2d targetAngle = FieldLayout.clampAwayFromTrench(mDrivetrain.getRotation());
+                mHeadingSetpoint = Optional.of(targetAngle);
 
-             else {
+                mDrivetrain.getDrivetrain().setControl(
+                    driveWithHeading
+                            .withVelocityX(throttleFieldFrame)
+                            .withVelocityY(strafeFieldFrame)
+                            .withTargetDirection(
+                                mHeadingSetpoint.get()
+                            )
+                );
+            }
+            else {
                 mDrivetrain.getDrivetrain().setControl(
                         driveNoHeading
-                                .withVelocityX(throttleFieldFrame)
+                            .withVelocityX(throttleFieldFrame)
                             .withVelocityY(strafeFieldFrame)
                             .withRotationalRate(
                                     turnFieldFrame

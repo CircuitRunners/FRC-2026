@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.io.MotorIO.Setpoint;
 import frc.lib.util.FieldLayout;
 import frc.robot.RobotConstants;
+import frc.robot.controlboard.ControlBoard;
 import frc.robot.shooting.ShotCalculator;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.hood.Hood;
@@ -53,18 +54,23 @@ public class Superstructure extends SubsystemBase {
     }
 
     public void updateShooterSetpoint() {
-      if (vision.timeSinceLastTargetSeen() < .5) {
+      if (visionValid()) {
         shooterSetpoint = 
             Setpoint.withVelocitySetpoint(
-            Units.RotationsPerSecond.of(
-            ShotCalculator.getInstance(drive)
-            .getParameters()
-            .flywheelSpeed()));
+              Units.RotationsPerSecond.of(
+              ShotCalculator.getInstance(drive)
+              .getParameters()
+              .flywheelSpeed()));
+      }
+      else {
+        shooterSetpoint = Shooter.KITBOT;
+        ControlBoard.getInstance(drive, this).setRumble(true);
       }
     }
 
     public void updateHoodSetpoint() {
-      if (vision.timeSinceLastTargetSeen() < .5) {
+      Pose2d lookaheadPose = drive.getLookaheadPose(SuperstructureConstants.lookaheadTrenchTime);
+      if (visionValid() && !FieldLayout.nearTrench(lookaheadPose, RobotConstants.isRedAlliance)) {
         hoodSetpoint = 
             Setpoint.withMotionMagicSetpoint(
               Units.Degrees.of(
@@ -72,14 +78,7 @@ public class Superstructure extends SubsystemBase {
               .getParameters()
               .flywheelSpeed()));
       }
-      ChassisSpeeds speeds = drive.getRobotRelativeChassisSpeeds();
-      Transform2d speedsPose = new Transform2d(
-						speeds.vxMetersPerSecond,
-						speeds.vyMetersPerSecond,
-						Rotation2d.fromRadians(speeds.omegaRadiansPerSecond))
-				.times(SuperstructureConstants.lookaheadTrenchTime.in(Units.Seconds));
-      Pose2d lookaheadPose = drive.getPose().transformBy(speedsPose);
-      if (FieldLayout.nearTrench(lookaheadPose, RobotConstants.isRedAlliance)) {
+      else {
         hoodSetpoint = Hood.KITBOT;
       }
     }
@@ -87,6 +86,19 @@ public class Superstructure extends SubsystemBase {
     public static enum State {
       TUCK,
       SHOOTING
+    }
+
+    public boolean visionValid() {
+      double time = vision.timeSinceLastTargetSeen();
+      ChassisSpeeds speeds = drive.getRobotRelativeChassisSpeeds();
+      double totalSpeed = Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
+      
+      if (totalSpeed < 1.0) {
+        return time < 1.0;
+      }
+      else {
+        return time < 0.5;
+      }
     }
   
     public Command setState(State state) {

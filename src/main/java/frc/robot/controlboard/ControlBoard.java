@@ -388,24 +388,24 @@ public class ControlBoard {
 // // 				.onFalse(Pivot.mInstance.setpointCommand(Pivot.HOLD));
 // // 	}
 
-// 	public Command rumbleCommand(Time duration) {
-// 		return Commands.sequence(
-// 						Commands.runOnce(() -> {
-// 							setRumble(true);
-// 						}),
-// 						Commands.waitSeconds(duration.in(Units.Seconds)),
-// 						Commands.runOnce(() -> {
-// 							setRumble(false);
-// 						}))
-// 				.handleInterrupt(() -> {
-// 					setRumble(false);
-// 					;
-// 				});
-// 	}
+	public Command rumbleCommand(Time duration) {
+		return Commands.sequence(
+						Commands.runOnce(() -> {
+							setRumble(true);
+						}),
+						Commands.waitSeconds(duration.in(Units.Seconds)),
+						Commands.runOnce(() -> {
+							setRumble(false);
+						}))
+				.handleInterrupt(() -> {
+					setRumble(false);
+					;
+				});
+	}
 
-// 	public void setRumble(boolean on) {
-// 		ControlBoardConstants.mDriverController.getHID().setRumble(RumbleType.kBothRumble, on ? 1.0 : 0.0);
-// 	}
+	public void setRumble(boolean on) {
+		ControlBoardConstants.mDriverController.getHID().setRumble(RumbleType.kBothRumble, on ? 1.0 : 0.0);
+	}
 
 // // 	public void configureSysIDTests() {
 // // 		// Run SysId routines when holding back/start and X/Y.

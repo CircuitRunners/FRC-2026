@@ -12,8 +12,10 @@ import choreo.trajectory.SwerveSample;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -24,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.util.FieldLayout;
 import frc.lib.util.MathHelpers;
 import frc.robot.RobotConstants;
+import frc.robot.subsystems.superstructure.SuperstructureConstants;
 
 @Logged
 /**
@@ -97,6 +100,17 @@ public class Drive extends SubsystemBase {
      */
     public Pose2d getPose() {
         return lastReadState.Pose;
+    }
+
+    public Pose2d getLookaheadPose(Time lookaheadTime) {
+        ChassisSpeeds speeds = getRobotRelativeChassisSpeeds();
+        Transform2d speedsPose = new Transform2d(
+                            speeds.vxMetersPerSecond,
+                            speeds.vyMetersPerSecond,
+                            Rotation2d.fromRadians(speeds.omegaRadiansPerSecond))
+                    .times(lookaheadTime.in(Units.Seconds));
+        Pose2d lookaheadPose = getPose().transformBy(speedsPose);
+        return lookaheadPose;
     }
 
     public Rotation2d getRotation() {

@@ -84,6 +84,32 @@ public class FieldLayout {
     	return nearTrenchX && inTrenchY;
 	}
 
+	/** Changes heading so the robot doesn't get stuck in the trench at certain angles
+	 * @param rotation current rotation
+	 * @return adjusted rotation
+	 */
+	public static Rotation2d clampAwayFromTrench(Rotation2d rotation) {
+		double degrees = rotation.getDegrees();
+
+		boolean forwardBad = degrees > 40 && degrees < 70;
+		boolean backwardBad = degrees > 220 && degrees < 250;
+
+		if (forwardBad) {
+			// snap to nearest edge
+			return Rotation2d.fromDegrees(
+				(degrees - 40 < 70 - degrees) ? 35 : 75
+			);
+		}
+
+		if (backwardBad) {
+			return Rotation2d.fromDegrees(
+				(degrees - 220 < 250 - degrees) ? 215 : 245
+			);
+    	}
+    	return rotation;
+	}
+
+
 	public static Translation2d mirrorAboutX(Translation2d t, Distance xValue) {
 		return new Translation2d(xValue.in(Units.Meters) + (xValue.in(Units.Meters) - t.getX()), t.getY());
 	}

@@ -52,13 +52,13 @@ import frc.robot.auto.AutoModeSelector;
 public class RobotContainer {
     private final Drive drive = new Drive();
     private final Vision vision = new Vision(
-        drive.getDrivetrain().getVisionConsumer(),
-        (RobotBase.isSimulation())
-        ? new VisionIOPhotonVisionSim(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose)
-        : new VisionIOPhotonVision(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose),
-        (RobotBase.isSimulation())
-        ? new VisionIOPhotonVisionSim(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
-        : new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
+        drive.getDrivetrain().getVisionConsumer()//,
+        // (RobotBase.isSimulation())
+        // ? new VisionIOPhotonVisionSim(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose)
+        // : new VisionIOPhotonVision(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose),
+        // (RobotBase.isSimulation())
+        // ? new VisionIOPhotonVisionSim(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
+        // : new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
     );
     private final Shooter shooter = new Shooter();
     private final Hood hood = new Hood();
