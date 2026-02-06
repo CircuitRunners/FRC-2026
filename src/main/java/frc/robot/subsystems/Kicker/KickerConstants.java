@@ -1,4 +1,4 @@
-package frc.robot.subsystems.kicker;
+package frc.robot.subsystems.Kicker;
 
 import static edu.wpi.first.units.Units.Minute;
 import static edu.wpi.first.units.Units.Rotations;
@@ -58,11 +58,11 @@ public class KickerConstants {
     }
 
     public static MotorIOTalonFX getMotorIO() {
-		if (Robot.isReal()) {
+		//if (Robot.isReal()) {
 			return new MotorIOTalonFX(getIOConfig());
-		} else {
-			return new MotorIOTalonFXSim(getIOConfig(), new RollerSim(getSimConstants()));
-		}
+		// } else {
+		// 	return new MotorIOTalonFXSim(getIOConfig(), new RollerSim(getSimConstants()));
+		// }
 	}
 
     public static RollerSimConstants getSimConstants() {
