@@ -79,11 +79,11 @@ public class IntakeDeployConstants {
     }
 
     public static MotorIOTalonFX getMotorIO() {
-        if (Robot.isReal()) {
+        //if (Robot.isReal()) {
             return new MotorIOTalonFX(getIOConfig());
-        } else {
-            return new MotorIOTalonFXSim(getIOConfig(), new PivotSim(getSimConstants()));
-        }
+        // } else {
+        //     return new MotorIOTalonFXSim(getIOConfig(), new PivotSim(getSimConstants()));
+        // }
     }
 
     public static PivotSimConstants getSimConstants() {
