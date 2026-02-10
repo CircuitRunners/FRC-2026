@@ -109,7 +109,7 @@ public class RobotContainer {
 		mPreviousAutoName = mAutoModeSelector.getSelectedCommand().getName();
         SmartDashboard.putData("Auto Chooser", mAutoModeSelector.getAutoChooser());
 
-        // pretty sure we dont need this, or we need to change it a bit cuz heading lock
+        // pretty sure we don't need this, or we need to change it a bit cuz heading lock
         // RobotModeTriggers.autonomous()
 		// 		.onFalse(Commands.runOnce(() -> drive.getDrivetrain().setControl(new SwerveRequest.ApplyFieldSpeeds()))
 		// 				.ignoringDisable(true));
