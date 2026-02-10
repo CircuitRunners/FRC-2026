@@ -127,7 +127,7 @@ public class DriveMaintainingHeading extends Command{
                 mHeadingSetpoint = 
                         Optional.of(mDrivetrain.getPose().getRotation());
             }
-            // dont get stuck in trench
+            // don't get stuck in trench
             if (FieldLayout.nearTrench(mDrivetrain.getLookaheadPose(SuperstructureConstants.lookaheadTrenchTime), RobotConstants.isRedAlliance)) {
                 Rotation2d targetAngle = FieldLayout.clampAwayFromTrench(mDrivetrain.getRotation());
                 mHeadingSetpoint = Optional.of(targetAngle);
