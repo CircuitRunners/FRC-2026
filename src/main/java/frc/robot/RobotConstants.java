@@ -1,5 +1,7 @@
 package frc.robot;
 
+import com.ctre.phoenix6.CANBus;
+
 import choreo.auto.AutoFactory;
 
 //import choreo.auto.AutoFactory;
@@ -10,19 +12,10 @@ public class RobotConstants {
 	public static boolean isOmega;
 
 	static {
-		if (Robot.isReal()) {
-			kSerial = System.getenv("serialnum");
-		} else {
-			kSerial = "";
-		}
-		RobotConstants.isComp = kSerial.startsWith(RobotConstants.kCompSerial);
-		RobotConstants.isOmega = kSerial.startsWith(RobotConstants.kOmegaSerial);
 		RobotConstants.isRedAlliance = false;
 	}
 
 	public static boolean isRedAlliance;
 	public static AutoFactory mAutoFactory;
-
-	public static final String kCompSerial = "03415A0E";
-	public static final String kOmegaSerial = "032B4B47";
+	public static CANBus superstructureBus = new CANBus("superstructure");
 }

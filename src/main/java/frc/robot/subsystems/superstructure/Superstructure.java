@@ -13,6 +13,8 @@ import frc.lib.util.FieldLayout;
 import frc.robot.RobotConstants;
 import frc.robot.controlboard.ControlBoard;
 import frc.robot.shooting.ShotCalculator;
+import frc.robot.subsystems.Conveyor.Conveyor;
+import frc.robot.subsystems.Kicker.Kicker;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.hood.Hood;
 import frc.robot.subsystems.intakeDeploy.IntakeDeploy;
@@ -27,14 +29,18 @@ public class Superstructure extends SubsystemBase {
     private final Hood hood;
     private final IntakeDeploy intakeDeploy;
     private final IntakeRollers intakeRollers;
+    private final Kicker kicker;
+    private final Conveyor conveyor;
 
-    public Superstructure(Drive drive, Vision vision, Shooter shooter, Hood hood, IntakeDeploy intakeDeploy, IntakeRollers intakeRollers) {
+    public Superstructure(Drive drive, Vision vision, Shooter shooter, Hood hood, IntakeDeploy intakeDeploy, IntakeRollers intakeRollers, Kicker kicker, Conveyor conveyor) {
         this.drive = drive;
         this.vision = vision;
         this.shooter = shooter;
         this.hood = hood;
         this.intakeDeploy = intakeDeploy;
         this.intakeRollers = intakeRollers;
+        this.kicker = kicker;
+        this.conveyor = conveyor;
     }
 
     private boolean isPathFollowing = false;

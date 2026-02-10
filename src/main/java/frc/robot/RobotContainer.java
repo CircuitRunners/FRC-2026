@@ -33,6 +33,8 @@ import frc.lib.drive.PIDToPoseCommand;
 import frc.robot.controlboard.ControlBoard;
 import frc.robot.controlboard.ControlBoardConstants;
 import frc.robot.shooting.ShotCalculator;
+import frc.robot.subsystems.Conveyor.Conveyor;
+import frc.robot.subsystems.Kicker.Kicker;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.drive.TunerConstants;
@@ -64,7 +66,9 @@ public class RobotContainer {
     private final Hood hood = new Hood();
     private final IntakeDeploy intakeDeploy = new IntakeDeploy();
     private final IntakeRollers intakeRollers = new IntakeRollers();
-    private final Superstructure superstructure = new Superstructure(drive, vision, shooter, hood, intakeDeploy, intakeRollers);
+    private final Kicker kicker = new Kicker();
+    private final Conveyor conveyor = new Conveyor();
+    private final Superstructure superstructure = new Superstructure(drive, vision, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor);
 
     private final ControlBoard controlBoard = ControlBoard.getInstance(drive, superstructure);
     private final ShotCalculator shotCalculator = ShotCalculator.getInstance(drive);
@@ -84,9 +88,9 @@ public class RobotContainer {
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
     /* Setting up bindings for necessary control of the swerve drive platform */
-    private final SwerveRequest.FieldCentric driveRequest = new SwerveRequest.FieldCentric()
-            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+    // private final SwerveRequest.FieldCentric driveRequest = new SwerveRequest.FieldCentric()
+    //         .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+    //         .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     
     
 
