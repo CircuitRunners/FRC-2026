@@ -79,7 +79,7 @@ public class FieldLayout {
     	Distance distFromWall = distanceFromAllianceWall(x, is_red_alliance);
 
     	boolean nearTrenchX =
-            distFromWall.isNear(blueHubCenter.getMeasureX(), Units.Inches.of(0.75));
+            distFromWall.isNear(handleAllianceFlip(blueHubCenter, is_red_alliance).getMeasureX(), Units.Inches.of(47.00 / 2));
 
     	return nearTrenchX && inTrenchY;
 	}
@@ -89,25 +89,29 @@ public class FieldLayout {
 	 * @return adjusted rotation
 	 */
 	public static Rotation2d clampAwayFromTrench(Rotation2d rotation) {
-		double degrees = rotation.getDegrees();
+		double deg = rotation.getDegrees();
 
-		boolean forwardBad = degrees > 40 && degrees < 70;
-		boolean backwardBad = degrees > 220 && degrees < 250;
-
-		if (forwardBad) {
-			// snap to nearest edge
-			return Rotation2d.fromDegrees(
-				(degrees - 40 < 70 - degrees) ? 35 : 75
-			);
+		if (deg >= 40 && deg <= 70) {
+			return Rotation2d.fromDegrees((deg - 40 < 70 - deg) ? 40 : 70);
 		}
 
-		if (backwardBad) {
-			return Rotation2d.fromDegrees(
-				(degrees - 220 < 250 - degrees) ? 215 : 245
-			);
-    	}
-    	return rotation;
+		if (deg >= -140 && deg <= -110) {
+			return Rotation2d.fromDegrees((deg - (-140) < -110 - deg) ? -140 : -110);
+		}
+
+		if (deg >= 130 && deg <= 160) {
+			return Rotation2d.fromDegrees((deg - 130 < 160 - deg) ? 130 : 160);
+		}
+
+		if (deg >= -50 && deg <= -20) {
+			return Rotation2d.fromDegrees((deg - (-50) < -20 - deg) ? -50 : -20);
+		}
+
+		return rotation;
 	}
+
+
+
 
 
 	public static Translation2d mirrorAboutX(Translation2d t, Distance xValue) {

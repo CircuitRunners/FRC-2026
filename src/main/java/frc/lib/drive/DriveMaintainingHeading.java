@@ -72,7 +72,7 @@ public class DriveMaintainingHeading extends Command{
             .withDriveRequestType(SwerveModule.DriveRequestType.Velocity);
     private final SwerveRequest.FieldCentricFacingAngle driveWithHeading = 
         new SwerveRequest.FieldCentricFacingAngle()
-        .withDeadband(DriveConstants.kDriveMaxSpeed * 0.05)
+        .withDeadband(DriveConstants.kDriveMaxSpeed * 0.15)
         .withDriveRequestType(SwerveModule.DriveRequestType.Velocity);
 
 
@@ -113,20 +113,6 @@ public class DriveMaintainingHeading extends Command{
                 mHeadingSetpoint =
                         Optional.of(mDrivetrain.getPose().getRotation());
             }
-            if (FieldLayout.distanceFromAllianceWall(Units.Meters.of(mDrivetrain.getPose().getX()), RobotConstants.isRedAlliance).lte(FieldLayout.kAllianceZoneX.minus(Units.Inches.of(14)))) {
-                Rotation2d targetAngle = ShotCalculator.getInstance(mDrivetrain).getParameters().heading();
-
-                mDrivetrain.getDrivetrain().setControl(
-                    driveWithHeading
-                            .withVelocityX(throttleFieldFrame)
-                            .withVelocityY(strafeFieldFrame)
-                            .withTargetDirection(
-                                targetAngle
-                            )
-                );
-                mHeadingSetpoint = 
-                        Optional.of(mDrivetrain.getPose().getRotation());
-            }
             // dont get stuck in trench
             if (FieldLayout.nearTrench(mDrivetrain.getLookaheadPose(SuperstructureConstants.lookaheadTrenchTime), RobotConstants.isRedAlliance)) {
                 Rotation2d targetAngle = FieldLayout.clampAwayFromTrench(mDrivetrain.getRotation());
@@ -140,7 +126,21 @@ public class DriveMaintainingHeading extends Command{
                                 mHeadingSetpoint.get()
                             )
                 );
+            } else if (FieldLayout.distanceFromAllianceWall(Units.Meters.of(mDrivetrain.getPose().getX()), RobotConstants.isRedAlliance).lte(FieldLayout.kAllianceZoneX.minus(Units.Inches.of(14)))) {
+                Rotation2d targetAngle = ShotCalculator.getInstance(mDrivetrain).getParameters().heading();
+
+                mDrivetrain.getDrivetrain().setControl(
+                    driveWithHeading
+                            .withVelocityX(throttleFieldFrame)
+                            .withVelocityY(strafeFieldFrame)
+                            .withTargetDirection(
+                                targetAngle
+                            )
+                );
+                mHeadingSetpoint = 
+                        Optional.of(mDrivetrain.getPose().getRotation());
             }
+            
             else {
                 mDrivetrain.getDrivetrain().setControl(
                         driveNoHeading
