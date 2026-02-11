@@ -35,8 +35,10 @@ import frc.lib.drive.PIDToPoseCommand;
 import frc.robot.controlboard.ControlBoard;
 import frc.robot.controlboard.ControlBoardConstants;
 import frc.robot.shooting.ShotCalculator;
-import frc.robot.subsystems.Conveyor.Conveyor;
-import frc.robot.subsystems.Kicker.Kicker;
+import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.ClimberConstants;
+import frc.robot.subsystems.conveyor.Conveyor;
+import frc.robot.subsystems.kicker.Kicker;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.drive.TunerConstants;
@@ -56,7 +58,6 @@ import frc.robot.subsystems.vision.detection.SimulatedGamePieceConstants;
 import frc.robot.auto.AutoHelpers;
 import frc.robot.auto.AutoModeSelector;
 @Logged
-@SuppressWarnings("all")
 public class RobotContainer {
     private static final Drive drive = new Drive();
     private final Vision vision = new Vision(
@@ -89,7 +90,8 @@ public class RobotContainer {
     private final IntakeRollers intakeRollers = new IntakeRollers();
     private final Kicker kicker = new Kicker();
     private final Conveyor conveyor = new Conveyor();
-    private final Superstructure superstructure = new Superstructure(drive, vision, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor);
+    private final Climber climber = new Climber();
+    private final Superstructure superstructure = new Superstructure(drive, vision, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, climber);
 
     private final ControlBoard controlBoard = ControlBoard.getInstance(drive, superstructure);
     private final ShotCalculator shotCalculator = ShotCalculator.getInstance(drive);

@@ -13,8 +13,9 @@ import frc.lib.util.FieldLayout;
 import frc.robot.RobotConstants;
 import frc.robot.controlboard.ControlBoard;
 import frc.robot.shooting.ShotCalculator;
-import frc.robot.subsystems.Conveyor.Conveyor;
-import frc.robot.subsystems.Kicker.Kicker;
+import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.conveyor.Conveyor;
+import frc.robot.subsystems.kicker.Kicker;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.hood.Hood;
 import frc.robot.subsystems.intakeDeploy.IntakeDeploy;
@@ -31,8 +32,9 @@ public class Superstructure extends SubsystemBase {
     private final IntakeRollers intakeRollers;
     private final Kicker kicker;
     private final Conveyor conveyor;
+    private final Climber climber;
 
-    public Superstructure(Drive drive, Vision vision, Shooter shooter, Hood hood, IntakeDeploy intakeDeploy, IntakeRollers intakeRollers, Kicker kicker, Conveyor conveyor) {
+    public Superstructure(Drive drive, Vision vision, Shooter shooter, Hood hood, IntakeDeploy intakeDeploy, IntakeRollers intakeRollers, Kicker kicker, Conveyor conveyor, Climber climber) {
         this.drive = drive;
         this.vision = vision;
         this.shooter = shooter;
@@ -41,6 +43,7 @@ public class Superstructure extends SubsystemBase {
         this.intakeRollers = intakeRollers;
         this.kicker = kicker;
         this.conveyor = conveyor;
+        this.climber = climber;
     }
 
     private boolean isPathFollowing = false;
@@ -70,6 +73,7 @@ public class Superstructure extends SubsystemBase {
       }
       else {
         shooterSetpoint = Shooter.KITBOT;
+        setState(State.KITBOT);
         ControlBoard.getInstance(drive, this).setRumble(true);
       }
     }
@@ -91,7 +95,10 @@ public class Superstructure extends SubsystemBase {
 
     public static enum State {
       TUCK,
-      SHOOTING
+      SHOOTING,
+      DEPLOYED,
+      INTAKING,
+      KITBOT
     }
 
     public boolean visionValid() {

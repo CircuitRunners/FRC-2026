@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Kicker;
+package frc.robot.subsystems.kicker;
 
 import static edu.wpi.first.units.Units.Minute;
 import static edu.wpi.first.units.Units.Rotations;

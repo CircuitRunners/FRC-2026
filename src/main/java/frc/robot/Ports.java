@@ -2,15 +2,20 @@ package frc.robot;
 
 import com.ctre.phoenix6.CANBus;
 
+
 /**
  * Holds ports IDs and canbuses for superstructure (subsystems that are not drivetrain)
+ * dont use ports 0-7, those are for drivebase motors
  */
 public enum Ports {
-	INTAKE_DEPLOY(1, RobotConstants.superstructureBus),
-	INTAKE_ROLLERS(2, RobotConstants.superstructureBus),
-	SHOOTER(3, RobotConstants.superstructureBus),
-	SHOOTER_FOLLOWER(4, RobotConstants.superstructureBus),
-	HOOD(5, RobotConstants.superstructureBus),
+	SHOOTER(8, RobotConstants.superstructureBus),
+	SHOOTER_FOLLOWER(9, RobotConstants.superstructureBus),
+	HOOD(10, RobotConstants.superstructureBus),
+	INTAKE_DEPLOY(11, RobotConstants.superstructureBus),
+	INTAKE_ROLLERS(12, RobotConstants.superstructureBus),
+	KICKER(13, RobotConstants.superstructureBus),
+	CONVEYOR(14, RobotConstants.superstructureBus),
+	CLIMBER(15, RobotConstants.superstructureBus),
 
 	PHYSICAL_BUTTON(9, new CANBus("rio"));
 

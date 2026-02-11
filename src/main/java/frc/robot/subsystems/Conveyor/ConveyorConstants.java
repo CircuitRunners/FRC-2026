@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Conveyor;
+package frc.robot.subsystems.conveyor;
 
 import static edu.wpi.first.units.Units.Minute;
 import static edu.wpi.first.units.Units.Rotations;
