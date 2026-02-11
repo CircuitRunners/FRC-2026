@@ -9,7 +9,10 @@ import choreo.auto.AutoFactory;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
@@ -47,12 +50,15 @@ import frc.robot.subsystems.vision.VisionConstants;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
+import frc.robot.subsystems.vision.detection.ObjectDetectionCamera;
+import frc.robot.subsystems.vision.detection.ObjectPoseEstimator;
+import frc.robot.subsystems.vision.detection.SimulatedGamePieceConstants;
 import frc.robot.auto.AutoHelpers;
 import frc.robot.auto.AutoModeSelector;
 @Logged
 @SuppressWarnings("all")
 public class RobotContainer {
-    private final Drive drive = new Drive();
+    private static final Drive drive = new Drive();
     private final Vision vision = new Vision(
         drive.getDrivetrain().getVisionConsumer()//,
         // (RobotBase.isSimulation())
@@ -61,6 +67,21 @@ public class RobotContainer {
         // (RobotBase.isSimulation())
         // ? new VisionIOPhotonVisionSim(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
         // : new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
+    );
+
+    public static final ObjectPoseEstimator CORAL_POSE_ESTIMATOR = new ObjectPoseEstimator(
+        drive,
+        0.5,
+        ObjectPoseEstimator.DistanceCalculationMethod.ROTATION_AND_TRANSLATION,
+        SimulatedGamePieceConstants.GamePieceType.CORAL,
+        new ObjectDetectionCamera(
+            drive, 
+            "ObjectDetectionCamera",
+            new Transform3d(
+                new Translation3d(0, 0, 0.77),
+                new Rotation3d(0, edu.wpi.first.math.util.Units.degreesToRadians(30), 0)
+            )
+        )
     );
     private final Shooter shooter = new Shooter();
     private final Hood hood = new Hood();
