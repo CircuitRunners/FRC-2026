@@ -2,7 +2,6 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
-
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -51,6 +50,7 @@ import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import frc.robot.auto.AutoHelpers;
 import frc.robot.auto.AutoModeSelector;
 @Logged
+@SuppressWarnings("all")
 public class RobotContainer {
     private final Drive drive = new Drive();
     private final Vision vision = new Vision(
@@ -109,7 +109,7 @@ public class RobotContainer {
 		mPreviousAutoName = mAutoModeSelector.getSelectedCommand().getName();
         SmartDashboard.putData("Auto Chooser", mAutoModeSelector.getAutoChooser());
 
-        // pretty sure we dont need this, or we need to change it a bit cuz heading lock
+        // pretty sure we don't need this, or we need to change it a bit cuz heading lock
         // RobotModeTriggers.autonomous()
 		// 		.onFalse(Commands.runOnce(() -> drive.getDrivetrain().setControl(new SwerveRequest.ApplyFieldSpeeds()))
 		// 				.ignoringDisable(true));
