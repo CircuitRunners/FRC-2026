@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Conveyor;
+package frc.robot.subsystems.conveyor;
 
     import frc.lib.bases.MotorSubsystem;
     import frc.lib.io.MotorIOTalonFX;
