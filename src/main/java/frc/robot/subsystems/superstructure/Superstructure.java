@@ -14,11 +14,14 @@ import frc.robot.RobotConstants;
 import frc.robot.controlboard.ControlBoard;
 import frc.robot.shooting.ShotCalculator;
 import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.ClimberConstants;
 import frc.robot.subsystems.conveyor.Conveyor;
 import frc.robot.subsystems.kicker.Kicker;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.hood.Hood;
+import frc.robot.subsystems.hood.HoodConstants;
 import frc.robot.subsystems.intakeDeploy.IntakeDeploy;
+import frc.robot.subsystems.intakeDeploy.IntakeDeployConstants;
 import frc.robot.subsystems.intakeRollers.IntakeRollers;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.vision.Vision;
@@ -50,6 +53,7 @@ public class Superstructure extends SubsystemBase {
     private boolean superstructureDone = false;
     private boolean driveReady = false;
     private boolean kitbotMode = false;
+    private boolean intakeDeployed = false;
 
     private State state = State.TUCK;
 
@@ -93,12 +97,94 @@ public class Superstructure extends SubsystemBase {
       }
     }
 
+
+    /**
+     * stops intake rollers, conveyor, and kicker
+     */
+    public Command idleRollers() {
+      return Commands.parallel(
+                      intakeRollers.setpointCommand(IntakeRollers.IDLE),
+                      conveyor.setpointCommand(Conveyor.IDLE),
+                      kicker.setpointCommand(Kicker.IDLE)
+              .withName("Idle Rollers")
+      );
+    }
+
+    public Command zero() {
+      return Commands.runOnce(() -> {
+            intakeDeploy.setCurrentPosition(IntakeDeployConstants.kStowClearPosition);
+            hood.setCurrentPosition(HoodConstants.kMinAngle);
+            climber.setCurrentPosition(ClimberConstants.kZeroHeight);
+          })
+      .withName("Zero");
+    }
+
+    public Command spit() {
+      return Commands.parallel(
+            intakeDeploy.setpointCommand(IntakeDeploy.EXHAUST),
+            intakeRollers.setpointCommand(IntakeRollers.EXHAUST),
+            conveyor.setpointCommand(Conveyor.FEED_BACKWARDS),
+            kicker.setpointCommand(Kicker.FEED_BACKWARDS),
+            setState(State.SPIT),
+            Commands.waitUntil(() -> false))
+            .handleInterrupt(() -> {
+                intakeRollers.setpointCommand(IntakeRollers.IDLE);
+                conveyor.setpointCommand(Conveyor.IDLE);
+                kicker.setpointCommand(Kicker.IDLE);
+            })
+            .withName("Spit");
+    }
+
+    public Command waitUntilSafeToShoot() {
+      return Commands.waitUntil(() -> shooter.spunUp() && hood.nearPositionSetpoint() && drive.getRotation() == ShotCalculator.getInstance(drive).getParameters().heading());
+    }
+
+    public Command shoot() {
+      return Commands.parallel(
+        conveyor.setpointCommand(Conveyor.FEED_FORWARD),
+        kicker.setpointCommand(Kicker.FEED_FORWARD).
+        withName("Shoot"));
+    }
+
+    public Command shootWhenReady() {
+      return Commands.sequence(
+                setState(State.SHOOTING), 
+                Commands.runOnce(() -> { 
+                if (getState() == State.SHOOTING) waitUntilSafeToShoot();}),
+                Commands.run(() -> shoot()));
+    }
+
+    public Command deployIntake() {
+      intakeDeployed = true;
+      return intakeDeploy.setpointCommand(IntakeDeploy.DEPLOY)
+      .withName("Intake Deploy");
+    }
+
+    public Command runIntakeIfDeployed() {
+      return Commands.either(
+          intakeRollers.setpointCommand(IntakeRollers.INTAKE),
+          Commands.sequence(
+              deployIntake(),
+              intakeRollers.setpointCommand(IntakeRollers.INTAKE)),
+          () -> intakeDeployed)
+          .withName("Intaking");
+    }
+
+    public Command tuck() {
+      intakeDeployed = false;
+      return Commands.runOnce(() -> {
+          intakeDeploy.setpointCommand(IntakeDeploy.STOW_CLEAR);
+          setState(State.TUCK);
+        })
+        .withName("Tuck");
+    }
+
     public static enum State {
       TUCK,
       SHOOTING,
-      DEPLOYED,
       INTAKING,
-      KITBOT
+      KITBOT,
+      SPIT
     }
 
     public boolean visionValid() {
