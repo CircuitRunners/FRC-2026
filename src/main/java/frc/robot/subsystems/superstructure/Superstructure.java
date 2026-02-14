@@ -21,7 +21,7 @@ import frc.robot.subsystems.hood.Hood;
 import frc.robot.subsystems.intakeDeploy.IntakeDeploy;
 import frc.robot.subsystems.intakeRollers.IntakeRollers;
 import frc.robot.subsystems.shooter.Shooter;
-import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.apriltag.Vision;
 
 public class Superstructure extends SubsystemBase {
     private final Drive drive;
