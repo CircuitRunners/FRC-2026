@@ -13,9 +13,6 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -28,7 +25,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.lib.drive.DriveMaintainingHeading;
-import frc.lib.drive.DriveToPose;
 import frc.lib.drive.FollowSyncedPIDToPose;
 import frc.lib.drive.FollowTrajectoryCommand;
 import frc.lib.drive.PIDToPoseCommand;
@@ -48,6 +44,10 @@ import frc.robot.subsystems.intakeRollers.IntakeRollers;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.vision.apriltag.Vision;
+import frc.robot.subsystems.vision.objectdetection.ObjectDetectionConstants;
+import frc.robot.subsystems.vision.objectdetection.ObjectPoseEstimator;
+import frc.robot.subsystems.vision.objectdetection.objectdetectioncamera.ObjectDetectionCamera;
+import frc.robot.subsystems.vision.objectdetection.simulatedfield.SimulatedGamePieceConstants;
 import frc.robot.subsystems.vision.objectdetection.simulatedfield.SimulationFieldHandler;
 import frc.robot.auto.AutoHelpers;
 import frc.robot.auto.AutoModeSelector;
@@ -63,6 +63,17 @@ public class RobotContainer {
         // ? new VisionIOPhotonVisionSim(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
         // : new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
     );
+
+    // public final ObjectPoseEstimator OBJECT_POSE_ESTIMATOR = new ObjectPoseEstimator(
+    //     drive,
+    //     ObjectDetectionConstants.OBJECT_POSE_ESTIMATOR_DELETION_THRESHOLD_SECONDS,
+    //     SimulatedGamePieceConstants.GamePieceType.FUEL,
+    //     new ObjectDetectionCamera(
+    //         drive,
+    //         "ObjectDetection",
+    //         ObjectDetectionConstants.cameraTransform
+    //     )
+    // );
 
     private final Shooter shooter = new Shooter();
     private final Hood hood = new Hood();
