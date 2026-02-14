@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.lib.util.FieldLayout;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.superstructure.Superstructure;
@@ -46,7 +47,6 @@ public class ControlBoard {
 	//private OverrideBehavior overrideBehavior = OverrideBehavior.CORAL_SCORE_L4;
 
 	private Trigger rightBumper = driver.rightBumper();
-	private Trigger endEffectorTrigger;
 
 	// public static enum OverrideBehavior {
 	// 	NET_SCORE(() -> superstructure.netScore().andThen(superstructure.tuck())),
@@ -77,7 +77,11 @@ public class ControlBoard {
 								() -> drive.getDrivetrain().seedFieldCentric(), drive)
 						.ignoringDisable(true));
 
-		//driverControls();
+		driver.back()
+				.onTrue(Commands.runOnce(
+								() -> drive.getDrivetrain().resetPose(FieldLayout.kAprilTagMap.getTagPose(31).get().toPose2d()), drive)
+						.ignoringDisable(true));
+		driverControls();
 		//debugControls();
 	}
 
@@ -90,231 +94,36 @@ public class ControlBoard {
 	// 	operator.b().onTrue(Commands.runOnce(() -> Detection.mInstance.setPipeline(DetectionConstants.kTelePipeline)));
 	// }
 
-// 	public void driverControls() {
-// 		Superstructure s = superstructure;
+	public void driverControls() {
+		Superstructure s = superstructure;
 
-// 		// MISC ###############################################################################
+		// MISC ###############################################################################
 
-// 		endEffectorTrigger = new Trigger(() -> s.getEndEffectorCoralBreak());
-// 		endEffectorTrigger.onTrue(rumbleCommand(Units.Seconds.of(0.2)));
+		driver.a().onTrue(s.spit().onlyWhile(driver.a()));
 
-// 		driver.a().onTrue(s.spit().onlyWhile(driver.a()));
+ 		driver.leftBumper().onTrue(s.tuck());
 
-// // 		driver.leftBumper().onTrue(s.tuckOrHold());
+ 		// INTAKING ###############################################################################
 
-// // 		overrideTrigger.onFalse(Commands.deferredProxy(() -> overrideBehavior.action.get()));
+ 		driver.leftTrigger(0.1)
+ 				.whileTrue(
+ 						s.runIntakeIfDeployed()
+ 						.withName("Deploy and/or Intake"));
 
-// // 		// INTAKING ###############################################################################
+ 		driver.x().whileTrue(
+						s.shootWhenReady()
+						.withName("Shooting")		
+		);
 
-// // 		driver.leftTrigger(0.1)
-// // 				.onTrue(Commands.either(
-// // 								s.coralIntakeToHold()
-// // 										.asProxy()
-// // 										.beforeStarting(Commands.runOnce(() -> s.setForceGulp(false))),
-// // 								Commands.either(
-// // 										s.coralIntaketoIndexer(),
-// // 										s.algaeIntakeToHold()
-// // 												.asProxy()
-// // 												.beforeStarting(setOverrideBehavior(OverrideBehavior.ALGAE_HOLD)),
-// // 										() -> superstructure.getHasAlgae()),
-// // 								() -> getCoralMode())
-// // 						.withName("Either Coral Intake or Algae Intake"));
 
-// // 		// CORAL MODE ###############################################################################
+ 	}
 
-// // 		// Top Left Paddle
-// // 		bindCoralAutoScore(Level.L1, driver.povRight());
+	// public Command shootingSetOverrideBehavior(Trigger button) {
+	// 	return setOverrideBehavior(OverrideBehavior.ALGAE_HOLD)
+	// 			.onlyWhile(button)
+	// 			.until(overrideTrigger);
+	// }
 
-// // 		// Top Right Paddle
-// // 		bindCoralAutoScore(Level.L2, driver.povUp());
-
-// // 		// Bottom Left Paddle
-// // 		bindCoralAutoScore(Level.L3, driver.povLeft());
-
-// // 		// Bottom Right Paddle
-// // 		bindCoralAutoScore(Level.L4, driver.povDown());
-
-// // 		// ALGAE MODE ###############################################################################
-
-// // 		// Top Left Paddle
-// // 		driver.povRight()
-// // 				.and(() -> !getCoralMode())
-// // 				.onTrue(superstructure.processorPrep())
-// // 				.onTrue(setOverrideBehavior(OverrideBehavior.PROCESSOR_SCORE));
-
-// // 		// Bottom Left Paddle
-// // 		bindAlgaeReefIntake(driver.povLeft());
-
-// // 		// Bottom Right Paddle
-// // 		bindNetAlignAndScore(driver.povDown());
-// // 	}
-
-// // 	public void bindCoralAutoScore(Level level, Trigger button) {
-// // 		Command scoreCommand =
-// // 				switch (level) {
-// // 					case L1 -> superstructure.L1Score();
-// // 					case L2 -> superstructure.L2Score();
-// // 					case L3 -> superstructure.L3Score();
-// // 					case L4 -> superstructure.L4Score();
-// // 					default -> Commands.none();
-// // 				};
-
-// // 		Command tuckCommand = level == Level.L1
-// // 				? superstructure.tuckAfterL1()
-// // 				: superstructure.tuckAfterScoring();
-
-// // 		OverrideBehavior coralOverrideBehavior =
-// // 				switch (level) {
-// // 					case L1 -> OverrideBehavior.CORAL_SCORE_L1;
-// // 					case L2 -> OverrideBehavior.CORAL_SCORE_L2;
-// // 					case L3 -> OverrideBehavior.CORAL_SCORE_L3;
-// // 					case L4 -> OverrideBehavior.CORAL_SCORE_L4;
-// // 					default -> OverrideBehavior.CORAL_SCORE_L4;
-// // 				};
-
-// // 		button.onTrue(Commands.either(
-// // 								Commands.sequence(
-// // 										superstructure
-// // 												.waitToStartScoreSequence()
-// // 												.onlyWhile(button)
-// // 												.until(overrideTrigger),
-// // 										scoreCommand
-// // 												.asProxy()
-// // 												.onlyWhile((button.or(overrideTrigger)))
-// // 												.onlyIf(button.or(overrideTrigger))
-// // 												.andThen(Commands.either(
-// // 														Commands.parallel(
-// // 																reefIntakeSuperstructure(driver.rightBumper()),
-// // 																reefIntakeDrive(driver.rightBumper()),
-// // 																reefIntakeSetOverrideBehavior(driver.rightBumper())),
-// // 														(tuckCommand)
-// // 																.asProxy()
-// // 																.onlyIf(button.and(
-// // 																		() -> EndEffector.mInstance.getCurrentCommand()
-// // 																				== null)),
-// // 														driver.rightBumper()))
-// // 												.asProxy()
-// // 												.withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
-// // 												.withName("Auto Score " + level.toString())),
-// // 								Commands.none(),
-// // 								() -> getCoralMode())
-// // 						.withName("Either Auto Score " + level.toString()))
-// // 				.onTrue(Commands.either(
-// // 								superstructure
-// // 										.goToScoringPose(level)
-// // 										.asProxy()
-// // 										.until(overrideTrigger)
-// // 										.unless(overrideTrigger)
-// // 										.onlyWhile(button)
-// // 										.withName("Auto Align " + level.toString()),
-// // 								Commands.none(),
-// // 								() -> getCoralMode())
-// // 						.withName("Either Auto Align " + level.toString()))
-// // 				.onTrue(Commands.either(
-// // 						setOverrideBehavior(coralOverrideBehavior), Commands.none(), () -> getCoralMode()));
-// // 	}
-
-// // 	public void bindNetAlignAndScore(Trigger button) {
-// // 		button.onTrue(Commands.either(
-// // 								Commands.sequence(
-// // 										superstructure
-// // 												.waitUnitlSlowEnoughToRaiseNet()
-// // 												.onlyWhile(button)
-// // 												.until(overrideTrigger),
-// // 										superstructure
-// // 												.netPrep()
-// // 												.asProxy()
-// // 												.onlyWhile((button.or(overrideTrigger)))
-// // 												.onlyIf(button.or(overrideTrigger))
-// // 												.asProxy()
-// // 												.withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
-// // 												.withName("Auto Score Net")),
-// // 								Commands.none(),
-// // 								() -> !getCoralMode())
-// // 						.withName("Either Auto Score Net Or None "))
-// // 				.onTrue(Commands.either(
-// // 								superstructure
-// // 										.alignToNet()
-// // 										.asProxy()
-// // 										.withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
-// // 										.until(overrideTrigger)
-// // 										.unless(overrideTrigger)
-// // 										.onlyWhile(button)
-// // 										.withName("Auto Align Net Drive"),
-// // 								Commands.none(),
-// // 								() -> !getCoralMode())
-// // 						.withName("Either Auto Align Net Drive"))
-// // 				.onTrue(Commands.either(
-// // 						setOverrideBehavior(OverrideBehavior.NET_SCORE), Commands.none(), () -> !getCoralMode()));
-// // 	}
-
-// // 	public void bindAlgaeReefIntake(Trigger button) {
-// // 		button.onTrue(Commands.either(reefIntakeSuperstructure(button), Commands.none(), () -> !getCoralMode()))
-// // 				.onTrue(Commands.either(reefIntakeDrive(button), Commands.none(), () -> !getCoralMode()))
-// // 				.onTrue(Commands.either(reefIntakeSetOverrideBehavior(button), Commands.none(), () -> !getCoralMode()));
-// // 	}
-
-// // 	public Command reefIntakeSetOverrideBehavior(Trigger button) {
-// // 		return setOverrideBehavior(OverrideBehavior.ALGAE_HOLD)
-// // 				.onlyWhile(button)
-// // 				.until(overrideTrigger);
-// // 	}
-
-// // 	public Command reefIntakeSuperstructure(Trigger button) {
-// // 		return Commands.sequence(
-// // 						superstructure
-// // 								.reefIntakeAtRightLevel()
-// // 								.withInterruptBehavior(InterruptionBehavior.kCancelIncoming)
-// // 								.onlyIf(button.or(overrideTrigger).and(() -> !getCoralMode())),
-// // 						superstructure.stowAlgaeWhenReady())
-// // 				.asProxy()
-// // 				.withName("Either Algae Reef Intake SS");
-// // 	}
-
-// // 	public Command reefIntakeDrive(Trigger button) {
-// // 		return superstructure
-// // 				.goToReefIntakeReadyPose()
-// // 				.withDeadline(superstructure.elevatorAtRightPointForAlgaeIntakeFromReef())
-// // 				.andThen(superstructure.goToReefIntakePose())
-// // 				.asProxy()
-// // 				.until(overrideTrigger)
-// // 				.unless(overrideTrigger)
-// // 				.onlyWhile(button)
-// // 				.withName("Either Algae Reef Intake Drive");
-// // 	}
-
-// // 	public void bindProcessorAutoScore(Trigger button) {
-// // 		button.onTrue(Commands.either(
-// // 								new SequentialCommandGroup(
-// // 												superstructure
-// // 														.processorPrep()
-// // 														.onlyWhile(button.or(overrideTrigger)),
-// // 												superstructure
-// // 														.processorScoreWhenReady()
-// // 														.onlyWhile((button.or(overrideTrigger)))
-// // 														.onlyIf((button.or(overrideTrigger)))
-// // 														.andThen(superstructure
-// // 																.tuckAfterProcessor()
-// // 																.onlyIf(button.or(overrideTrigger))))
-// // 										.asProxy()
-// // 										.withName("Auto Processor Score"),
-// // 								Commands.none(),
-// // 								() -> !getCoralMode())
-// // 						.withName("Either Auto Processor Score"))
-// // 				.onTrue(Commands.either(
-// // 								superstructure
-// // 										.goToProcessorScoringPose()
-// // 										.until(overrideTrigger)
-// // 										.unless(overrideTrigger)
-// // 										.onlyWhile(button)
-// // 										.asProxy()
-// // 										.withName("Auto Align to Processor"),
-// // 								Commands.none(),
-// // 								() -> !getCoralMode())
-// // 						.withName("Either Auto Align to Processor"))
-// // 				.onTrue(Commands.either(
-// // 						setOverrideBehavior(OverrideBehavior.PROCESSOR_SCORE), Commands.none(), () -> !getCoralMode()));
-// // 	}
 
 // // 	private void debugControls() {
 // // 		Superstructure s = superstructure;

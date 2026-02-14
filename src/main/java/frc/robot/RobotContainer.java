@@ -125,6 +125,7 @@ public class RobotContainer {
         drive.setDefaultCommand(
             driveCommand
         );
+        
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
         // drive.getDrivetrain().setDefaultCommand(
@@ -151,7 +152,7 @@ public class RobotContainer {
         // joystick.start().and(joystick.x()).whileTrue(drive.getDrivetrain().sysIdQuasistatic(Direction.kReverse));
 
         // reset the field-centric heading on left bumper press
-        ControlBoardConstants.mDriverController.start().onTrue(drive.getDrivetrain().runOnce(() -> drive.getDrivetrain().seedFieldCentric()));
+        //ControlBoardConstants.mDriverController.start().onTrue(drive.getDrivetrain().runOnce(() -> drive.getDrivetrain().seedFieldCentric()));
     }
 
     public Command getAutonomousCommand() {

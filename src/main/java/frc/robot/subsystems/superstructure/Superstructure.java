@@ -8,6 +8,7 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.drive.PIDToPoseCommand;
 import frc.lib.io.MotorIO.Setpoint;
 import frc.lib.util.FieldLayout;
 import frc.robot.RobotConstants;
@@ -136,7 +137,9 @@ public class Superstructure extends SubsystemBase {
     }
 
     public Command waitUntilSafeToShoot() {
-      return Commands.waitUntil(() -> shooter.spunUp() && hood.nearPositionSetpoint() && drive.getRotation() == ShotCalculator.getInstance(drive).getParameters().heading());
+      return Commands.waitUntil(() -> shooter.spunUp() 
+      && hood.nearPositionSetpoint() 
+      && drive.getRotation().getMeasure().isNear(ShotCalculator.getInstance(drive).getParameters().heading().getMeasure(), Units.Degrees.of(5.0)));
     }
 
     public Command shoot() {
@@ -147,11 +150,11 @@ public class Superstructure extends SubsystemBase {
     }
 
     public Command shootWhenReady() {
-      return Commands.sequence(
-                setState(State.SHOOTING), 
+      return Commands.parallel(turnToHub(), Commands.sequence(
                 Commands.runOnce(() -> { 
-                if (getState() == State.SHOOTING) waitUntilSafeToShoot();}),
-                Commands.run(() -> shoot()));
+                  if (state != State.SHOOTING) waitUntilSafeToShoot();}),
+                Commands.run(() -> shoot()),
+                setState(State.SHOOTING)));
     }
 
     public Command deployIntake() {
@@ -177,6 +180,12 @@ public class Superstructure extends SubsystemBase {
           setState(State.TUCK);
         })
         .withName("Tuck");
+    }
+
+    public Command turnToHub() {
+      if (state != State.KITBOT)
+        return new PIDToPoseCommand(drive, this, new Pose2d(drive.getPose().getX(), drive.getPose().getY(), ShotCalculator.getInstance(drive).getParameters().heading()));
+      return Commands.none();
     }
 
     public static enum State {
