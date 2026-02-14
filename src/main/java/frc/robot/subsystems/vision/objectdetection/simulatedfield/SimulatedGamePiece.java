@@ -40,8 +40,6 @@ public class SimulatedGamePiece {
     }
 
     void release() {
-        CURRENT_SPINDEXER_RELATIVE_OCCUPIED_ROTATIONS.remove(spindexerRelativeRotation);
-        spindexerRelativeRotation = null;
         unindexedRobotRelativeStorePosition = null;
     }
 
@@ -109,85 +107,6 @@ public class SimulatedGamePiece {
         return new Translation3d(randomX, randomY, randomZ);
     }
 
-    private Rotation2d findClosestOpenRotationInSpindexer(Rotation2d targetRotation, Rotation2d currentSpindexerRotation) {
-        final ArrayList<Rotation2d> occupiedRotations = CURRENT_SPINDEXER_RELATIVE_OCCUPIED_ROTATIONS;
-        final double angularWidthRad = SimulatedGamePieceConstants.GamePieceType.FUEL.originPointHeightOffGroundMeters * 2 /
-                SimulatedGamePieceConstants.ROBOT_RELATIVE_HELD_FUEL_OFFSET_FROM_SPINDEXER_METERS.toTranslation2d().getNorm();
-
-        final double EPSILON = 0.001;
-        final double clearanceRequired = angularWidthRad + EPSILON;
-        final double fuelRadiusRad = angularWidthRad / 2.0;
-
-        // 1. Define Robot-Relative Deadzone (80° to 180°)
-        // We ADD the fuel radius to the bounds so the edge of the ball never enters the zone
-        final double ROBOT_FORBIDDEN_MIN = Math.toRadians(80) - fuelRadiusRad;
-        final double ROBOT_FORBIDDEN_MAX = Math.PI + fuelRadiusRad;
-
-        // 2. Convert to Spindexer-Relative bounds
-        double spindexerForbiddenMin = MathUtil.angleModulus(ROBOT_FORBIDDEN_MIN - currentSpindexerRotation.getRadians());
-        double spindexerForbiddenMax = MathUtil.angleModulus(ROBOT_FORBIDDEN_MAX - currentSpindexerRotation.getRadians());
-
-        // 3. Normalize target and check if it's in the inflated forbidden zone
-        double targetRad = MathUtil.angleModulus(targetRotation.getRadians());
-
-        if (isAngleInSector(targetRad, spindexerForbiddenMin, spindexerForbiddenMax)) {
-            double distToMin = Math.abs(MathUtil.angleModulus(targetRad - spindexerForbiddenMin));
-            double distToMax = Math.abs(MathUtil.angleModulus(targetRad - spindexerForbiddenMax));
-            targetRad = (distToMin < distToMax) ? spindexerForbiddenMin : spindexerForbiddenMax;
-        }
-        Rotation2d clampedTarget = Rotation2d.fromRadians(targetRad);
-
-        // 4. Standard collision check against other fuel
-        boolean targetBlocked = false;
-        for (Rotation2d occupied : occupiedRotations) {
-            if (Math.abs(clampedTarget.minus(occupied).getRadians()) < clearanceRequired) {
-                targetBlocked = true;
-                break;
-            }
-        }
-        if (!targetBlocked) return clampedTarget;
-
-        // 5. Generate candidate points (Edges of deadzone + Edges of existing balls)
-        ArrayList<Rotation2d> candidates = new ArrayList<>();
-        candidates.add(Rotation2d.fromRadians(spindexerForbiddenMin));
-        candidates.add(Rotation2d.fromRadians(spindexerForbiddenMax));
-
-        for (Rotation2d occupied : occupiedRotations) {
-            candidates.add(occupied.plus(Rotation2d.fromRadians(clearanceRequired)));
-            candidates.add(occupied.minus(Rotation2d.fromRadians(clearanceRequired)));
-        }
-
-        Rotation2d bestRotation = null;
-        double minDistance = Double.MAX_VALUE;
-
-        for (Rotation2d candidate : candidates) {
-            double candRad = MathUtil.angleModulus(candidate.getRadians());
-
-            // REJECT if center is within the inflated deadzone
-            if (isAngleInSector(candRad, spindexerForbiddenMin, spindexerForbiddenMax)) {
-                continue;
-            }
-
-            // REJECT if colliding with other balls
-            boolean isBlocked = false;
-            for (Rotation2d occupied : occupiedRotations) {
-                if (Math.abs(candidate.minus(occupied).getRadians()) < clearanceRequired - (EPSILON * 2)) {
-                    isBlocked = true;
-                    break;
-                }
-            }
-
-            if (!isBlocked) {
-                double dist = Math.abs(clampedTarget.minus(candidate).getRadians());
-                if (dist < minDistance) {
-                    minDistance = dist;
-                    bestRotation = candidate;
-                }
-            }
-        }
-
-        return bestRotation;
-    }
 
     private boolean isAngleInSector(double angle, double start, double end) {
         double normalizedStart = MathUtil.angleModulus(start);
