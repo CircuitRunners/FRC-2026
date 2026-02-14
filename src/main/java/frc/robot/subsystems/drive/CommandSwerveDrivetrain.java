@@ -285,7 +285,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds), visionMeasurementStdDevs);
     }
 
-    public frc.robot.subsystems.vision.Vision.VisionConsumer getVisionConsumer() {
+    public frc.robot.subsystems.vision.apriltag.Vision.VisionConsumer getVisionConsumer() {
         return (visionPose, timestamp, stdDevs) -> {
             this.addVisionMeasurement(visionPose, timestamp, stdDevs);
         };

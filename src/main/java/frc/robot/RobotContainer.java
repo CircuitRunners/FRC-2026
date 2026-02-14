@@ -9,7 +9,10 @@ import choreo.auto.AutoFactory;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
@@ -44,11 +47,8 @@ import frc.robot.subsystems.intakeDeploy.IntakeDeploy;
 import frc.robot.subsystems.intakeRollers.IntakeRollers;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.superstructure.Superstructure;
-import frc.robot.subsystems.vision.Vision;
-import frc.robot.subsystems.vision.VisionConstants;
-import frc.robot.subsystems.vision.VisionIO;
-import frc.robot.subsystems.vision.VisionIOPhotonVision;
-import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
+import frc.robot.subsystems.vision.apriltag.Vision;
+import frc.robot.subsystems.vision.objectdetection.simulatedfield.SimulationFieldHandler;
 import frc.robot.auto.AutoHelpers;
 import frc.robot.auto.AutoModeSelector;
 @Logged
@@ -63,6 +63,7 @@ public class RobotContainer {
         // ? new VisionIOPhotonVisionSim(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
         // : new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
     );
+
     private final Shooter shooter = new Shooter();
     private final Hood hood = new Hood();
     private final IntakeDeploy intakeDeploy = new IntakeDeploy();
@@ -71,6 +72,7 @@ public class RobotContainer {
     private final Conveyor conveyor = new Conveyor();
     private final Climber climber = new Climber();
     private final Superstructure superstructure = new Superstructure(drive, vision, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, climber);
+    
 
     private final ControlBoard controlBoard = ControlBoard.getInstance(drive, superstructure);
     private final ShotCalculator shotCalculator = ShotCalculator.getInstance(drive);
@@ -79,7 +81,7 @@ public class RobotContainer {
         return shotCalculator;
     }
 
-
+    
 
     private AutoModeSelector mAutoModeSelector;
     private static String mPreviousAutoName;
@@ -94,9 +96,9 @@ public class RobotContainer {
     //         .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
     //         .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     
-    
-
     public RobotContainer() {
+        SimulationFieldHandler.superstructure = this.superstructure;
+        SimulationFieldHandler.drive = this.drive;
         controlBoard.configureBindings(drive, superstructure);
         configureBindings();
         RobotConstants.mAutoFactory = new AutoFactory(
@@ -115,9 +117,6 @@ public class RobotContainer {
         // RobotModeTriggers.autonomous()
 		// 		.onFalse(Commands.runOnce(() -> drive.getDrivetrain().setControl(new SwerveRequest.ApplyFieldSpeeds()))
 		// 				.ignoringDisable(true));
-
-
-
         shooter.setDefaultCommand(shooter.trackTargetCommand(superstructure.shooterSetpoint));
         hood.setDefaultCommand(hood.trackTargetCommand(superstructure.hoodSetpoint));
     }
@@ -155,19 +154,10 @@ public class RobotContainer {
         ControlBoardConstants.mDriverController.start().onTrue(drive.getDrivetrain().runOnce(() -> drive.getDrivetrain().seedFieldCentric()));
     }
 
-
     public Command getAutonomousCommand() {
         return Commands.print("No autonomous command configured");
     }
 
-
     private final DriveMaintainingHeading driveCommand = 
         new DriveMaintainingHeading(drive, () -> ControlBoardConstants.mDriverController.getLeftY(), () -> ControlBoardConstants.mDriverController.getLeftX(), () -> -ControlBoardConstants.mDriverController.getRightX());
-
-
-
-    
-    
-
-
 }
