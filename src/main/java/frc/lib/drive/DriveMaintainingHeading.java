@@ -31,13 +31,15 @@ public class DriveMaintainingHeading extends Command{
         Drive drivetrain,
         DoubleSupplier throttle,
         DoubleSupplier strafe,
-        DoubleSupplier turn
+        DoubleSupplier turn,
+        DoubleSupplier epsilon
         ) 
     {
         mDrivetrain = drivetrain;
         mThrottleSupplier = throttle;
         mStrafeSupplier = strafe;
         mTurnSupplier = turn;
+        mEpsilonSupplier = epsilon;
 
         driveWithHeading.HeadingController.setPID(
             DriveConstants.kHeadingControllerP,
@@ -58,6 +60,7 @@ public class DriveMaintainingHeading extends Command{
     private final DoubleSupplier mThrottleSupplier;
     private final DoubleSupplier mStrafeSupplier;
     private final DoubleSupplier mTurnSupplier;
+    public final DoubleSupplier mEpsilonSupplier;
     private Optional<Rotation2d> mHeadingSetpoint = Optional.empty();
     private double mJoystickLastTouched = -1;
     
@@ -86,6 +89,7 @@ public class DriveMaintainingHeading extends Command{
         double throttle = mThrottleSupplier.getAsDouble() * DriveConstants.kDriveMaxSpeed;
         double strafe = mStrafeSupplier.getAsDouble() * DriveConstants.kDriveMaxSpeed;
         double turnFieldFrame = mTurnSupplier.getAsDouble();
+        double epsilon = mEpsilonSupplier.getAsDouble();
         double throttleFieldFrame = RobotConstants.isRedAlliance ? throttle : -throttle;
         double strafeFieldFrame = RobotConstants.isRedAlliance ? strafe : -strafe;
 
@@ -94,7 +98,7 @@ public class DriveMaintainingHeading extends Command{
         }
 
         if (Math.abs(turnFieldFrame) > DriveConstants.kSteerJoystickDeadband
-                || (MathHelpers.epsilonEquals(mJoystickLastTouched, Timer.getFPGATimestamp(), 0.25)
+                || (MathHelpers.epsilonEquals(mJoystickLastTouched, Timer.getFPGATimestamp(), epsilon)
                         && Math.abs(
                                         mDrivetrain.getRobotRelativeChassisSpeeds()
                                                 .omegaRadiansPerSecond)
@@ -114,7 +118,7 @@ public class DriveMaintainingHeading extends Command{
                         Optional.of(mDrivetrain.getPose().getRotation());
             }
             // dont get stuck in trench
-            if (FieldLayout.nearTrench(mDrivetrain.getLookaheadPose(SuperstructureConstants.lookaheadTrenchTime), RobotConstants.isRedAlliance)) {
+            if (FieldLayout.nearTrench(mDrivetrain.getLookaheadPose(SuperstructureConstants.trenchLookaheadTime), RobotConstants.isRedAlliance)) {
                 Rotation2d targetAngle = FieldLayout.clampAwayFromTrench(mDrivetrain.getRotation());
                 mHeadingSetpoint = Optional.of(targetAngle);
 

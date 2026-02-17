@@ -5,12 +5,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.bases.ServoMotorSubsystem;
 import frc.lib.io.MotorIOTalonFX;
 import frc.lib.io.MotorIO.Setpoint;
-import frc.robot.shooting.ShotCalculator;
-import frc.robot.subsystems.drive.Drive;
 
 public class Hood extends ServoMotorSubsystem<MotorIOTalonFX>{
-    private Drive drive;
-
     public static final Setpoint KITBOT = Setpoint.withMotionMagicSetpoint(HoodConstants.kKitbotPosition);
     public static final Setpoint ZERO = Setpoint.withMotionMagicSetpoint(HoodConstants.kMinAngle);
 
@@ -23,7 +19,7 @@ public class Hood extends ServoMotorSubsystem<MotorIOTalonFX>{
     }
 
     public Command trackTargetCommand(Setpoint setpoint) {
-        return followSetpointCommand(() -> setpoint);
+        return followSetpointCommand(() -> setpoint).withName("Track Hub");
     }
     
     public Hood() {

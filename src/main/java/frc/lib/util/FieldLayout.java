@@ -4,6 +4,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Distance;
@@ -36,6 +37,8 @@ public class FieldLayout {
 	public static final Translation2d blueDepotCenter = new Translation2d(Units.Inches.of(13.5), kFieldWidth.div(2.0).plus(Units.Inches.of(75.93)));
 	public static final Translation2d kInnerBottomTrenchEdge = new Translation2d(Units.Inches.of(blueHubCenter.getX()), Units.Inches.of(50.34));
 	public static final Translation2d kInnerTopTrenchEdge = new Translation2d(Units.Inches.of(blueHubCenter.getX()), kFieldWidth.minus(Units.Inches.of(50.34)));
+	public static final Pose2d leftTower = kAprilTagMap.getTagPose(15).get().toPose2d().transformBy(new Transform2d(Units.Inches.of(40 + (3.51/2)), Units.Inches.of((32.25 / 2) + (5.875 + 1.5)).unaryMinus(), new Rotation2d()));
+	public static final Pose2d rightTower = kAprilTagMap.getTagPose(15).get().toPose2d().transformBy(new Transform2d(Units.Inches.of(40 + (3.51/2)), Units.Inches.of((32.25 / 2) + (5.875 + 1.5)), new Rotation2d()));
 
 
 

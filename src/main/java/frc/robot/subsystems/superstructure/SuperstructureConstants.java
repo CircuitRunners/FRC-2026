@@ -1,9 +1,7 @@
 package frc.robot.subsystems.superstructure;
 
-import java.util.function.BooleanSupplier;
 
-import com.ctre.phoenix6.configs.CANrangeConfiguration;
-
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -19,7 +17,9 @@ import frc.robot.Robot;
 import frc.robot.controlboard.ControlBoardConstants;
 
 public class SuperstructureConstants {
-	public static final Time lookaheadTrenchTime = Units.Milliseconds.of(100.0);
+	public static final Time trenchLookaheadTime = Units.Milliseconds.of(100.0);
+	public static final Time aimLookaheadTime = Units.Milliseconds.of(100);
+	public static final Translation3d climberOffset = new Translation3d(Units.Inches.of(12.126), Units.Inches.of(2.651), Units.Inches.of(-20.299));
 
     public static Distance getAutoAlignScoringDistanceEpsilon() {
 		return Units.Inches.of(0);

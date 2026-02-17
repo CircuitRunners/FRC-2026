@@ -1,5 +1,8 @@
 package frc.lib.util;
 
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -43,4 +46,5 @@ public class MathHelpers {
     public static boolean epsilonEquals(int a, int b, int epsilon) {
         return (a - epsilon <= b) && (a + epsilon >= b);
     }
+
 }

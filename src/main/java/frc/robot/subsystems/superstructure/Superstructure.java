@@ -1,5 +1,9 @@
 package frc.robot.subsystems.superstructure;
 
+import java.util.List;
+import java.util.Set;
+
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -26,7 +30,7 @@ import frc.robot.subsystems.intakeDeploy.IntakeDeployConstants;
 import frc.robot.subsystems.intakeRollers.IntakeRollers;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.vision.apriltag.Vision;
-
+@Logged
 public class Superstructure extends SubsystemBase {
     private final Drive drive;
     private final Vision vision;
@@ -56,6 +60,8 @@ public class Superstructure extends SubsystemBase {
     private boolean kitbotMode = false;
     private boolean intakeDeployed = false;
 
+    public double maintainHeadingEpsilon = 0.25;
+
     private State state = State.TUCK;
 
     public Setpoint hoodSetpoint = Hood.ZERO;
@@ -68,7 +74,7 @@ public class Superstructure extends SubsystemBase {
     }
 
     public void updateShooterSetpoint() {
-      if (visionValid()) {
+      if (visionValid() == true) {
         shooterSetpoint = 
             Setpoint.withVelocitySetpoint(
               Units.RotationsPerSecond.of(
@@ -76,15 +82,15 @@ public class Superstructure extends SubsystemBase {
               .getParameters()
               .flywheelSpeed()));
       }
-      else {
+      else if (visionValid() == false) {
         shooterSetpoint = Shooter.KITBOT;
-        setState(State.KITBOT);
+        kitbotMode = true;
         ControlBoard.getInstance(drive, this).setRumble(true);
       }
     }
 
     public void updateHoodSetpoint() {
-      Pose2d lookaheadPose = drive.getLookaheadPose(SuperstructureConstants.lookaheadTrenchTime);
+      Pose2d lookaheadPose = drive.getLookaheadPose(SuperstructureConstants.trenchLookaheadTime);
       if (visionValid() && !FieldLayout.nearTrench(lookaheadPose, RobotConstants.isRedAlliance)) {
         hoodSetpoint = 
             Setpoint.withMotionMagicSetpoint(
@@ -128,7 +134,7 @@ public class Superstructure extends SubsystemBase {
             kicker.setpointCommand(Kicker.FEED_BACKWARDS),
             setState(State.SPIT),
             Commands.waitUntil(() -> false))
-            .handleInterrupt(() -> {
+            .finallyDo(() -> {
                 intakeRollers.setpointCommand(IntakeRollers.IDLE);
                 conveyor.setpointCommand(Conveyor.IDLE);
                 kicker.setpointCommand(Kicker.IDLE);
@@ -139,60 +145,73 @@ public class Superstructure extends SubsystemBase {
     public Command waitUntilSafeToShoot() {
       return Commands.waitUntil(() -> shooter.spunUp() 
       && hood.nearPositionSetpoint() 
-      && drive.getRotation().getMeasure().isNear(ShotCalculator.getInstance(drive).getParameters().heading().getMeasure(), Units.Degrees.of(5.0)));
+      && (kitbotMode || drive.getRotation().getMeasure().isNear(ShotCalculator.getInstance(drive).getParameters().heading().getMeasure(), Units.Degrees.of(5.0))));
     }
 
     public Command shoot() {
       return Commands.parallel(
         conveyor.setpointCommand(Conveyor.FEED_FORWARD),
-        kicker.setpointCommand(Kicker.FEED_FORWARD).
-        withName("Shoot"));
+        kicker.setpointCommand(Kicker.FEED_FORWARD)).
+        withName("Shoot");
     }
 
     public Command shootWhenReady() {
       return Commands.parallel(turnToHub(), Commands.sequence(
                 Commands.runOnce(() -> { 
                   if (state != State.SHOOTING) waitUntilSafeToShoot();}),
-                Commands.run(() -> shoot()),
-                setState(State.SHOOTING)));
+                shoot()),
+                setState(State.SHOOTING),
+                Commands.waitUntil(() -> false))
+                .finallyDo(() -> {
+                  conveyor.setpointCommand(Conveyor.IDLE); 
+                  kicker.setpointCommand(Kicker.IDLE);
+                });
     }
 
     public Command deployIntake() {
-      intakeDeployed = true;
-      return intakeDeploy.setpointCommand(IntakeDeploy.DEPLOY)
+      return Commands.sequence(setIntakeStatus(true), intakeDeploy.setpointCommand(IntakeDeploy.DEPLOY))
       .withName("Intake Deploy");
     }
 
     public Command runIntakeIfDeployed() {
-      return Commands.either(
+      return Commands.sequence(Commands.either(
           intakeRollers.setpointCommand(IntakeRollers.INTAKE),
           Commands.sequence(
               deployIntake(),
               intakeRollers.setpointCommand(IntakeRollers.INTAKE)),
-          () -> intakeDeployed)
-          .withName("Intaking");
+          () -> intakeDeployed),
+          setState(State.INTAKING),
+          Commands.waitUntil(() -> false))
+          .withName("Intaking").finallyDo(() -> intakeRollers.setpointCommand(IntakeRollers.IDLE).withName("End Intake"));
     }
 
     public Command tuck() {
-      intakeDeployed = false;
-      return Commands.runOnce(() -> {
-          intakeDeploy.setpointCommand(IntakeDeploy.STOW_CLEAR);
-          setState(State.TUCK);
-        })
+      return Commands.sequence(
+          intakeDeploy.setpointCommand(IntakeDeploy.STOW_CLEAR),
+          setIntakeStatus(false),
+          setState(State.TUCK))
         .withName("Tuck");
     }
 
     public Command turnToHub() {
-      if (state != State.KITBOT)
-        return new PIDToPoseCommand(drive, this, new Pose2d(drive.getPose().getX(), drive.getPose().getY(), ShotCalculator.getInstance(drive).getParameters().heading()));
+      if (kitbotMode == false) 
+        return Commands.runOnce(() -> maintainHeadingEpsilon = 0.0);
       return Commands.none();
     }
+
+    // public Command climb() {
+    //   return Commands.sequence(Commands.defer(
+    //     () -> {
+    //       Pose2d ladderSide = drive.getPose().nearest(List.of(FieldLayout.leftTower, FieldLayout.rightTower));
+    //       Pose2d initialPose = ladderSide.transformBy(new Transform2d(SuperstructureConstants.climberOffset.toTranslation2d(), new Rotation2d()));
+    //       Pose2d finalPose = initialPose.transformBy(new Transform2d())
+    //     }, Set.of(drive, climber)));
+    // }
 
     public static enum State {
       TUCK,
       SHOOTING,
       INTAKING,
-      KITBOT,
       SPIT
     }
 
@@ -211,6 +230,10 @@ public class Superstructure extends SubsystemBase {
   
     public Command setState(State state) {
       return Commands.runOnce(() -> this.state = state);
+    }
+
+    public Command setIntakeStatus(boolean status) {
+      return Commands.runOnce(() -> intakeDeployed = status);
     }
   
     public State getState() {

@@ -23,7 +23,7 @@ public class Shooter extends FlywheelMotorSubsystem<MotorIOTalonFX> {
     }
 
     public Command trackTargetCommand(Setpoint setpoint) {
-        return followSetpointCommand(() -> setpoint);
+        return followSetpointCommand(() -> setpoint).withName("Track Hub");
     }
 
     private void stop() {
