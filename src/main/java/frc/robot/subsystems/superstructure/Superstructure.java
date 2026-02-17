@@ -1,5 +1,6 @@
 package frc.robot.subsystems.superstructure;
 
+import java.util.List;
 import java.util.Set;
 
 import edu.wpi.first.epilogue.Logged;
@@ -195,17 +196,17 @@ public class Superstructure extends SubsystemBase {
     public Command turnToHub() {
       if (kitbotMode == false) 
         return Commands.runOnce(() -> maintainHeadingEpsilon = 0.0);
-      //   return Commands.defer(() -> new PIDToPoseCommand(drive, this, new Pose2d(
-      //     drive.getLookaheadPose(SuperstructureConstants.aimLookaheadTime).getX(), 
-      //     drive.getLookaheadPose(SuperstructureConstants.aimLookaheadTime).getY(), 
-      //     FieldLayout.handleAllianceFlip(FieldLayout.blueHubCenter, RobotConstants.isRedAlliance)
-      //                       .minus(
-      //                           drive
-      //                           .getPose()
-      //                           .getTranslation())
-      //                           .getAngle())), Set.of(drive));
       return Commands.none();
     }
+
+    // public Command climb() {
+    //   return Commands.sequence(Commands.defer(
+    //     () -> {
+    //       Pose2d ladderSide = drive.getPose().nearest(List.of(FieldLayout.leftTower, FieldLayout.rightTower));
+    //       Pose2d initialPose = ladderSide.transformBy(new Transform2d(SuperstructureConstants.climberOffset.toTranslation2d(), new Rotation2d()));
+    //       Pose2d finalPose = initialPose.transformBy(new Transform2d())
+    //     }, Set.of(drive, climber)));
+    // }
 
     public static enum State {
       TUCK,
