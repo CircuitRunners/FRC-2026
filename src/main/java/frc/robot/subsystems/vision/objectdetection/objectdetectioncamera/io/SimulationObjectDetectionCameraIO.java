@@ -1,6 +1,7 @@
 package frc.robot.subsystems.vision.objectdetection.objectdetectioncamera.io;
 
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -10,27 +11,34 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.vision.objectdetection.ObjectDetectionConstants;
+import frc.robot.subsystems.vision.objectdetection.ObjectPoseEstimator;
 import frc.robot.subsystems.vision.objectdetection.objectdetectioncamera.ObjectDetectionCameraIO;
 import frc.robot.subsystems.vision.objectdetection.simulatedfield.SimulatedGamePiece;
 import frc.robot.subsystems.vision.objectdetection.simulatedfield.SimulatedGamePieceConstants;
 
 public class SimulationObjectDetectionCameraIO extends ObjectDetectionCameraIO {
     private static final Rotation2d
-            CAMERA_HORIZONTAL_FOV = Rotation2d.fromDegrees(75),
-            CAMERA_VERTICAL_FOV = Rotation2d.fromDegrees(45);
+            CAMERA_HORIZONTAL_FOV = Rotation2d.fromDegrees(70),
+            CAMERA_VERTICAL_FOV = Rotation2d.fromDegrees(47.2);
 
     private final String hostname;
     private final Transform3d cameraTransform;
     private final Drive drive;
+    
 
     public SimulationObjectDetectionCameraIO(Drive drive, String hostname, Transform3d cameraTransform) {
         this.hostname = hostname;
         this.drive = drive;
         this.cameraTransform = cameraTransform;
+        
     }
 
     @Override
@@ -65,6 +73,7 @@ public class SimulationObjectDetectionCameraIO extends ObjectDetectionCameraIO {
     private void updateNoNewResultInputs(ObjectDetectionCameraInputs inputs) {
         inputs.hasObject = new boolean[ObjectDetectionConstants.NUMBER_OF_GAME_PIECE_TYPES];
         inputs.visibleObjectRotations = new Rotation3d[ObjectDetectionConstants.NUMBER_OF_GAME_PIECE_TYPES][0];
+
     }
 
     private void updateHasNewResultInputs(ObjectDetectionCameraInputs inputs, ArrayList<Pair<SimulatedGamePiece, Rotation3d>>[] visibleGamePieces, double currentTimestamp) {
@@ -86,7 +95,9 @@ public class SimulationObjectDetectionCameraIO extends ObjectDetectionCameraIO {
      * @return the placements of the visible objects, as a pair of the object and the rotation of the object relative to the camera
      */
     private ArrayList<Pair<SimulatedGamePiece, Rotation3d>> calculateVisibleGamePiecesRotations(Pose3d cameraPose) {
+
         final ArrayList<SimulatedGamePiece> gamePiecesOnField = SimulatedGamePiece.getSimulatedGamePieces();
+        
         final ArrayList<Pair<SimulatedGamePiece, Rotation3d>> visibleObjects = new ArrayList<>();
         for (SimulatedGamePiece currentObject : gamePiecesOnField) {
             final Rotation3d cameraAngleToObject = calculateCameraAngleToObject(currentObject.getPosition(), cameraPose);
@@ -94,9 +105,12 @@ public class SimulationObjectDetectionCameraIO extends ObjectDetectionCameraIO {
             if (isObjectWithinFOV(cameraAngleToObject))
                 visibleObjects.add(new Pair<>(currentObject, cameraAngleToObject));
         }
-
+        
         return visibleObjects;
+        
     }
+
+    
 
     private Rotation3d calculateCameraAngleToObject(Translation3d objectPosition, Pose3d cameraPose) {
         final Translation3d cameraPosition = cameraPose.getTranslation();
@@ -142,12 +156,32 @@ public class SimulationObjectDetectionCameraIO extends ObjectDetectionCameraIO {
                 Math.abs(objectRotation.getY()) <= CAMERA_VERTICAL_FOV.getRadians() / 2;
     }
 
+    
+
     private void logVisibleGamePieces(ArrayList<Pair<SimulatedGamePiece, Rotation3d>>[] visibleGamePieces) {
-        for (int i = 0; i < visibleGamePieces.length; i++) {
-            final String gamePieceTypeName = SimulatedGamePieceConstants.GamePieceType.getNameFromID(i);
+        ArrayList<SimulatedGamePiece> q = new ArrayList<>();
+        for (ArrayList<Pair<SimulatedGamePiece, Rotation3d>> a:visibleGamePieces) {
+            for (Pair<SimulatedGamePiece, Rotation3d> p : a) {
+                q.add(p.getFirst());
+            }
         }
     }
 
+
+    public void displayFuel(ArrayList<SimulatedGamePiece> gamePiecesOnField) {
+        ArrayList<Pose2d> poses = new ArrayList<>();
+        for (SimulatedGamePiece s: gamePiecesOnField) {
+            poses.add(new Pose2d(
+                new Translation2d(
+                    s.getPosition().getX(),
+                    s.getPosition().getY()
+                ),
+                Rotation2d.kZero
+            )
+            );
+        }
+        ObjectPoseEstimator.field.getObject("Fuel").setPoses(poses);
+    }
     private Pose3d[] mapSimulatedGamePieceListToPoseArray(ArrayList<Pair<SimulatedGamePiece, Rotation3d>> gamePieces) {
         final Pose3d[] poses = new Pose3d[gamePieces.size()];
         for (int i = 0; i < poses.length; i++) {

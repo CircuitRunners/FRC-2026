@@ -16,42 +16,19 @@ import java.util.List;
 public class SimulationFieldHandler {
     public static Superstructure superstructure;
     public static Drive drive;
-    private static final ArrayList<SimulatedGamePiece> HELD_FUEL = new ArrayList<>(List.of());
 
-    public static boolean hasFuel() {
-        return !HELD_FUEL.isEmpty();
-    }
 
     public static void update() {
-        updateGamePieces();
         SimulatedGamePiece.logAll();
     }
 
     /**
      * Updates the state of all game pieces.
      */
-    private static void updateGamePieces() {
-        updateCollection();
-    }
+    
 
-    private static void updateCollection() {
-        final Translation3d robotRelativeCollectionPosition = SimulatedGamePieceConstants.COLLECTION_CHECK_POSITION;
-        final Translation3d collectionPose = robotRelativeToFieldRelative(robotRelativeCollectionPosition);
+    
 
-        if (isCollectingFuel() && HELD_FUEL.size() < SimulatedGamePieceConstants.MAXIMUM_HELD_FUEL) {
-            final ArrayList<SimulatedGamePiece> collectedFuel = getCollectedFuel(collectionPose);
-            for (SimulatedGamePiece fuel : collectedFuel) {
-                if (HELD_FUEL.size() >= SimulatedGamePieceConstants.MAXIMUM_HELD_FUEL)
-                    return;
-
-                addHeldFuel(fuel);
-            }
-        }
-    }
-
-    public static void addHeldFuel(SimulatedGamePiece fuel) {
-        HELD_FUEL.add(fuel);
-    }
 
     /**
      * Gets the fuel object that is being collected.
@@ -76,11 +53,7 @@ public class SimulationFieldHandler {
         return robotRelativeToFieldRelative(loaderPose);
     }
 
-    private static void ejectGamePiece(SimulatedGamePiece ejectedGamePiece) {
-        ejectedGamePiece.release();
-        HELD_FUEL.remove(ejectedGamePiece);
-        // CommandScheduler.getInstance().schedule(new VisualizeFuelShootingCommand(ejectedGamePiece));
-    }
+
 
 
 

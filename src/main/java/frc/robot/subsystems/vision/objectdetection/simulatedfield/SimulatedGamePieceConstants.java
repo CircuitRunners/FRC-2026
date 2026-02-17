@@ -22,23 +22,7 @@ public class SimulatedGamePieceConstants {
             LOADER_CHECK_POSITION = new Translation3d(0, 0.13455, 0.2);
 
     static final int MAXIMUM_HELD_FUEL = 40;
-    static final Translation3d ROBOT_RELATIVE_HELD_FUEL_OFFSET_FROM_SPINDEXER_METERS = new Translation3d(
-            0.165,
-            0,
-            0.2
-    );
-
-    static final Translation3d
-            ROBOT_RELATIVE_HELD_UNINDEXED_FUEL_BOUNDING_BOX_START = new Translation3d(
-            0.35,
-            0.35,
-            0.13
-    ),
-            ROBOT_RELATIVE_HELD_UNINDEXED_FUEL_BOUNDING_BOX_END = new Translation3d(
-                    -0.35,
-                    -0.35,
-                    0.4
-            );
+    
 
     private static final int
             STARTING_FUEL_ROWS = 12,
@@ -63,7 +47,7 @@ public class SimulatedGamePieceConstants {
         initializeFuel();
     }
 
-    private static void initializeFuel() {
+    public static void initializeFuel() {
         for (int i = 0; i < STARTING_FUEL_ROWS; i++) {
             for (int j = 0; j < STARTING_FUEL_COLUMNS; j++) {
                 new SimulatedGamePiece(
@@ -73,10 +57,7 @@ public class SimulatedGamePieceConstants {
             }
         }
 
-        for (int i = 0; i <8; i++) {
-            final SimulatedGamePiece currentHeldFuel = new SimulatedGamePiece(0, 0);
-            SimulationFieldHandler.addHeldFuel(currentHeldFuel);
-        }
+        
 
         initializeDepotFuel(DEPOT_CENTER_POSITION.getX(), DEPOT_CENTER_POSITION.getY());
         initializeDepotFuel(FieldLayout.kFieldLength.in(Units.Meters) - DEPOT_CENTER_POSITION.getX(), FieldLayout.kFieldWidth.in(Units.Meters) - DEPOT_CENTER_POSITION.getY());

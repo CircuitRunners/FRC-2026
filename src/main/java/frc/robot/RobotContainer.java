@@ -64,16 +64,16 @@ public class RobotContainer {
         // : new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
     );
 
-    // public final ObjectPoseEstimator OBJECT_POSE_ESTIMATOR = new ObjectPoseEstimator(
-    //     drive,
-    //     ObjectDetectionConstants.OBJECT_POSE_ESTIMATOR_DELETION_THRESHOLD_SECONDS,
-    //     SimulatedGamePieceConstants.GamePieceType.FUEL,
-    //     new ObjectDetectionCamera(
-    //         drive,
-    //         "ObjectDetection",
-    //         ObjectDetectionConstants.cameraTransform
-    //     )
-    // );
+    public final ObjectPoseEstimator OBJECT_POSE_ESTIMATOR = new ObjectPoseEstimator(
+        drive,
+        ObjectDetectionConstants.OBJECT_POSE_ESTIMATOR_DELETION_THRESHOLD_SECONDS,
+        SimulatedGamePieceConstants.GamePieceType.FUEL,
+        new ObjectDetectionCamera(
+            drive,
+            "ObjectDetection",
+            ObjectDetectionConstants.cameraTransform
+        )
+    );
 
     private final Shooter shooter = new Shooter();
     private final Hood hood = new Hood();

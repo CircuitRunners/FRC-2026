@@ -1,13 +1,17 @@
 package frc.robot.subsystems.vision.objectdetection.objectdetectioncamera;
 
+import java.util.ArrayList;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.vision.objectdetection.ObjectPoseEstimator;
 import frc.robot.subsystems.vision.objectdetection.objectdetectioncamera.ObjectDetectionCameraIO.ObjectDetectionCameraInputs;
 import frc.robot.subsystems.vision.objectdetection.objectdetectioncamera.io.PhotonObjectDetectionCameraIO;
 import frc.robot.subsystems.vision.objectdetection.objectdetectioncamera.io.SimulationObjectDetectionCameraIO;
@@ -30,6 +34,7 @@ public class ObjectDetectionCamera extends SubsystemBase {
     @Override
     public void periodic() {
         objectDetectionCameraIO.updateInputs(objectDetectionCameraInputs);
+        fuelField();
     }
 
     /**
@@ -62,6 +67,7 @@ public class ObjectDetectionCamera extends SubsystemBase {
         return objectDetectionCameraInputs.hasObject[targetGamePiece.id];
     }
 
+    
     public Translation2d[] getObjectPositionsOnField(SimulatedGamePieceConstants.GamePieceType targetGamePiece) {
         final Rotation3d[] visibleObjectRotations = getObjectsRotations(targetGamePiece);
         final Translation2d[] objectPositionsOnField = new Translation2d[visibleObjectRotations.length];
@@ -69,9 +75,18 @@ public class ObjectDetectionCamera extends SubsystemBase {
         for (int i = 0; i < visibleObjectRotations.length; i++)
             objectPositionsOnField[i] = calculateObjectPositionFromRotation(visibleObjectRotations[i]);
 
-        
         return objectPositionsOnField;
     }
+
+    public void fuelField() {
+        ArrayList<Pose2d> a = new ArrayList<>();
+        for (Translation2d t : getObjectPositionsOnField(SimulatedGamePieceConstants.GamePieceType.FUEL)) {
+            a.add(new Pose2d(t, Rotation2d.kZero));
+        }
+        ObjectPoseEstimator.field.getObject("Fuel").setPoses(a);
+    }
+
+    
 
     public Rotation3d[] getObjectsRotations(SimulatedGamePieceConstants.GamePieceType targetGamePiece) {
         return objectDetectionCameraInputs.visibleObjectRotations[targetGamePiece.id];

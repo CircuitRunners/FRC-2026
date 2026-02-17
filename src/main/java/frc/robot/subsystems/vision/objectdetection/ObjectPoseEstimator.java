@@ -2,25 +2,34 @@ package frc.robot.subsystems.vision.objectdetection;
 
 import java.lang.System.Logger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.vision.objectdetection.objectdetectioncamera.ObjectDetectionCamera;
+import frc.robot.subsystems.vision.objectdetection.objectdetectioncamera.io.SimulationObjectDetectionCameraIO;
+import frc.robot.subsystems.vision.objectdetection.simulatedfield.SimulatedGamePiece;
 import frc.robot.subsystems.vision.objectdetection.simulatedfield.SimulatedGamePieceConstants;
+import frc.robot.subsystems.vision.objectdetection.simulatedfield.SimulatedGamePieceConstants.GamePieceType;
 
 public class ObjectPoseEstimator extends SubsystemBase {
     private final double deletionThresholdSeconds;
     private final SimulatedGamePieceConstants.GamePieceType gamePieceType;
     private final ObjectDetectionCamera camera;
     private final Drive drive;
+    public static final Field2d field = new Field2d();
     /**
      * Stores the position of each detected object along with the timestamp of when it was detected.
      */
@@ -41,6 +50,8 @@ public class ObjectPoseEstimator extends SubsystemBase {
         this.gamePieceType = gamePieceType;
         this.camera = camera;
         this.objectPositionsToDetectionTimestamp = new HashMap<>();
+        SimulatedGamePieceConstants.initializeFuel();
+        SmartDashboard.putData("ObjectDetectionField", field);
     }
 
     /**
@@ -51,6 +62,12 @@ public class ObjectPoseEstimator extends SubsystemBase {
     public void periodic() {
         updateTrackedObjectsPositions();
         removeOldObjects();
+        
+        try {
+            field.setRobotPose(new Pose2d(getClosestObjectToRobot(), Rotation2d.kZero));
+        } catch(NullPointerException e) {
+
+        }
     }
 
     /**
@@ -132,6 +149,7 @@ public class ObjectPoseEstimator extends SubsystemBase {
      */
     public Translation2d getClosestObjectToRobot() {
         return getClosestTrackedObjectToPosition(drive.getPose().getTranslation());
+
     }
 
     private void updateTrackedObjectsPositions() {
