@@ -99,7 +99,7 @@ public class ControlBoard {
 
 		// MISC ###############################################################################
 
-		driver.a().whileTrue(s.spit());
+		driver.a().whileTrue(s.spit()).onFalse(s.setState(Superstructure.State.DEPLOYED));
 
  		driver.leftBumper().onTrue(s.tuck());
 
@@ -107,13 +107,18 @@ public class ControlBoard {
 
  		driver.leftTrigger(0.1)
  				.whileTrue(
- 						s.runIntakeIfDeployed());
+ 						s.runIntakeIfDeployed())
+						.onFalse(s.setState(Superstructure.State.DEPLOYED));
  						//.withName("Deploy and/or Intake"));
 
  		driver.x().whileTrue(
-						s.shootWhenReady()
-						.withName("Shooting").finallyDo(() -> superstructure.maintainHeadingEpsilon = 0.25)		
-		);
+						Commands.sequence(
+							Commands.runOnce(() -> superstructure.maintainHeadingEpsilon = 0.00),
+							s.shootWhenReady()
+							.withName("Shooting").finallyDo(() -> superstructure.maintainHeadingEpsilon = 0.25)).withName("Shooting")
+		).onFalse(s.setState(Superstructure.State.DEPLOYED));
+
+		driver.b().whileTrue(s.climb()).onFalse(s.setState(Superstructure.State.CLIMBING));
 
 
  	}

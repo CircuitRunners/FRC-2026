@@ -27,20 +27,29 @@ import frc.robot.RobotConstants;
  * Width refers to the <i>y</i> direction (as described by wpilib)
  */
 public class FieldLayout {
+	public static AprilTagFieldLayout kAprilTagMap =
+			AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
+	public static Distance kAprilTagWidth = Units.Inches.of(6.5);
     public static Distance kFieldLength = Units.Inches.of(651.22);
 	public static Distance kFieldWidth = Units.Inches.of(317.69);
 	public static Distance kAllianceZoneX = Units.Inches.of(158.61);
-    public static AprilTagFieldLayout kAprilTagMap =
-			AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
-	public static Distance kAprilTagWidth = Units.Inches.of(6.5);
+	public static Distance oppAllianceZone = Units.Meters.of(kAprilTagMap.getTagPose(10).get().getX());
+    
 
     public static final Translation2d blueHubCenter = new Translation2d(Units.Inches.of(182.11), kFieldWidth.div(2.0));
 	public static final Pose2d blueOutpostPose = kAprilTagMap.getTagPose(13).get().toPose2d();
 	public static final Translation2d blueDepotCenter = new Translation2d(Units.Inches.of(13.5), kFieldWidth.div(2.0).plus(Units.Inches.of(75.93)));
 	public static final Translation2d kInnerBottomTrenchEdge = new Translation2d(Units.Inches.of(blueHubCenter.getX()), Units.Inches.of(50.34));
 	public static final Translation2d kInnerTopTrenchEdge = new Translation2d(Units.Inches.of(blueHubCenter.getX()), kFieldWidth.minus(Units.Inches.of(50.34)));
-	public static final Pose2d leftTower = kAprilTagMap.getTagPose(15).get().toPose2d().transformBy(new Transform2d(Units.Inches.of(40 + (3.51/2)), Units.Inches.of((32.25 / 2) + (5.875 + 1.5)).unaryMinus(), new Rotation2d()));
-	public static final Pose2d rightTower = kAprilTagMap.getTagPose(15).get().toPose2d().transformBy(new Transform2d(Units.Inches.of(40 + (3.51/2)), Units.Inches.of((32.25 / 2) + (5.875 + 1.5)), new Rotation2d()));
+	public static final Pose2d leftTower = kAprilTagMap.getTagPose(31).get().toPose2d().transformBy(new Transform2d(Units.Inches.of(40 + (3.51/2)), Units.Inches.of((32.25 / 2) + (5.875 + 1.5)), new Rotation2d()));
+	public static final Pose2d rightTower = kAprilTagMap.getTagPose(31).get().toPose2d().transformBy(new Transform2d(Units.Inches.of(40 + (3.51/2)), Units.Inches.of((32.25 / 2) + (5.875 + 1.5)).unaryMinus(), new Rotation2d()));
+
+	public static final Distance center = kFieldWidth.div(2.0);
+	public static final Distance neutralZoneNear = center.minus(Units.Inches.of(120.0));
+    public static final Distance neutralZoneFar = center.plus(Units.Inches.of(120.0));
+
+	public static final Distance rightBumpStart = Units.Inches.of(158.84 - (47 / 2));
+	public static final Distance leftBumpEnd = Units.Inches.of(158.84 + (47 / 2));
 
 
 	public static final Rectangle2d rightNeutralZone = new Rectangle2d(
