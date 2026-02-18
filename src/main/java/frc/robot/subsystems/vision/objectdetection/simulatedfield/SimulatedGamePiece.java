@@ -18,6 +18,16 @@ public class SimulatedGamePiece {
         SIMULATED_GAME_PIECES.add(this);
     }
 
+    public static boolean removeGamePiece(SimulatedGamePiece g) {
+        for (int i = 0; i < SIMULATED_GAME_PIECES.size(); i++) {
+            if (SIMULATED_GAME_PIECES.get(i) == g) {
+                SIMULATED_GAME_PIECES.remove(g);
+                return true;
+            }
+        }
+        return false;
+    }
+    
     public static ArrayList<SimulatedGamePiece> getSimulatedGamePieces() {
         return SIMULATED_GAME_PIECES;
     }
