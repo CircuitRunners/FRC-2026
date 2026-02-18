@@ -29,6 +29,7 @@ import frc.robot.subsystems.superstructure.SuperstructureConstants;
 public class DriveMaintainingHeading extends Command{
     public DriveMaintainingHeading(
         Drive drivetrain,
+        Superstructure superstructure,
         DoubleSupplier throttle,
         DoubleSupplier strafe,
         DoubleSupplier turn,
@@ -36,6 +37,7 @@ public class DriveMaintainingHeading extends Command{
         ) 
     {
         mDrivetrain = drivetrain;
+        mSuperstructure = superstructure;
         mThrottleSupplier = throttle;
         mStrafeSupplier = strafe;
         mTurnSupplier = turn;
@@ -57,6 +59,7 @@ public class DriveMaintainingHeading extends Command{
     }
 
     protected Drive mDrivetrain;
+    protected Superstructure mSuperstructure;
     private final DoubleSupplier mThrottleSupplier;
     private final DoubleSupplier mStrafeSupplier;
     private final DoubleSupplier mTurnSupplier;
@@ -130,7 +133,8 @@ public class DriveMaintainingHeading extends Command{
                                 mHeadingSetpoint.get()
                             )
                 );
-            } else if (FieldLayout.distanceFromAllianceWall(Units.Meters.of(mDrivetrain.getPose().getX()), RobotConstants.isRedAlliance).lte(FieldLayout.kAllianceZoneX.minus(Units.Inches.of(14)))) {
+            } else if (//FieldLayout.distanceFromAllianceWall(Units.Meters.of(mDrivetrain.getPose().getX()), RobotConstants.isRedAlliance).lte(FieldLayout.kAllianceZoneX.minus(Units.Inches.of(14)))
+                     mSuperstructure.shouldHeadingLock()) {
                 Rotation2d targetAngle = ShotCalculator.getInstance(mDrivetrain).getParameters().heading();
 
                 mDrivetrain.getDrivetrain().setControl(

@@ -6,7 +6,7 @@ public class HubRegression {
                         // @x --> distance from target (in meters)
                         // @y --> hood angle (in degrees)
 
-                        { 1.0, 11.0 },
+                        { 1.34, 11.0 },
                         { 1.25, 12.0 },
                         { 1.50, 16.0 },
                         { 1.75, 18.0 },
@@ -57,11 +57,11 @@ public class HubRegression {
                         { 7.0, 3150 }
         };
 
-        public static double[][] ktimeOfFlightMap = {
+        public static double[][] kTimeOfFlightMap = {
                         // Need to change values
 
                         // @x --> distance from target (in meters)
-                        // @y --> shooter velocity (in rpm)
+                        // @y --> time of flight (in seconds)
                         { 1.38, 0.90 },
                         { 1.88, 1.09 },
                         { 3.15, 1.11 },
