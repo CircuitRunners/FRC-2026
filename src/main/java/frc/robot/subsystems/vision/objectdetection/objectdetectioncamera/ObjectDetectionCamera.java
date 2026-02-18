@@ -10,11 +10,13 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.util.MathHelpers;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.vision.objectdetection.ObjectPoseEstimator;
 import frc.robot.subsystems.vision.objectdetection.objectdetectioncamera.ObjectDetectionCameraIO.ObjectDetectionCameraInputs;
 import frc.robot.subsystems.vision.objectdetection.objectdetectioncamera.io.PhotonObjectDetectionCameraIO;
 import frc.robot.subsystems.vision.objectdetection.objectdetectioncamera.io.SimulationObjectDetectionCameraIO;
+import frc.robot.subsystems.vision.objectdetection.simulatedfield.SimulatedGamePiece;
 import frc.robot.subsystems.vision.objectdetection.simulatedfield.SimulatedGamePieceConstants;
 
 public class ObjectDetectionCamera extends SubsystemBase {
@@ -78,12 +80,16 @@ public class ObjectDetectionCamera extends SubsystemBase {
         return objectPositionsOnField;
     }
 
-    public void fuelField() {
+    public ArrayList<Translation2d> fuelField() {
         ArrayList<Pose2d> a = new ArrayList<>();
-        for (Translation2d t : getObjectPositionsOnField(SimulatedGamePieceConstants.GamePieceType.FUEL)) {
-            a.add(new Pose2d(t, Rotation2d.kZero));
+        ArrayList<Translation2d> q = new ArrayList<>();
+        for (SimulatedGamePiece t : SimulatedGamePiece.getSimulatedGamePieces()) {
+
+            a.add(MathHelpers.pose2dFromTranslation(new Translation2d(t.getPosition().getX(), t.getPosition().getY())));
+            q.add(new Translation2d(t.getPosition().getX(), t.getPosition().getY()));
         }
         ObjectPoseEstimator.field.getObject("Fuel").setPoses(a);
+        return q;
     }
 
     

@@ -1,5 +1,7 @@
 package frc.robot.subsystems.vision.objectdetection.simulatedfield;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -48,19 +50,24 @@ public class SimulatedGamePieceConstants {
     }
 
     public static void initializeFuel() {
-        for (int i = 0; i < STARTING_FUEL_ROWS; i++) {
-            for (int j = 0; j < STARTING_FUEL_COLUMNS; j++) {
-                new SimulatedGamePiece(
-                        STARTING_FUEL_X_POSITION_METERS + (i * STARTING_FUEL_SPACING_METERS),
-                        STARTING_FUEL_Y_POSITION_METERS + (j * STARTING_FUEL_SPACING_METERS)
-                );
-            }
+        // for (int i = 0; i < STARTING_FUEL_ROWS; i++) {
+        //     for (int j = 0; j < STARTING_FUEL_COLUMNS; j++) {
+        //         new SimulatedGamePiece(
+        //                 STARTING_FUEL_X_POSITION_METERS + (i * STARTING_FUEL_SPACING_METERS),
+        //                 STARTING_FUEL_Y_POSITION_METERS + (j * STARTING_FUEL_SPACING_METERS)
+        //         );
+        //     }
+        // }
+
+        for (int i = 0; i < 10; i++) {
+            new SimulatedGamePiece(
+                ThreadLocalRandom.current().nextDouble(-FieldLayout.rightNeutralZone.getXWidth(), FieldLayout.rightNeutralZone.getXWidth())/2.0 + FieldLayout.rightNeutralZone.getCenter().getX(),
+                ThreadLocalRandom.current().nextDouble(-FieldLayout.rightNeutralZone.getYWidth(), FieldLayout.rightNeutralZone.getYWidth())/2.0 + FieldLayout.rightNeutralZone.getCenter().getY()
+            );
         }
 
-        
-
-        initializeDepotFuel(DEPOT_CENTER_POSITION.getX(), DEPOT_CENTER_POSITION.getY());
-        initializeDepotFuel(FieldLayout.kFieldLength.in(Units.Meters) - DEPOT_CENTER_POSITION.getX(), FieldLayout.kFieldWidth.in(Units.Meters) - DEPOT_CENTER_POSITION.getY());
+        // initializeDepotFuel(DEPOT_CENTER_POSITION.getX(), DEPOT_CENTER_POSITION.getY());
+        // initializeDepotFuel(FieldLayout.kFieldLength.in(Units.Meters) - DEPOT_CENTER_POSITION.getX(), FieldLayout.kFieldWidth.in(Units.Meters) - DEPOT_CENTER_POSITION.getY());
     }
 
     private static void initializeDepotFuel(double depotCenterX, double depotCenterY) {

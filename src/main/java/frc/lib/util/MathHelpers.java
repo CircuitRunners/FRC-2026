@@ -19,6 +19,12 @@ public class MathHelpers {
 		return new Pose2d(translation, kRotation2dZero);
 	}
 
+	public static final Translation2d translationFromPose2d(Pose2d pose) {
+		return new Translation2d(
+			pose.getX(),
+			pose.getY()
+		);
+	}
 	public static final Rotation2d kRotation2dZero = new Rotation2d();
 	public static final Rotation2d kRotation2dPi = Rotation2d.fromDegrees(180.0);
 

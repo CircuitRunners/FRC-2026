@@ -3,11 +3,13 @@ package frc.lib.util;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rectangle2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Distance;
+import frc.robot.RobotConstants;
 
 /**
  * Contains various field dimensions and useful reference points. Dimensions are
@@ -41,7 +43,15 @@ public class FieldLayout {
 	public static final Pose2d rightTower = kAprilTagMap.getTagPose(15).get().toPose2d().transformBy(new Transform2d(Units.Inches.of(40 + (3.51/2)), Units.Inches.of((32.25 / 2) + (5.875 + 1.5)), new Rotation2d()));
 
 
+	public static final Rectangle2d rightNeutralZone = new Rectangle2d(
+		handleAllianceFlip(new Translation2d(edu.wpi.first.math.util.Units.inchesToMeters(205.61), 0), RobotConstants.isRedAlliance),
+		handleAllianceFlip(new Translation2d(edu.wpi.first.math.util.Units.inchesToMeters(325.61), edu.wpi.first.math.util.Units.inchesToMeters(158.84)), RobotConstants.isRedAlliance)
+	);
 
+	public static final Rectangle2d leftNeutralZone = new Rectangle2d(
+		handleAllianceFlip(new Translation2d(edu.wpi.first.math.util.Units.inchesToMeters(205.61), edu.wpi.first.math.util.Units.inchesToMeters(158.84)), RobotConstants.isRedAlliance),
+		handleAllianceFlip(new Translation2d(edu.wpi.first.math.util.Units.inchesToMeters(325.61), edu.wpi.first.math.util.Units.inchesToMeters(317.69)), RobotConstants.isRedAlliance)
+	);
 	public static Pose2d handleAllianceFlip(Pose2d blue_pose, boolean is_red_alliance) {
 		if (is_red_alliance) {
 			blue_pose = rotateAboutCenter(blue_pose, Rotation2d.k180deg);
