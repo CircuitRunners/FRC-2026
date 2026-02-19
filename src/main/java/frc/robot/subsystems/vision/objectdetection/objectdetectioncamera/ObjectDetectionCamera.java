@@ -36,7 +36,6 @@ public class ObjectDetectionCamera extends SubsystemBase {
     @Override
     public void periodic() {
         objectDetectionCameraIO.updateInputs(objectDetectionCameraInputs);
-        fuelField();
     }
 
     /**
@@ -79,20 +78,6 @@ public class ObjectDetectionCamera extends SubsystemBase {
 
         return objectPositionsOnField;
     }
-
-    public ArrayList<Translation2d> fuelField() {
-        ArrayList<Pose2d> a = new ArrayList<>();
-        ArrayList<Translation2d> q = new ArrayList<>();
-        for (SimulatedGamePiece t : SimulatedGamePiece.getSimulatedGamePieces()) {
-
-            a.add(MathHelpers.pose2dFromTranslation(new Translation2d(t.getPosition().getX(), t.getPosition().getY())));
-            q.add(new Translation2d(t.getPosition().getX(), t.getPosition().getY()));
-        }
-        ObjectPoseEstimator.field.getObject("Fuel").setPoses(a);
-        return q;
-    }
-
-    
 
     public Rotation3d[] getObjectsRotations(SimulatedGamePieceConstants.GamePieceType targetGamePiece) {
         return objectDetectionCameraInputs.visibleObjectRotations[targetGamePiece.id];

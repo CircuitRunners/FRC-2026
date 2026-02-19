@@ -5,19 +5,29 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rectangle2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.util.MathHelpers;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.DriveConstants;
+import frc.robot.subsystems.intakeRollers.IntakeRollerConstants;
+import frc.robot.subsystems.vision.objectdetection.BestClusterFinder.ClusterResult;
 import frc.robot.subsystems.vision.objectdetection.objectdetectioncamera.ObjectDetectionCamera;
 import frc.robot.subsystems.vision.objectdetection.objectdetectioncamera.io.SimulationObjectDetectionCameraIO;
 import frc.robot.subsystems.vision.objectdetection.simulatedfield.SimulatedGamePiece;
@@ -52,6 +62,7 @@ public class ObjectPoseEstimator extends SubsystemBase {
         this.objectPositionsToDetectionTimestamp = new HashMap<>();
         SimulatedGamePieceConstants.initializeFuel();
         SmartDashboard.putData("ObjectDetectionField", field);
+        
     }
 
     /**
@@ -64,10 +75,13 @@ public class ObjectPoseEstimator extends SubsystemBase {
         removeOldObjects();
         
         try {
-            field.setRobotPose(new Pose2d(getClosestObjectToRobot(), Rotation2d.kZero));
+            
         } catch(NullPointerException e) {
 
         }
+
+        findPathToClusters();
+        removeIntakedFuel();
     }
 
     /**
@@ -237,4 +251,110 @@ public class ObjectPoseEstimator extends SubsystemBase {
     private boolean hasObjectExpired(double timestamp) {
         return Timer.getTimestamp() - timestamp > deletionThresholdSeconds;
     }
+
+
+    public Trajectory findPathToClusters() {
+        ArrayList<ClusterResult> w = new ArrayList<>();
+        List<Translation2d> l = new ArrayList<Translation2d>();
+        List<Pose2d> d = new ArrayList<>();
+
+        
+        for (SimulatedGamePiece s : SimulatedGamePiece.getSimulatedGamePieces()) {
+            l.add(new Translation2d(s.getPosition().getX(), s.getPosition().getY()));
+            d.add(MathHelpers.pose2dFromTranslation(new Translation2d(s.getPosition().getX(), s.getPosition().getY())));
+        }
+        field.getObject("Fuel").setPoses(d);
+        double radius = ObjectDetectionConstants.maxClusterRadius;
+        boolean cont = true;
+        while (cont == true) {
+            BestClusterFinder.ClusterResult result =
+                    BestClusterFinder.findBestCluster(l, radius);
+
+            for (Translation2d p : result.points) {
+                for (int j = 0; j < l.size(); j++) {
+                    if (l.get(j).getDistance(p) < 0.005) {
+                        l.remove(l.get(j));
+                    }
+                }
+            }
+            w.add(result);
+            if (result.points.size() < 3) cont = false;
+        }
+        ArrayList<Pose2d> results = new ArrayList<>();
+        for (ClusterResult c : w) {
+            results.add(MathHelpers.pose2dFromTranslation(c.center));
+        }
+
+        field.getObject("Centroid").setPoses(results);
+        field.setRobotPose(drive.getPose());
+
+
+
+        List<Pose2d> remaining = new ArrayList<>(results);
+        List<Translation2d> resultsSorted = new ArrayList<>();
+
+        Pose2d currentPose = drive.getPose();
+
+        while (!remaining.isEmpty()) {
+            Pose2d closestPose = remaining.get(0);
+            double closestDistance =
+                currentPose.getTranslation().getDistance(
+                    closestPose.getTranslation()
+                );
+
+            for (Pose2d pose : remaining) {
+                double distance =
+                    currentPose.getTranslation().getDistance(
+                        pose.getTranslation()
+                    );
+
+                if (distance < closestDistance) {
+                    closestDistance = distance;
+                    closestPose = pose;
+                }
+            }
+            resultsSorted.add(closestPose.getTranslation());
+            currentPose = closestPose;
+
+            remaining.remove(closestPose);
+        }
+
+        Pose2d lastPose = results.get(0);
+        TrajectoryConfig config = new TrajectoryConfig(DriveConstants.kDriveMaxSpeed, DriveConstants.kMaxAccelerationMetersPerSecondSquared);
+        Trajectory t = TrajectoryGenerator.generateTrajectory(drive.getPose(), resultsSorted, lastPose, config);
+        field.getObject("traj").setTrajectory(t);
+        return t;
+    }
+
+    public void removeIntakedFuel() {
+        Rectangle2d intake = new Rectangle2d(
+            (new Translation2d(0.6408928, IntakeRollerConstants.intakeWidth / 2))
+                .plus(drive.getPose().getTranslation()),
+            (new Translation2d(0.6408928 - 0.2524, -IntakeRollerConstants.intakeWidth / 2))
+                .plus(drive.getPose().getTranslation())
+        );
+
+        Iterator<SimulatedGamePiece> iterator =
+            SimulatedGamePiece.getSimulatedGamePieces().iterator();
+
+        while (iterator.hasNext()) {
+            SimulatedGamePiece s = iterator.next();
+
+            Translation2d piecePos =
+                new Translation2d(s.getPosition().getX(),
+                                s.getPosition().getY());
+
+            if (intake.contains(piecePos)) {
+                iterator.remove();
+            }
+        }
+    }
+
+
+    
+
+
+
+
+
 }
