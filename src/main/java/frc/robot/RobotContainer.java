@@ -32,8 +32,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.lib.drive.PIDToPosesCommand;
+import frc.lib.util.FieldLayout;
 import frc.lib.drive.DriveMaintainingHeading;
-import frc.lib.drive.DriveToPoseCommand;
 import frc.lib.drive.FollowSyncedPIDToPose;
 import frc.lib.drive.FollowTrajectoryCommand;
 import frc.lib.drive.PIDToPoseCommand;
@@ -112,9 +112,9 @@ public class RobotContainer {
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
     /* Setting up bindings for necessary control of the swerve drive platform */
-    private final SwerveRequest.FieldCentric driveRequest = new SwerveRequest.FieldCentric()
-            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+    // private final SwerveRequest.FieldCentric driveRequest = new SwerveRequest.FieldCentric()
+    //         .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+    //         .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     
     public RobotContainer() {
         SimulationFieldHandler.superstructure = this.superstructure;
@@ -155,22 +155,22 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        // drive.setDefaultCommand(
-        //     driveCommand
-        // );
+        drive.setDefaultCommand(
+            driveCommand
+        );
 
 
         
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
-        drive.getDrivetrain().setDefaultCommand(
-            // Drivetrain will execute this command periodically
-            drive.getDrivetrain().applyRequest(() ->
-            driveRequest.withVelocityX(-ControlBoardConstants.mDriverController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(-ControlBoardConstants.mDriverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(-ControlBoardConstants.mDriverController.getRightX() * MaxAngularRate).withDeadband(MaxSpeed * 0.15).withRotationalDeadband(MaxAngularRate*0.15) // Drive counterclockwise with negative X (left)
-            )
-        );
+        // drive.getDrivetrain().setDefaultCommand(
+        //     // Drivetrain will execute this command periodically
+        //     drive.getDrivetrain().applyRequest(() ->
+        //     driveRequest.withVelocityX(-ControlBoardConstants.mDriverController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+        //             .withVelocityY(-ControlBoardConstants.mDriverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+        //             .withRotationalRate(-ControlBoardConstants.mDriverController.getRightX() * MaxAngularRate).withDeadband(MaxSpeed * 0.15).withRotationalDeadband(MaxAngularRate*0.15) // Drive counterclockwise with negative X (left)
+        //     )
+        // );
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
@@ -224,8 +224,8 @@ public class RobotContainer {
 
                 }, Set.of(drive))
             ).until(() -> OBJECT_POSE_ESTIMATOR.getOrderedClusters().isEmpty()),
-            new DriveToPoseCommand(drive, superstructure, new Pose2d(5.7392120361328125,0.6200974583625793 , new Rotation2d(1.5707977574648115)))
-        );              
+            new PIDToPoseCommand(drive, superstructure, FieldLayout.handleAllianceFlip(new Pose2d(5.7392120361328125,0.6200974583625793,new Rotation2d(1.5707977574648115)), RobotConstants.isRedAlliance), DriveConstants.getDriveToPoseTranslationController()
+        ));              
     }
 
 }

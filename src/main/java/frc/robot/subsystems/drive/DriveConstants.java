@@ -90,17 +90,16 @@ public class DriveConstants {
 
 			Pose2d currentPose = drive.getPose();
 
-			// Vector from robot TO target
 			Translation2d error =
 				targetPose.getTranslation().minus(currentPose.getTranslation());
 
 			double distance = error.getNorm();
 
-			// Normalize direction
+
 			Translation2d direction =
 				distance > 1e-4 ? error.div(distance) : new Translation2d();
 
-			// 🚀 FULL SPEED ALWAYS
+
 			double driveSpeed = kMaxSpeed.in(Units.MetersPerSecond);
 
 			LinearVelocity vx =
@@ -108,7 +107,7 @@ public class DriveConstants {
 			LinearVelocity vy =
 				Units.MetersPerSecond.of(direction.getY() * driveSpeed);
 
-			// --- ROTATION PID (unchanged) ---
+
 			headingController.setSetpoint(
 				Units.Radians.of(
 					MathUtil.angleModulus(targetPose.getRotation().getRadians())
@@ -163,6 +162,11 @@ public class DriveConstants {
 
 	public static SynchronousPIDF getObjectDetectionTranslationController() {
 		SynchronousPIDF controller = new SynchronousPIDF(7, 0.0, 0.0);
+		controller.setMaxAbsoluteOutput(kMaxSpeed.in(Units.MetersPerSecond));
+		return controller;
+	}
+	public static SynchronousPIDF getDriveToPoseTranslationController() {
+		SynchronousPIDF controller = new SynchronousPIDF(100, 0.0, 2);
 		controller.setMaxAbsoluteOutput(kMaxSpeed.in(Units.MetersPerSecond));
 		return controller;
 	}

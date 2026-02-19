@@ -30,8 +30,9 @@ public class RightNeutralCycle_Climb extends AutoModeBase {
 			rightSideToRightNeutral.cmd(),
             r.collectFuelCommand(),
 			rightNeutralToRightShoot.cmd(),
-			superstructure.shoot().deadlineFor(Commands.waitSeconds(3)),
+			superstructure.shoot(),
 			superstructure.climb()
+			
         );
 	}
 }
