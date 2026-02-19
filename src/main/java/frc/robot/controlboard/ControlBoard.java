@@ -113,12 +113,16 @@ public class ControlBoard {
 
  		driver.x().whileTrue(
 						Commands.sequence(
-							Commands.runOnce(() -> superstructure.maintainHeadingEpsilon = 0.00),
+							Commands.runOnce(() -> s.maintainHeadingEpsilon = 0.00),
 							s.shootWhenReady()
 							.withName("Shooting").finallyDo(() -> superstructure.maintainHeadingEpsilon = 0.25)).withName("Shooting")
 		).onFalse(s.setState(Superstructure.State.DEPLOYED));
 
 		driver.b().whileTrue(s.climb()).onFalse(s.setState(Superstructure.State.CLIMBING));
+
+		driver.povLeft().onTrue(s.toggleSOTM().withName("SOTM Toggle"));
+
+		driver.povDown().whileTrue(s.driveBrake().withName("Brake"));
 
 
  	}
