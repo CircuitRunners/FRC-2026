@@ -2,6 +2,10 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -14,18 +18,22 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.lib.drive.PIDToPosesCommand;
 import frc.lib.drive.DriveMaintainingHeading;
+import frc.lib.drive.DriveToPoseCommand;
 import frc.lib.drive.FollowSyncedPIDToPose;
 import frc.lib.drive.FollowTrajectoryCommand;
 import frc.lib.drive.PIDToPoseCommand;
@@ -104,9 +112,9 @@ public class RobotContainer {
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
     /* Setting up bindings for necessary control of the swerve drive platform */
-    // private final SwerveRequest.FieldCentric driveRequest = new SwerveRequest.FieldCentric()
-    //         .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
-    //         .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+    private final SwerveRequest.FieldCentric driveRequest = new SwerveRequest.FieldCentric()
+            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     
     public RobotContainer() {
         SimulationFieldHandler.superstructure = this.superstructure;
@@ -121,7 +129,7 @@ public class RobotContainer {
 				drive);
 
         // AutoHelpers.bindEventMarkers(RobotConstants.mAutoFactory)
-        mAutoModeSelector = new AutoModeSelector(drive, superstructure, RobotConstants.mAutoFactory);
+        mAutoModeSelector = new AutoModeSelector(this, drive, superstructure, RobotConstants.mAutoFactory);
 		mPreviousAutoName = mAutoModeSelector.getSelectedCommand().getName();
         SmartDashboard.putData("Auto Chooser", mAutoModeSelector.getAutoChooser());
 
@@ -147,20 +155,22 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        drive.setDefaultCommand(
-            driveCommand
-        );
+        // drive.setDefaultCommand(
+        //     driveCommand
+        // );
+
+
         
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
-        // drive.getDrivetrain().setDefaultCommand(
-        //     // Drivetrain will execute this command periodically
-        //     drive.getDrivetrain().applyRequest(() ->
-        //     driveRequest.withVelocityX(-ControlBoardConstants.mDriverController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-        //             .withVelocityY(-ControlBoardConstants.mDriverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-        //             .withRotationalRate(-ControlBoardConstants.mDriverController.getRightX() * MaxAngularRate).withDeadband(MaxSpeed * 0.15).withRotationalDeadband(MaxAngularRate*0.15) // Drive counterclockwise with negative X (left)
-        //     )
-        // );
+        drive.getDrivetrain().setDefaultCommand(
+            // Drivetrain will execute this command periodically
+            drive.getDrivetrain().applyRequest(() ->
+            driveRequest.withVelocityX(-ControlBoardConstants.mDriverController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+                    .withVelocityY(-ControlBoardConstants.mDriverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+                    .withRotationalRate(-ControlBoardConstants.mDriverController.getRightX() * MaxAngularRate).withDeadband(MaxSpeed * 0.15).withRotationalDeadband(MaxAngularRate*0.15) // Drive counterclockwise with negative X (left)
+            )
+        );
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
@@ -186,4 +196,36 @@ public class RobotContainer {
 
     private final DriveMaintainingHeading driveCommand = 
         new DriveMaintainingHeading(drive, superstructure, () -> ControlBoardConstants.mDriverController.getLeftY(), () -> ControlBoardConstants.mDriverController.getLeftX(), () -> -ControlBoardConstants.mDriverController.getRightX(), () -> superstructure.maintainHeadingEpsilon);
+
+    public Command collectFuelCommand() {
+        return Commands.sequence(
+            Commands.repeatingSequence(
+                Commands.defer(() -> {
+                    var clusters = OBJECT_POSE_ESTIMATOR.getOrderedClusters();
+                    if (clusters.isEmpty()) {
+                        return Commands.none();
+                    }
+                    List<Pose2d> poses = new ArrayList<>();
+                    Translation2d currentTrans = drive.getPose().getTranslation();
+
+                    for (Translation2d t : clusters) {
+                        Rotation2d r = t.minus(currentTrans).getAngle();
+                        poses.add(new Pose2d(t, r));
+                        currentTrans = t;
+                    }
+
+                    return new PIDToPosesCommand(
+                            drive,
+                            superstructure,
+                            poses
+                    ).andThen(Commands.runOnce(() ->
+                        OBJECT_POSE_ESTIMATOR.removeClosestObjectToRobot()
+                    ));
+
+                }, Set.of(drive))
+            ).until(() -> OBJECT_POSE_ESTIMATOR.getOrderedClusters().isEmpty()),
+            new DriveToPoseCommand(drive, superstructure, new Pose2d(5.7392120361328125,0.6200974583625793 , new Rotation2d(1.5707977574648115)))
+        );              
+    }
+
 }

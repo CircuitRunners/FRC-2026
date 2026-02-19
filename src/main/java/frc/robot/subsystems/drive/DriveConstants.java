@@ -80,6 +80,59 @@ public class DriveConstants {
 		};
 	}
 
+	public static final UnaryOperator<SwerveRequest.FieldCentric> getDriveToPoseRequestUpdater(Drive drive, Pose2d targetPose) {
+		return getDriveToPoseRequestUpdater(drive, targetPose, mAutoAlignTranslationController, mAutoAlignHeadingController);
+	}
+
+	public static final UnaryOperator<SwerveRequest.FieldCentric> getDriveToPoseRequestUpdater(
+			Drive drive, Pose2d targetPose, SynchronousPIDF translationController, SynchronousPIDF headingController) {
+		return (SwerveRequest.FieldCentric request) -> {
+
+			Pose2d currentPose = drive.getPose();
+
+			// Vector from robot TO target
+			Translation2d error =
+				targetPose.getTranslation().minus(currentPose.getTranslation());
+
+			double distance = error.getNorm();
+
+			// Normalize direction
+			Translation2d direction =
+				distance > 1e-4 ? error.div(distance) : new Translation2d();
+
+			// 🚀 FULL SPEED ALWAYS
+			double driveSpeed = kMaxSpeed.in(Units.MetersPerSecond);
+
+			LinearVelocity vx =
+				Units.MetersPerSecond.of(direction.getX() * driveSpeed);
+			LinearVelocity vy =
+				Units.MetersPerSecond.of(direction.getY() * driveSpeed);
+
+			// --- ROTATION PID (unchanged) ---
+			headingController.setSetpoint(
+				Units.Radians.of(
+					MathUtil.angleModulus(targetPose.getRotation().getRadians())
+				).in(Units.Rotations)
+			);
+
+			var omega = Units.RotationsPerSecond.of(
+				headingController.calculate(
+					Units.Radians.of(
+						MathUtil.angleModulus(
+							currentPose.getRotation().getRadians()
+						)
+					).in(Units.Rotations)
+				)
+			);
+
+			request.withVelocityX(vx)
+				.withVelocityY(vy)
+				.withRotationalRate(omega);
+
+			return request;
+		};
+	}
+
     public static final SwerveRequest.FieldCentric PIDToPoseRequest = new SwerveRequest.FieldCentric()
 			.withDeadband(DriveConstants.kMaxSpeed
 					.times(kSteerJoystickDeadband)
@@ -108,6 +161,11 @@ public class DriveConstants {
 		return controller;
 	}
 
+	public static SynchronousPIDF getObjectDetectionTranslationController() {
+		SynchronousPIDF controller = new SynchronousPIDF(7, 0.0, 0.0);
+		controller.setMaxAbsoluteOutput(kMaxSpeed.in(Units.MetersPerSecond));
+		return controller;
+	}
 
 }
 
