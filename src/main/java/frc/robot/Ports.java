@@ -17,7 +17,7 @@ public enum Ports {
 	CONVEYOR(14, RobotConstants.superstructureBus),
 	CLIMBER(15, RobotConstants.superstructureBus),
 
-	PHYSICAL_BUTTON(9, new CANBus("rio"));
+	PHYSICAL_BUTTON(20, new CANBus("rio"));
 
 	public final int id;
 	public final CANBus bus;

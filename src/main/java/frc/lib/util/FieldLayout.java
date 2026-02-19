@@ -7,9 +7,16 @@ import edu.wpi.first.math.geometry.Rectangle2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.units.VelocityUnit;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
 import frc.robot.RobotConstants;
+import frc.robot.subsystems.drive.DriveConstants;
+import frc.robot.subsystems.drive.TunerConstants;
+import frc.robot.subsystems.hood.HoodConstants;
+import frc.robot.subsystems.shooter.ShooterConstants;
 
 /**
  * Contains various field dimensions and useful reference points. Dimensions are
@@ -34,22 +41,30 @@ public class FieldLayout {
 	public static Distance kFieldWidth = Units.Inches.of(317.69);
 	public static Distance kAllianceZoneX = Units.Inches.of(158.61);
 	public static Distance oppAllianceZone = Units.Meters.of(kAprilTagMap.getTagPose(10).get().getX());
-    
+    public static final Translation2d center = new Translation2d(kFieldLength.div(2.0), kFieldWidth.div(2.0));
 
     public static final Translation2d blueHubCenter = new Translation2d(Units.Inches.of(182.11), kFieldWidth.div(2.0));
+	public static final Translation2d redHubCenter = mirrorAboutX(blueHubCenter, center.getMeasureX());
 	public static final Pose2d blueOutpostPose = kAprilTagMap.getTagPose(13).get().toPose2d();
 	public static final Translation2d blueDepotCenter = new Translation2d(Units.Inches.of(13.5), kFieldWidth.div(2.0).plus(Units.Inches.of(75.93)));
 	public static final Translation2d kInnerBottomTrenchEdge = new Translation2d(Units.Inches.of(blueHubCenter.getX()), Units.Inches.of(50.34));
 	public static final Translation2d kInnerTopTrenchEdge = new Translation2d(Units.Inches.of(blueHubCenter.getX()), kFieldWidth.minus(Units.Inches.of(50.34)));
 	public static final Pose2d leftTower = kAprilTagMap.getTagPose(31).get().toPose2d().transformBy(new Transform2d(Units.Inches.of(40 + (3.51/2)), Units.Inches.of((32.25 / 2) + (5.875 + 1.5)), new Rotation2d()));
 	public static final Pose2d rightTower = kAprilTagMap.getTagPose(31).get().toPose2d().transformBy(new Transform2d(Units.Inches.of(40 + (3.51/2)), Units.Inches.of((32.25 / 2) + (5.875 + 1.5)).unaryMinus(), new Rotation2d()));
+	public static final Pose2d towerCenter = kAprilTagMap.getTagPose(31).get().toPose2d().transformBy(new Transform2d(Units.Inches.of(40 + (3.51/2)), Units.Inches.of(0.0), new Rotation2d()));
 
-	public static final Distance center = kFieldWidth.div(2.0);
-	public static final Distance neutralZoneNear = center.minus(Units.Inches.of(120.0));
-    public static final Distance neutralZoneFar = center.plus(Units.Inches.of(120.0));
+	public static final Distance neutralZoneNear = center.getMeasureY().minus(Units.Inches.of(120.0));
+    public static final Distance neutralZoneFar = center.getMeasureY().plus(Units.Inches.of(120.0));
 
 	public static final Distance rightBumpStart = Units.Inches.of(158.84 - (47 / 2));
 	public static final Distance leftBumpEnd = Units.Inches.of(158.84 + (47 / 2));
+
+	public static final Distance trenchTagToCenter = Units.Inches.of(1.5/2.0);
+
+	public static final Translation2d kLeftBlueTrench = new Translation2d(blueHubCenter.getMeasureX(), kAprilTagMap.getTagPose(23).get().getMeasureY().plus(trenchTagToCenter));
+	public static final Translation2d kRightBlueTrench = new Translation2d(blueHubCenter.getMeasureX(), kAprilTagMap.getTagPose(28).get().getMeasureY().plus(trenchTagToCenter));
+	public static final Translation2d kLeftRedTrench = new Translation2d(redHubCenter.getMeasureX(), kAprilTagMap.getTagPose(7).get().getMeasureY().minus(trenchTagToCenter));
+	public static final Translation2d kRightRedTrench = new Translation2d(redHubCenter.getMeasureX(), kAprilTagMap.getTagPose(12).get().getMeasureY().minus(trenchTagToCenter));
 
 
 	public static final Rectangle2d rightNeutralZone = new Rectangle2d(
@@ -90,21 +105,113 @@ public class FieldLayout {
 		return x_coordinate;
 	}
 
-	public static boolean nearTrench(Pose2d pose, boolean is_red_alliance) {
-		Distance x = pose.getMeasureX();
-    	Distance y = pose.getMeasureY();
+	public static Distance calculateRetractZoneWidth(
+			Pose2d robotPose,
+			ChassisSpeeds robotSpeeds,
+			Translation2d trenchCenter) {
 
-    	boolean inTrenchY =
-            y.lte(kInnerBottomTrenchEdge.getMeasureY())
-         || y.gte(kInnerTopTrenchEdge.getMeasureY());
+		Translation2d fieldVelocity =
+				new Translation2d(
+						robotSpeeds.vxMetersPerSecond,
+						robotSpeeds.vyMetersPerSecond);
 
-    	Distance distFromWall = distanceFromAllianceWall(x, is_red_alliance);
+		Translation2d toTrench =
+				trenchCenter.minus(robotPose.getTranslation());
 
-    	boolean nearTrenchX =
-            distFromWall.isNear(handleAllianceFlip(blueHubCenter, is_red_alliance).getMeasureX(), Units.Inches.of(47.00 / 2));
+		Translation2d directionToTrench =
+				toTrench.div(toTrench.getNorm());
 
-    	return nearTrenchX && inTrenchY;
+		double velocityTowardTrench =
+				fieldVelocity.getX() * directionToTrench.getX()
+			+ fieldVelocity.getY() * directionToTrench.getY();
+
+		velocityTowardTrench = Math.max(0.0, velocityTowardTrench);
+
+		LinearVelocity vToward =
+				Units.MetersPerSecond.of(velocityTowardTrench);
+
+		LinearVelocity velocityAtRetract =
+				Units.MetersPerSecond.of(
+						Math.min(
+								vToward
+									.plus(DriveConstants.kMaxAcceleration
+											.times(HoodConstants.retractTime))
+									.in(Units.MetersPerSecond),
+								TunerConstants.kSpeedAt12Volts
+									.in(Units.MetersPerSecond)));
+
+		Distance zoneWidth = Units.Inches.of(47);
+		zoneWidth =
+				zoneWidth.plus(
+						HoodConstants.retractTime.times(velocityAtRetract));
+
+		return zoneWidth;
 	}
+
+
+
+	public static boolean nearTrench(
+			Pose2d pose,
+			ChassisSpeeds currentSpeeds) {
+
+		Pose2d shooterPose = pose.plus(ShooterConstants.robotToShooter);
+		
+		Distance x = shooterPose.getMeasureX();
+		Distance y = shooterPose.getMeasureY();
+
+		boolean inTrenchY =
+				y.lte(kInnerBottomTrenchEdge.getMeasureY())
+			|| y.gte(kInnerTopTrenchEdge.getMeasureY());
+
+		if (!inTrenchY) {
+			return false;
+		}
+
+		double fieldVx = currentSpeeds.vxMetersPerSecond;
+
+		Distance[] trenchCenters = {
+			kLeftBlueTrench.getMeasureX(),
+			kRightBlueTrench.getMeasureX(),
+			kLeftRedTrench.getMeasureX(),
+			kRightRedTrench.getMeasureX()
+		};
+
+		for (Distance trenchX : trenchCenters) {
+
+			double direction =
+					Math.signum(
+						trenchX.minus(x).in(Units.Meters));
+
+			// Only count velocity toward trench
+			double velocityToward =
+					Math.max(0.0, fieldVx * direction);
+
+			LinearVelocity vToward =
+					Units.MetersPerSecond.of(velocityToward);
+
+			LinearVelocity velocityAtRetract =
+					Units.MetersPerSecond.of(
+							Math.min(
+									vToward
+										.plus(DriveConstants.kMaxAcceleration
+												.times(HoodConstants.retractTime))
+										.in(Units.MetersPerSecond),
+									TunerConstants.kSpeedAt12Volts
+										.in(Units.MetersPerSecond)));
+
+			Distance retractZoneWidth =
+					Units.Inches.of(47)
+						.plus(HoodConstants.retractTime
+								.times(velocityAtRetract));
+
+			if (x.isNear(trenchX, retractZoneWidth)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 
 	/** Changes heading so the robot doesn't get stuck in the trench at certain angles
 	 * @param rotation current rotation

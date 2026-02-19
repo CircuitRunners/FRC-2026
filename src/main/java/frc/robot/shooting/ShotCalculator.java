@@ -72,7 +72,7 @@ public class ShotCalculator {
 
     // Passing targets
     private static final Distance hubPassLine =
-        FieldLayout.center;
+        FieldLayout.center.getMeasureY();
     private static final Distance xPassTarget = Units.Inches.of(25);
     private static final Distance yPassTarget = Units.Inches.of(50);
     // Boxes of bad
@@ -241,13 +241,13 @@ public class ShotCalculator {
 
     public Translation2d getPassingTarget() {
         Distance flippedY = FieldLayout.handleAllianceFlip(drive.getPose(), RobotConstants.isRedAlliance).getMeasureY();
-        boolean mirror = flippedY.gte(FieldLayout.center);
+        boolean mirror = flippedY.gte(FieldLayout.center.getMeasureY());
 
         // Check if we need to interpolate
         if (FieldLayout.kFieldWidth.minus(hubPassLine).gte(flippedY) && flippedY.gte(hubPassLine)) {
         double interpolateZoneAmount =
             ((mirror ? FieldLayout.kFieldWidth.minus(flippedY).in(Units.Meters) : flippedY.minus(hubPassLine).in(Units.Meters))
-                / (FieldLayout.center.minus(hubPassLine).in(Units.Meters)));
+                / (FieldLayout.center.getMeasureY().minus(hubPassLine).in(Units.Meters)));
         var unflippedPoseY =
             mirror
                 ? FieldLayout.kFieldWidth.in(Units.Meters)
@@ -260,10 +260,10 @@ public class ShotCalculator {
 
         // Fixed passing target
         Translation2d flippedGoalTranslation =
-            FieldLayout.handleAllianceFlip(
+            //FieldLayout.handleAllianceFlip(
                 new Translation2d(
-                    xPassTarget, mirror ? FieldLayout.kFieldWidth.minus(yPassTarget) : yPassTarget),
-                    RobotConstants.isRedAlliance);
+                    xPassTarget, mirror ? FieldLayout.kFieldWidth.minus(yPassTarget) : yPassTarget)/*,
+                    //RobotConstants.isRedAlliance)*/;
 
         return flippedGoalTranslation;
     }

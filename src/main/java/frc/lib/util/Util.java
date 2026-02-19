@@ -231,19 +231,4 @@ public class Util {
 			SmartDashboard.putNumber("Auto Align Traj/Number Of Trajectory States", poseList.size());
 		}
 	}
-
-	public static double calculateDistanceToStartDeccel(
-			double currentVel, double stowedAccel, double raisedAccel, double timeToRaise) {
-		double distToRaiseElev = calculatDistanceToRaiseElevator(raisedAccel, timeToRaise);
-		double velAtDistToRaiseElev = raisedAccel * timeToRaise;
-		double deltaVel = currentVel - velAtDistToRaiseElev;
-		double timeToDeccelDelta = deltaVel / stowedAccel;
-		double distToDeccelDelta = 0.5 * stowedAccel * timeToDeccelDelta * timeToDeccelDelta;
-		double totalDist = distToDeccelDelta + distToRaiseElev;
-		return totalDist;
-	}
-
-	public static double calculatDistanceToRaiseElevator(double raisedAccel, double timeToRaise) {
-		return 0.5 * raisedAccel * timeToRaise * timeToRaise;
-	}
 }

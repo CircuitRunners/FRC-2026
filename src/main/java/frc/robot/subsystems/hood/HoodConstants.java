@@ -8,6 +8,7 @@ import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Time;
 import frc.lib.bases.ServoMotorSubsystem.ServoHomingConfig;
 import frc.lib.io.MotorIOTalonFX;
 import frc.lib.io.MotorIOTalonFX.MotorIOTalonFXConfig;
@@ -25,6 +26,8 @@ public class HoodConstants {
     public static final Angle kMinAngle = Units.Degrees.of(0.0);
 
     public static final Angle kEpsilonThreshold = Units.Degrees.of(0.5);
+	
+	public static final Time retractTime = Units.Seconds.of(0.1);
 
     public static TalonFXConfiguration getFXConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();

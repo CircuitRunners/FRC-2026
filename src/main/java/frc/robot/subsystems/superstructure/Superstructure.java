@@ -8,10 +8,9 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -62,6 +61,7 @@ public class Superstructure extends SubsystemBase {
     private boolean driveReady = false;
     private boolean kitbotMode = false;
     private boolean intakeDeployed = false;
+    public boolean shootOnTheMove = false;
 
     public double maintainHeadingEpsilon = 0.25;
 
@@ -69,11 +69,14 @@ public class Superstructure extends SubsystemBase {
 
     public Setpoint hoodSetpoint = Hood.ZERO;
     public Setpoint shooterSetpoint = Shooter.STOP;
+    public Rotation2d headingSetpoint = new Rotation2d();
 
     @Override
     public void periodic() {
         updateShooterSetpoint();
         updateHoodSetpoint();
+        updateHeadingSetpoint();
+        SmartDashboard.putBoolean("Near Trench", FieldLayout.nearTrench(drive.getPose(), drive.getFieldRelativeChassisSpeeds()));
     }
 
     public void updateShooterSetpoint() {
@@ -93,8 +96,7 @@ public class Superstructure extends SubsystemBase {
     }
 
     public void updateHoodSetpoint() {
-      Pose2d lookaheadPose = drive.getLookaheadPose(SuperstructureConstants.trenchLookaheadTime);
-      if (visionValid() && !FieldLayout.nearTrench(lookaheadPose, RobotConstants.isRedAlliance)) {
+      if (visionValid() && !FieldLayout.nearTrench(drive.getPose(), drive.getFieldRelativeChassisSpeeds())) {
         hoodSetpoint = 
             Setpoint.withMotionMagicSetpoint(
               Units.Degrees.of(
@@ -104,6 +106,16 @@ public class Superstructure extends SubsystemBase {
       }
       else {
         hoodSetpoint = Hood.KITBOT;
+      }
+    }
+
+    public void updateHeadingSetpoint() {
+      boolean passing = !FieldLayout.distanceFromAllianceWall(Units.Meters.of(drive.getPose().getX()), RobotConstants.isRedAlliance).lte(FieldLayout.kAllianceZoneX.minus(Units.Inches.of(14)));
+      if (!passing) {
+      headingSetpoint = shootOnTheMove ? ShotCalculator.getInstance(drive).getParameters().heading() : ShotCalculator.getStationaryAimedPose(drive.getPose().getTranslation()).getRotation();
+      }
+      else {
+        headingSetpoint = ShotCalculator.getInstance(drive).getParameters().heading();
       }
     }
 
@@ -148,7 +160,7 @@ public class Superstructure extends SubsystemBase {
     public Command waitUntilSafeToShoot() {
       return Commands.waitUntil(() -> shooter.spunUp() 
       && hood.nearPositionSetpoint() 
-      && (kitbotMode || drive.getRotation().getMeasure().isNear(ShotCalculator.getInstance(drive).getParameters().heading().getMeasure(), Units.Degrees.of(5.0))));
+      && (kitbotMode || drive.getRotation().getMeasure().isNear(headingSetpoint.getMeasure(), Units.Degrees.of(5.0))));
     }
 
     public Command shoot() {
@@ -196,11 +208,20 @@ public class Superstructure extends SubsystemBase {
         .withName("Tuck");
     }
 
+    public Command driveBrake() {
+      return Commands.sequence(
+        Commands.waitUntil(() -> drive.getRotation().getMeasure().isNear(headingSetpoint.getMeasure(), Units.Degrees.of(5.0))),
+        drive.brake()
+      );
+    }
+
     public Command climb() {
       return Commands.defer(
           () -> {
             Pose2d ladderSide =
-                drive.getPose().nearest(List.of(FieldLayout.leftTower, FieldLayout.rightTower));
+                FieldLayout.handleAllianceFlip(drive.getPose().nearest(List.of(FieldLayout.handleAllianceFlip(FieldLayout.leftTower, RobotConstants.isRedAlliance), FieldLayout.handleAllianceFlip(FieldLayout.rightTower, RobotConstants.isRedAlliance))), RobotConstants.isRedAlliance);
+
+            boolean isLeftTower = ladderSide.equals(FieldLayout.leftTower);
 
             Pose2d initialPose = FieldLayout.handleAllianceFlip(
                 ladderSide.transformBy(
@@ -208,21 +229,19 @@ public class Superstructure extends SubsystemBase {
                         SuperstructureConstants.climberOffset
                             .toTranslation2d()
                             .plus(new Translation2d(
-                                Units.Inches.of(-5.0),
+                                Units.Inches.of(!isLeftTower ? -5.0 : 5.0),
                                 Units.Inches.of(0.0))),
-                        new Rotation2d())), 
+                                Rotation2d.kZero)), 
                         RobotConstants.isRedAlliance);
 
-            Pose2d finalPose = FieldLayout.handleAllianceFlip(
-                initialPose.transformBy(
+            Pose2d finalPose = initialPose 
+                  .transformBy(
                     new Transform2d(
-                        Units.Inches.of(0.0),
-                        Units.Inches.of(5.875 / 2),
-                        new Rotation2d())),
-                        RobotConstants.isRedAlliance);
-
-            boolean isLeftTower = ladderSide.equals(FieldLayout.leftTower);
-
+                        Units.Inches.of(!isLeftTower ? 5.0 : -5.0),
+                        Units.Inches.of(!isLeftTower ? 5.875 / 2.0 : -5.875 / 2.0),
+                        !isLeftTower ? Rotation2d.kZero : Rotation2d.k180deg));
+            if (isLeftTower) finalPose = finalPose.transformBy(new Transform2d(SuperstructureConstants.climberOffset.getMeasureX().times(2.0), Units.Inches.of(0.0), Rotation2d.kZero));
+              
             if (isLeftTower) {
               return Commands.sequence(
                   setState(State.CLIMBING),
@@ -275,6 +294,10 @@ public class Superstructure extends SubsystemBase {
 
     public Command setIntakeStatus(boolean status) {
       return Commands.runOnce(() -> intakeDeployed = status);
+    }
+
+    public Command toggleSOTM() {
+      return Commands.runOnce(() -> shootOnTheMove = !shootOnTheMove);
     }
   
     public State getState() {

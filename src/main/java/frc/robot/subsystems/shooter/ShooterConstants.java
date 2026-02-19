@@ -21,7 +21,7 @@ import frc.robot.Robot;
 
 public class ShooterConstants {
     public static final double kGearing = 1.0 / 1.0;
-    public static Transform2d robotToShooter = new Transform2d(-0.19685, 0.0, Rotation2d.kZero);
+    public static Transform2d robotToShooter = new Transform2d(Units.Inches.of(0), Units.Inches.of(6.881), Rotation2d.kZero);
 
     public static final AngularVelocity kMinVelocity = Units.RotationsPerSecond.of(2000);
 
