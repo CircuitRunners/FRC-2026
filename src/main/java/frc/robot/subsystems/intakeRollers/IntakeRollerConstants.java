@@ -74,5 +74,5 @@ public class IntakeRollerConstants {
 		return simConstants;
 	}
 
-    public static double intakeWidth = .6096;
+    public static double intakeWidth = 1;
 }

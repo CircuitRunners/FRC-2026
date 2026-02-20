@@ -11,6 +11,5 @@ public class ObjectDetectionConstants {
     public static final double OBJECT_POSE_ESTIMATOR_DELETION_THRESHOLD_SECONDS = 0.5;
     public static final Transform3d cameraTransform =  new Transform3d(-.344, 0.0, .499, new Rotation3d(0, Units.degreesToRadians(30),0 ));
     //public static final Transform3d cameraTransform = new Transform3d();
-    public static final double maxClusterRadius = 0.3;
-    public static final double sizeBias = 2;
+    public static final double maxClusterRadius = 0.5;
 }

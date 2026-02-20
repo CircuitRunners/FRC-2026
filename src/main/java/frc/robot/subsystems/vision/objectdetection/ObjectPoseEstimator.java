@@ -1,8 +1,10 @@
+
 package frc.robot.subsystems.vision.objectdetection;
 
 import java.lang.System.Logger;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -40,6 +42,7 @@ public class ObjectPoseEstimator extends SubsystemBase {
     private final ObjectDetectionCamera camera;
     private final Drive drive;
     public static final Field2d field = new Field2d();
+
     /**
      * Stores the position of each detected object along with the timestamp of when it was detected.
      */
@@ -62,7 +65,6 @@ public class ObjectPoseEstimator extends SubsystemBase {
         this.objectPositionsToDetectionTimestamp = new HashMap<>();
         SimulatedGamePieceConstants.initializeFuel();
         SmartDashboard.putData("ObjectDetectionField", field);
-        
     }
 
     /**
@@ -75,13 +77,13 @@ public class ObjectPoseEstimator extends SubsystemBase {
         removeOldObjects();
         
         try {
-            
-        } catch(NullPointerException e) {
+            getOrderedClusters();
+            removeIntakedFuel();
+        } catch(Exception e) {
 
         }
 
-        findPathToClusters();
-        removeIntakedFuel();
+        
     }
 
     /**
@@ -252,8 +254,7 @@ public class ObjectPoseEstimator extends SubsystemBase {
         return Timer.getTimestamp() - timestamp > deletionThresholdSeconds;
     }
 
-
-    public Trajectory findPathToClusters() {
+    public List<Translation2d> getOrderedClusters() {
         ArrayList<ClusterResult> w = new ArrayList<>();
         List<Translation2d> l = new ArrayList<Translation2d>();
         List<Pose2d> d = new ArrayList<>();
@@ -266,6 +267,7 @@ public class ObjectPoseEstimator extends SubsystemBase {
         field.getObject("Fuel").setPoses(d);
         double radius = ObjectDetectionConstants.maxClusterRadius;
         boolean cont = true;
+        
         while (cont == true) {
             BestClusterFinder.ClusterResult result =
                     BestClusterFinder.findBestCluster(l, radius);
@@ -277,62 +279,131 @@ public class ObjectPoseEstimator extends SubsystemBase {
                     }
                 }
             }
-            w.add(result);
+            
             if (result.points.size() < 3) cont = false;
+            else w.add(result);
         }
         ArrayList<Pose2d> results = new ArrayList<>();
         for (ClusterResult c : w) {
             results.add(MathHelpers.pose2dFromTranslation(c.center));
         }
 
-        field.getObject("Centroid").setPoses(results);
+        // field.getObject("Centroid").setPoses(results);
         field.setRobotPose(drive.getPose());
 
-
-
+        List<Pose2d> ordered = new ArrayList<>();
         List<Pose2d> remaining = new ArrayList<>(results);
-        List<Translation2d> resultsSorted = new ArrayList<>();
+
 
         Pose2d currentPose = drive.getPose();
 
+
         while (!remaining.isEmpty()) {
-            Pose2d closestPose = remaining.get(0);
+
+            Pose2d closest = remaining.get(0);
             double closestDistance =
-                currentPose.getTranslation().getDistance(
-                    closestPose.getTranslation()
-                );
+                    currentPose.getTranslation()
+                            .getDistance(closest.getTranslation());
 
             for (Pose2d pose : remaining) {
+
                 double distance =
-                    currentPose.getTranslation().getDistance(
-                        pose.getTranslation()
-                    );
+                        currentPose.getTranslation()
+                                .getDistance(pose.getTranslation());
 
                 if (distance < closestDistance) {
                     closestDistance = distance;
-                    closestPose = pose;
+                    closest = pose;
                 }
             }
-            resultsSorted.add(closestPose.getTranslation());
-            currentPose = closestPose;
 
-            remaining.remove(closestPose);
+            ordered.add(closest);
+            currentPose = closest;
+            remaining.remove(closest);
         }
 
-        Pose2d lastPose = results.get(0);
-        TrajectoryConfig config = new TrajectoryConfig(DriveConstants.kDriveMaxSpeed, DriveConstants.kMaxAccelerationMetersPerSecondSquared);
-        Trajectory t = TrajectoryGenerator.generateTrajectory(drive.getPose(), resultsSorted, lastPose, config);
-        field.getObject("traj").setTrajectory(t);
-        return t;
+        boolean improved = true;
+
+        while (improved) {
+            improved = false;
+
+            for (int i = 0; i < ordered.size() - 2; i++) {
+                for (int j = i + 2; j < ordered.size() - 1; j++) {
+
+                    Pose2d A = ordered.get(i);
+                    Pose2d B = ordered.get(i + 1);
+                    Pose2d C = ordered.get(j);
+                    Pose2d D = ordered.get(j + 1);
+
+                    double currentDist =
+                            A.getTranslation().getDistance(B.getTranslation())
+                        + C.getTranslation().getDistance(D.getTranslation());
+
+                    double swappedDist =
+                            A.getTranslation().getDistance(C.getTranslation())
+                        + B.getTranslation().getDistance(D.getTranslation());
+
+                    if (swappedDist < currentDist) {
+                        Collections.reverse(ordered.subList(i + 1, j + 1));
+                        improved = true;
+                    }
+                }
+            }
+        }
+
+
+        List<Translation2d> interiorWaypoints = new ArrayList<>();
+
+        for (int i = 0; i < ordered.size() - 1; i++) {
+            interiorWaypoints.add(ordered.get(i).getTranslation());
+        }
+
+        if (ordered.isEmpty()) {
+            return new ArrayList<>();
+        }
+        Pose2d endPose = ordered.get(ordered.size() - 1);
+
+        interiorWaypoints.add(endPose.getTranslation());
+
+        return interiorWaypoints;
     }
 
+
+
+    // public void removeIntakedFuel() {
+    //     Rectangle2d intake = new Rectangle2d(
+    //         (new Translation2d(0.6408928, IntakeRollerConstants.intakeWidth / 2))
+    //             .plus(drive.getPose().getTranslation()),
+    //         (new Translation2d(0.6408928 - 0.2524, -IntakeRollerConstants.intakeWidth / 2))
+    //             .plus(drive.getPose().getTranslation())
+    //     );
+
+    //     Iterator<SimulatedGamePiece> iterator =
+    //         SimulatedGamePiece.getSimulatedGamePieces().iterator();
+
+    //     while (iterator.hasNext()) {
+    //         SimulatedGamePiece s = iterator.next();
+
+    //         Translation2d piecePos =
+    //             new Translation2d(s.getPosition().getX(),
+    //                             s.getPosition().getY());
+
+    //         if (intake.contains(piecePos)) {
+    //             iterator.remove();
+    //         }
+    //     }
+    // }
+
+    private Pose2d lastPose = null;
+
     public void removeIntakedFuel() {
-        Rectangle2d intake = new Rectangle2d(
-            (new Translation2d(0.6408928, IntakeRollerConstants.intakeWidth / 2))
-                .plus(drive.getPose().getTranslation()),
-            (new Translation2d(0.6408928 - 0.2524, -IntakeRollerConstants.intakeWidth / 2))
-                .plus(drive.getPose().getTranslation())
-        );
+
+        Pose2d currentPose = drive.getPose();
+
+        if (lastPose == null) {
+            lastPose = currentPose;
+            return;
+        }
 
         Iterator<SimulatedGamePiece> iterator =
             SimulatedGamePiece.getSimulatedGamePieces().iterator();
@@ -340,21 +411,46 @@ public class ObjectPoseEstimator extends SubsystemBase {
         while (iterator.hasNext()) {
             SimulatedGamePiece s = iterator.next();
 
-            Translation2d piecePos =
-                new Translation2d(s.getPosition().getX(),
-                                s.getPosition().getY());
+            Translation2d pieceField =
+                new Translation2d(
+                    s.getPosition().getX(),
+                    s.getPosition().getY());
 
-            if (intake.contains(piecePos)) {
+            // Check multiple interpolation steps between lastPose and currentPose
+            int steps = 5;  // increase if still unreliable
+
+            boolean remove = false;
+
+            for (int i = 0; i <= steps; i++) {
+
+                double t = (double) i / steps;
+
+                Pose2d interpPose = lastPose.interpolate(currentPose, t);
+
+                // Convert piece into ROBOT frame at this interpolated pose
+                Translation2d pieceRobot =
+                    pieceField.minus(interpPose.getTranslation())
+                            .rotateBy(interpPose.getRotation().unaryMinus());
+
+                double x = pieceRobot.getX();
+                double y = pieceRobot.getY();
+
+                boolean inside =
+                    x <= 0.6408928 &&
+                    x >= (0.6408928 - 0.2524) &&
+                    Math.abs(y) <= IntakeRollerConstants.intakeWidth / 2;
+
+                if (inside) {
+                    remove = true;
+                    break;
+                }
+            }
+
+            if (remove) {
                 iterator.remove();
             }
         }
+
+        lastPose = currentPose;
     }
-
-
-    
-
-
-
-
-
 }

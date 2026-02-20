@@ -60,6 +60,8 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     mAutonomousCommand = m_robotContainer.getAutoModeSelector().getSelectedCommand();
+
+
 		autoTimer.start();
 
 		if (mAutonomousCommand != null) {
