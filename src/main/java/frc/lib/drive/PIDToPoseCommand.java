@@ -157,6 +157,10 @@ public class PIDToPoseCommand extends Command {
 		this(drive, superstructure, finalPose, DriveConstants.mAutoAlignTranslationController, DriveConstants.mAutoAlignHeadingController);
 	}
 
+	public PIDToPoseCommand(Drive drive, Superstructure superstructure, Pose2d finalPose, Distance epsilonDist, Angle epsilonAngle) {
+		this(drive, superstructure, finalPose, epsilonDist, epsilonAngle, DriveConstants.mAutoAlignTranslationController, DriveConstants.mAutoAlignHeadingController);
+	}
+
     /* AUTO ALIGN PID TO POSE COMMANDS */
 	
 
