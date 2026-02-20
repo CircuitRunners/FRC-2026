@@ -10,8 +10,8 @@ import frc.robot.subsystems.superstructure.Superstructure;
 public class AutoModeSelector {
 	private AutoChooser mAutoChooser = new AutoChooser();
 
-	public AutoModeSelector(RobotContainer r, Drive drive, Superstructure superstructure, AutoFactory factory) {
-		mAutoChooser.addRoutine("Right Neutral Cycle + Climb", () -> new RightNeutralCycle_Climb(r, drive, superstructure, factory).getRoutine());
+	public AutoModeSelector(Drive drive, Superstructure superstructure, AutoFactory factory) {
+		mAutoChooser.addRoutine("Right Neutral Cycle + Climb", () -> new RightNeutralCycle_Climb(drive, superstructure, factory).getRoutine());
 		mAutoChooser.addRoutine("Left Neutral Cycle + Climb", () -> new LeftNeutralClimb(drive, superstructure, factory).getRoutine());
     }
 

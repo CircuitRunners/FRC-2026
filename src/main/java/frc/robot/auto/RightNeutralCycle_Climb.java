@@ -18,10 +18,8 @@ import frc.robot.subsystems.superstructure.Superstructure;
 
 
 public class RightNeutralCycle_Climb extends AutoModeBase {
-	RobotContainer r;
-	public RightNeutralCycle_Climb(RobotContainer r, Drive drive, Superstructure superstructure, AutoFactory factory) {
+	public RightNeutralCycle_Climb(Drive drive, Superstructure superstructure, AutoFactory factory) {
 		super(drive, superstructure, factory, "Right Neutral Cycle + Climb");
-		this.r = r;
 		AutoTrajectory rightTrenchToNeutral = trajectory("rightTrenchToNeutral");
 		AutoTrajectory rightNeutralToTrench = trajectory("rightNeutralToTrench");
 		AutoTrajectory rightTrenchToShoot = trajectory("rightTrenchToShoot");
