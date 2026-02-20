@@ -62,6 +62,7 @@ public class Superstructure extends SubsystemBase {
     private boolean kitbotMode = false;
     private boolean intakeDeployed = false;
     public boolean shootOnTheMove = false;
+    public boolean headingLockToggle = true;
 
     public double maintainHeadingEpsilon = 0.25;
 
@@ -175,7 +176,7 @@ public class Superstructure extends SubsystemBase {
                 Commands.runOnce(() -> { 
                   if (state != State.SHOOTING) waitUntilSafeToShoot();}),
                 shoot(),
-                setState(State.SHOOTING),
+                Commands.either(setState(State.SHOOTINTAKE), setState(State.SHOOTING), () -> state == State.INTAKING),
                 Commands.waitUntil(() -> false))
                 .finallyDo(() -> {
                   conveyor.setpointCommand(Conveyor.IDLE); 
@@ -195,7 +196,7 @@ public class Superstructure extends SubsystemBase {
               deployIntake(),
               intakeRollers.setpointCommand(IntakeRollers.INTAKE)),
           () -> intakeDeployed),
-          setState(State.INTAKING),
+          Commands.either(setState(State.SHOOTINTAKE), setState(State.INTAKING), () -> state == State.SHOOTING),
           Commands.waitUntil(() -> false))
           .withName("Intaking").finallyDo(() -> intakeRollers.setpointCommand(IntakeRollers.IDLE).withName("End Intake"));
     }
@@ -305,7 +306,7 @@ public class Superstructure extends SubsystemBase {
     }
 
     public boolean shouldHeadingLock() {
-      return (state != State.INTAKING);
+      return (state != State.INTAKING && headingLockToggle == true);
     }
 
     public void setPathFollowing(boolean isFollowing) {
