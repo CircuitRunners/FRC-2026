@@ -98,6 +98,19 @@ public class FieldLayout {
 		return blue_rotation;
 	}
 
+	public static Rectangle2d handleAllianceFlip(Rectangle2d rect, boolean is_red_alliance) {
+		Translation2d cornerA = new Translation2d(
+			rect.getCenter().getTranslation().getX() - rect.getXWidth()/2,
+			rect.getCenter().getTranslation().getY() - rect.getYWidth()/2
+		);
+		Translation2d cornerB = new Translation2d(
+			rect.getCenter().getTranslation().getX() + rect.getXWidth()/2,
+			rect.getCenter().getTranslation().getY() + rect.getYWidth()/2
+		);
+
+		return new Rectangle2d(handleAllianceFlip(cornerA, is_red_alliance), handleAllianceFlip(cornerB, is_red_alliance));
+	}
+
 	public static Distance distanceFromAllianceWall(Distance x_coordinate, boolean is_red_alliance) {
 		if (is_red_alliance) {
 			return kFieldLength.minus(x_coordinate);

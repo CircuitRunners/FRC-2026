@@ -27,12 +27,11 @@ public class RightNeutralCycle_Climb extends AutoModeBase {
 
 
 		prepRoutine(
-			rightSideToRightNeutral.cmd(),
-            r.collectFuelCommand(),
+			Commands.parallel(rightSideToRightNeutral.cmd(), superstructure.deployIntake()),
+            Commands.deadline(superstructure.collectFuelCommand(), superstructure.runIntakeIfDeployed()),
 			rightNeutralToRightShoot.cmd(),
-			superstructure.shoot(),
+			Commands.deadline(Commands.waitSeconds(AutoConstants.shootAllFuelTime), Commands.parallel(superstructure.shootWhenReady(), drive.brake())),
 			superstructure.climb()
-			
         );
 	}
 }

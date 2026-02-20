@@ -23,4 +23,5 @@ public class AutoConstants {
 		ALGAE_GRAB,
 		ALGAE_DRIVE
 	}
+	public static double shootAllFuelTime = 3;
 }

@@ -74,5 +74,7 @@ public class IntakeRollerConstants {
 		return simConstants;
 	}
 
-    public static double intakeWidth = 1;
+    public static final double intakeWidth = .61;
+    public static final int fuelLimit = 30;
+    public static int numberOfFuel = 0;
 }

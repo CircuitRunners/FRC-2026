@@ -2,6 +2,7 @@
 package frc.robot.subsystems.vision.objectdetection;
 
 import java.lang.System.Logger;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -24,7 +25,9 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.util.FieldLayout;
 import frc.lib.util.MathHelpers;
+import frc.robot.RobotConstants;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
@@ -42,6 +45,7 @@ public class ObjectPoseEstimator extends SubsystemBase {
     private final ObjectDetectionCamera camera;
     private final Drive drive;
     public static final Field2d field = new Field2d();
+    
 
     /**
      * Stores the position of each detected object along with the timestamp of when it was detected.
@@ -261,9 +265,17 @@ public class ObjectPoseEstimator extends SubsystemBase {
 
         
         for (SimulatedGamePiece s : SimulatedGamePiece.getSimulatedGamePieces()) {
-            l.add(new Translation2d(s.getPosition().getX(), s.getPosition().getY()));
-            d.add(MathHelpers.pose2dFromTranslation(new Translation2d(s.getPosition().getX(), s.getPosition().getY())));
+            if (FieldLayout.handleAllianceFlip(FieldLayout.rightNeutralZone, true).contains(new Translation2d(s.getPosition().getX(), s.getPosition().getY()))) {
+                l.add(new Translation2d(s.getPosition().getX(), s.getPosition().getY()));
+                d.add(MathHelpers.pose2dFromTranslation(new Translation2d(s.getPosition().getX(), s.getPosition().getY())));
+            }
         }
+        // for (Translation2d s : getObjectsOnField()) {
+        //     if (FieldLayout.handleAllianceFlip(FieldLayout.rightNeutralZone, RobotConstants.isRedAlliance).contains(s)) {
+        //         l.add((s));
+        //         d.add(MathHelpers.pose2dFromTranslation(s));
+        //     }
+        // }
         field.getObject("Fuel").setPoses(d);
         double radius = ObjectDetectionConstants.maxClusterRadius;
         boolean cont = true;
@@ -280,7 +292,7 @@ public class ObjectPoseEstimator extends SubsystemBase {
                 }
             }
             
-            if (result.points.size() < 3) cont = false;
+            if (result.points.size() < 6) cont = false;
             else w.add(result);
         }
         ArrayList<Pose2d> results = new ArrayList<>();
@@ -448,6 +460,8 @@ public class ObjectPoseEstimator extends SubsystemBase {
 
             if (remove) {
                 iterator.remove();
+                IntakeRollerConstants.numberOfFuel++;
+                
             }
         }
 
