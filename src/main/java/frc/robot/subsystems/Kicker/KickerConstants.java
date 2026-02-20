@@ -21,10 +21,8 @@ import frc.robot.Robot;
 public class KickerConstants {
     private static final double kGearing = (6.0 / 9.0);
 
-    public static final Voltage kStartVoltage = Volts.of(3.0); // PH
     public static final Voltage kFeedForwardVoltage = Volts.of(12.0); // PH
-    public static final Voltage kHoldVoltage = Volts.of(2.0); // PH
-    public static final Voltage kFeedBackwardVoltage = Volts.of(12); // PH
+    public static final Voltage kFeedBackwardVoltage = Volts.of(-12.0); // PH
 
     public static TalonFXConfiguration getFXConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
@@ -44,7 +42,7 @@ public class KickerConstants {
 
 		    config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
-		    return config;
+		return config;
     }
 
     public static MotorIOTalonFXConfig getIOConfig() {

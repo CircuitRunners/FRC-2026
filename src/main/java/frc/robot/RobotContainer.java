@@ -34,7 +34,6 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.lib.drive.PIDToPosesCommand;
 import frc.lib.util.FieldLayout;
 import frc.lib.drive.DriveMaintainingHeading;
-import frc.lib.drive.FollowSyncedPIDToPose;
 import frc.lib.drive.FollowTrajectoryCommand;
 import frc.lib.drive.PIDToPoseCommand;
 import frc.robot.controlboard.ControlBoard;

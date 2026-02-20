@@ -21,9 +21,7 @@ import frc.robot.Robot;
 public class ConveyorConstants {
     private static final double kGearing = (6.0 / 9.0);
 
-    public static final Voltage kStartVoltage = Volts.of(3.0); // PH
     public static final Voltage kFeedForwardVoltage = Volts.of(12.0); // PH
-    public static final Voltage kHoldVoltage = Volts.of(2.0); // PH
     public static final Voltage kFeedBackwardVoltage = Volts.of(12); // PH
 
     public static TalonFXConfiguration getFXConfig() {

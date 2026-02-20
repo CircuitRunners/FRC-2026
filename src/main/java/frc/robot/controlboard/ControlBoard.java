@@ -18,6 +18,8 @@ import frc.lib.util.FieldLayout;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.superstructure.Superstructure;
+import frc.robot.subsystems.superstructure.Superstructure.State;
+
 import java.util.function.Supplier;
 
 public class ControlBoard {
@@ -108,7 +110,7 @@ public class ControlBoard {
  		driver.leftTrigger(0.1)
  				.whileTrue(
  						s.runIntakeIfDeployed())
-						.onFalse(s.setState(Superstructure.State.DEPLOYED));
+						.onFalse(Commands.either(s.setState(State.SHOOTING), s.setState(State.DEPLOYED), () -> s.getState() == State.SHOOTINTAKE));
  						//.withName("Deploy and/or Intake"));
 
  		driver.x().whileTrue(
@@ -116,13 +118,15 @@ public class ControlBoard {
 							Commands.runOnce(() -> s.maintainHeadingEpsilon = 0.00),
 							s.shootWhenReady()
 							.withName("Shooting").finallyDo(() -> superstructure.maintainHeadingEpsilon = 0.25)).withName("Shooting")
-		).onFalse(s.setState(Superstructure.State.DEPLOYED));
+		).onFalse(Commands.either(s.setState(State.INTAKING), s.setState(State.DEPLOYED), () -> s.getState() == State.SHOOTINTAKE));
 
 		driver.b().whileTrue(s.climb()).onFalse(s.setState(Superstructure.State.CLIMBING));
 
 		driver.povLeft().onTrue(s.toggleSOTM().withName("SOTM Toggle"));
 
 		driver.povDown().whileTrue(s.driveBrake().withName("Brake"));
+
+		driver.povRight().onTrue((Commands.runOnce(() -> s.headingLockToggle = !s.headingLockToggle)));
 
 
  	}
