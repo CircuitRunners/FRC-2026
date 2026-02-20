@@ -299,22 +299,6 @@ public class Superstructure extends SubsystemBase {
         }, Set.of(drive));
     }
 
-    public Command driveToNeutralTrajectory() {
-      TrajectoryConfig config =
-        new TrajectoryConfig(DriveConstants.kMaxSpeed, DriveConstants.kMaxAcceleration);
-      config.setEndVelocity(DriveConstants.kMaxSpeed);
-      Trajectory traj =
-          TrajectoryGenerator.generateTrajectory(
-              drive.getPose(),
-              List.of(),
-              FieldLayout.handleAllianceFlip(new Pose2d(6.770, 1.027, new Rotation2d(1.068)), RobotConstants.isRedAlliance),
-              config
-      );
-      return new FollowTrajectoryCommand(drive, traj);
-    }
-
-
-
     public static enum State {
       TUCK,
       SHOOTING,

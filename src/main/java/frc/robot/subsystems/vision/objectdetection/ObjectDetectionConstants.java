@@ -12,4 +12,6 @@ public class ObjectDetectionConstants {
     public static final Transform3d cameraTransform =  new Transform3d(-.344, 0.0, .499, new Rotation3d(0, Units.degreesToRadians(30),0 ));
     //public static final Transform3d cameraTransform = new Transform3d();
     public static final double maxClusterRadius =1;
+
+    public static boolean change = false;
 }

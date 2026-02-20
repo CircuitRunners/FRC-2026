@@ -161,15 +161,21 @@ public class DriveConstants {
 	}
 
 	public static SynchronousPIDF getObjectDetectionTranslationController() {
-		SynchronousPIDF controller = new SynchronousPIDF(7, 0.0, 0.0);
+		SynchronousPIDF controller = new SynchronousPIDF(7.5, 0.0, 0.0);
 		controller.setMaxAbsoluteOutput(kMaxSpeed.in(Units.MetersPerSecond));
 		return controller;
 	}
-	public static SynchronousPIDF getDriveToPoseTranslationController() {
-		SynchronousPIDF controller = new SynchronousPIDF(100, 0.0, 2);
-		controller.setMaxAbsoluteOutput(kMaxSpeed.in(Units.MetersPerSecond));
+
+	public static SynchronousPIDF getObjectDetectionHeadingController() {
+		SynchronousPIDF controller = new SynchronousPIDF(5.0, 0.0, 0.0);
+		controller.setInputRange(-0.5, 0.5);
+		controller.setMaxAbsoluteOutput(kMaxAngularRate.in(Units.RotationsPerSecond));
+		controller.setContinuous();
 		return controller;
 	}
+
+	
+
 
 }
 
