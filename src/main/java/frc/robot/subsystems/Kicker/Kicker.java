@@ -9,8 +9,6 @@ public class Kicker extends MotorSubsystem<MotorIOTalonFX>{
     public static final Setpoint IDLE = Setpoint.withNeutralSetpoint();
     public static final Setpoint FEED_FORWARD = Setpoint.withVoltageSetpoint(KickerConstants.kFeedForwardVoltage);
     public static final Setpoint FEED_BACKWARDS = Setpoint.withVoltageSetpoint(KickerConstants.kFeedBackwardVoltage);
-    public static final Setpoint HOLD_PIECE = Setpoint.withVoltageSetpoint(KickerConstants.kHoldVoltage);
-    public static final Setpoint START = Setpoint.withVoltageSetpoint(KickerConstants.kStartVoltage);
     
         public Kicker() {
         super(KickerConstants.getMotorIO(), "Kicker");

@@ -6,11 +6,9 @@ import frc.lib.io.MotorIOTalonFX;
 
 public class IntakeDeploy extends ServoMotorSubsystem<MotorIOTalonFX> {
     
-    public static final Setpoint STOW_FULL = Setpoint.withMotionMagicSetpoint(IntakeDeployConstants.kFullStowPosition);
-	public static final Setpoint STOW_CLEAR = Setpoint.withMotionMagicSetpoint(IntakeDeployConstants.kStowClearPosition);
+    public static final Setpoint STOW = Setpoint.withMotionMagicSetpoint(IntakeDeployConstants.kStowPosition);
 	public static final Setpoint DEPLOY = Setpoint.withMotionMagicSetpoint(IntakeDeployConstants.kDeployPosition);
 	public static final Setpoint EXHAUST = Setpoint.withMotionMagicSetpoint(IntakeDeployConstants.kExhaustPosition);
-	public static final Setpoint INDEXERHOLD = Setpoint.withMotionMagicSetpoint(IntakeDeployConstants.kIndexerHold);
 
     public IntakeDeploy() {
         super(
@@ -19,8 +17,8 @@ public class IntakeDeploy extends ServoMotorSubsystem<MotorIOTalonFX> {
             IntakeDeployConstants.kEpsilonThreshold,
             IntakeDeployConstants.getServoHomingConfig()
         );
-        setCurrentPosition(IntakeDeployConstants.kFullStowPosition);
-        applySetpoint(STOW_CLEAR);
+        setCurrentPosition(IntakeDeployConstants.kStowPosition);
+        applySetpoint(STOW);
     }
 
     @Override

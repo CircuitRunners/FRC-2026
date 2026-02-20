@@ -21,9 +21,7 @@ import frc.robot.Robot;
 public class IntakeRollerConstants {
     private static final double kGearing = (6.0 / 9.0);
 
-    public static final Voltage kStartVoltage = Volts.of(3.0); // PH
     public static final Voltage kIntakeVoltage = Volts.of(12.0); // PH
-    public static final Voltage kPelicanVoltage = Volts.of(2.0); // PH
     public static final Voltage kExhaustVoltage = Volts.of(12); // PH
 
     public static TalonFXConfiguration getFXConfig() {
@@ -33,18 +31,18 @@ public class IntakeRollerConstants {
         config.CurrentLimits.StatorCurrentLimit = 120; // PH?
 
         config.CurrentLimits.SupplyCurrentLimitEnable = Robot.isReal();
-		    config.CurrentLimits.SupplyCurrentLimit = 60.0; // PH
-		    config.CurrentLimits.SupplyCurrentLowerLimit = 60.0; // PH
-		    config.CurrentLimits.SupplyCurrentLowerTime = 0.1; // PH
+		config.CurrentLimits.SupplyCurrentLimit = 60.0; // PH
+		config.CurrentLimits.SupplyCurrentLowerLimit = 60.0; // PH
+		config.CurrentLimits.SupplyCurrentLowerTime = 0.1; // PH
 
-		    config.Voltage.PeakForwardVoltage = 12.0; // PH
-		    config.Voltage.PeakReverseVoltage = -12.0; // PH
+		config.Voltage.PeakForwardVoltage = 12.0; // PH
+		config.Voltage.PeakReverseVoltage = -12.0; // PH
 
-		    config.Feedback.SensorToMechanismRatio = kGearing;
+		config.Feedback.SensorToMechanismRatio = kGearing;
 
-		    config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+		config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
-		    return config;
+		return config;
     }
 
     public static MotorIOTalonFXConfig getIOConfig() {

@@ -134,7 +134,7 @@ public class Superstructure extends SubsystemBase {
 
     public Command zero() {
       return Commands.runOnce(() -> {
-            intakeDeploy.setCurrentPosition(IntakeDeployConstants.kStowClearPosition);
+            intakeDeploy.setCurrentPosition(IntakeDeployConstants.kStowPosition);
             hood.setCurrentPosition(HoodConstants.kMinAngle);
             climber.setCurrentPosition(ClimberConstants.kZeroHeight);
           })
@@ -202,7 +202,7 @@ public class Superstructure extends SubsystemBase {
 
     public Command tuck() {
       return Commands.sequence(
-          intakeDeploy.setpointCommand(IntakeDeploy.STOW_CLEAR),
+          intakeDeploy.setpointCommand(IntakeDeploy.STOW),
           setIntakeStatus(false),
           setState(State.TUCK))
         .withName("Tuck");

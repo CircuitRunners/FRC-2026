@@ -16,6 +16,7 @@ import frc.lib.io.MotorIOTalonFX.MotorIOTalonFXConfig;
 import frc.lib.io.MotorIOTalonFXSim;
 import frc.lib.sim.RollerSim;
 import frc.lib.sim.RollerSim.RollerSimConstants;
+import frc.lib.util.TunableNumber;
 import frc.robot.Ports;
 import frc.robot.Robot;
 
@@ -29,12 +30,11 @@ public class ShooterConstants {
 
     public static TalonFXConfiguration getFXConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
-        config.Slot1.kS = 0; // default
-        config.Slot1.kV = 0; // default
-        config.Slot1.kA = 0; // default
-        config.Slot1.kP = 0; // default
-        config.Slot1.kI = 0; // default
-        config.Slot1.kD = 0; // default
+        config.Slot1.kS = new TunableNumber("Shooter kS", 0.0, true).get(); // default
+        config.Slot1.kA = new TunableNumber("Shooter kA", 0.0, true).get(); // default
+        config.Slot1.kP = new TunableNumber("Shooter kP", 0.0, true).get(); // default
+        config.Slot1.kI = new TunableNumber("Shooter kI", 0.0, true).get(); // default
+        config.Slot1.kD = new TunableNumber("Shooter kD", 0.0, true).get(); // default
 
         config.CurrentLimits.StatorCurrentLimitEnable = Robot.isReal();
         config.CurrentLimits.StatorCurrentLimit = 120.0; // default

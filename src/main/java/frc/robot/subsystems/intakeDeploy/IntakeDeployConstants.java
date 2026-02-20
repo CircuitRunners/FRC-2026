@@ -17,6 +17,7 @@ import frc.lib.io.MotorIOTalonFX.MotorIOTalonFXConfig;
 import frc.lib.io.MotorIOTalonFXSim;
 import frc.lib.sim.PivotSim;
 import frc.lib.sim.PivotSim.PivotSimConstants;
+import frc.lib.util.TunableNumber;
 import frc.robot.Ports;
 import frc.robot.Robot;
 import frc.robot.RobotConstants;
@@ -25,10 +26,8 @@ import frc.robot.RobotConstants;
 public class IntakeDeployConstants {
     public static final double kGearing = 40.0;
 
-	public static final Angle kDeployPosition = Units.Degrees.of(3.0);
-	public static final Angle kStowClearPosition = Units.Degrees.of(55.0);
-	public static final Angle kFullStowPosition = Units.Degrees.of(83.0);
-	public static final Angle kIndexerHold = Units.Degrees.of(10.0);
+	public static final Angle kDeployPosition = Units.Degrees.of(new TunableNumber("kDeployPosition", 3.0, true).get());
+	public static final Angle kStowPosition = Units.Degrees.of(new TunableNumber("kDeployPosition", 83.0, true).get());
 
 	public static final Angle kExhaustPosition = kDeployPosition;
 	public static final Distance kArmLength = Units.Inches.of(14.0);
@@ -37,10 +36,10 @@ public class IntakeDeployConstants {
 
     public static TalonFXConfiguration getFXConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
-        config.Slot0.kP = 180.0; // PH
-        config.Slot0.kD = 0.0; // PH
-        config.Slot0.kS = 0.0; // PH
-        config.Slot0.kG = 0.0; // PH
+        config.Slot0.kP = new TunableNumber("Intake kP", 180.0, true).get(); // PH
+        config.Slot0.kD = new TunableNumber("Intake kD", 0.0, true).get(); // PH
+        config.Slot0.kS = new TunableNumber("Intake kS", 0.0, true).get(); // PH
+        config.Slot0.kG = new TunableNumber("Intake kG", 0.0, true).get(); // PH
 
         config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
         config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
@@ -59,7 +58,7 @@ public class IntakeDeployConstants {
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
         config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-        config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = kFullStowPosition.in(Units.Rotations);
+        config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = kStowPosition.in(Units.Rotations);
 
         config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
         config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = kDeployPosition.in(Units.Rotations);
@@ -92,10 +91,10 @@ public class IntakeDeployConstants {
 		simConstants.armLength = kArmLength;
 		simConstants.momentOfInertia = Units.KilogramSquareMeters.of(0.6046665376);
 		simConstants.motor = DCMotor.getKrakenX60Foc(1);
-		simConstants.mechanismMaxHardStop = kFullStowPosition;
+		simConstants.mechanismMaxHardStop = kStowPosition;
 		simConstants.mechanismMinHardStop = kDeployPosition;
 		simConstants.simGravity = false;
-		simConstants.mechanismStartPos = kFullStowPosition;
+		simConstants.mechanismStartPos = kStowPosition;
 
 		return simConstants;
 	}
