@@ -22,15 +22,22 @@ public class RightNeutralCycle_Climb extends AutoModeBase {
 	public RightNeutralCycle_Climb(Drive drive, Superstructure superstructure, AutoFactory factory) {
 		super(factory, "Right Neutral Cycle + Climb");
 		this.r = r;
-		AutoTrajectory rightSideToRightNeutral = trajectory("Right_Side_to_Right_Neutral");
-		AutoTrajectory rightNeutralToRightShoot = trajectory("Right_Neutral_to_Right_Shoot");
+		AutoTrajectory rightTrenchToNeutral = trajectory("rightTrenchToNeutral");
+		AutoTrajectory rightNeutralToTrench = trajectory("rightNeutralToTrench");
+		AutoTrajectory rightTrenchToShoot = trajectory("rightTrenchToShoot");
+		Pose2d startPose = FieldLayout.handleAllianceFlip(
+				new Pose2d(4.622, .652, Rotation2d.kZero),
+				RobotConstants.isRedAlliance);
 
 
 		prepRoutine(
-			Commands.parallel(rightSideToRightNeutral.cmd(), superstructure.deployIntake()),
-            Commands.deadline(superstructure.collectFuelCommand(), superstructure.runIntakeIfDeployed()),
-			rightNeutralToRightShoot.cmd(),
-			Commands.deadline(Commands.waitSeconds(AutoConstants.shootAllFuelTime), Commands.parallel(superstructure.shootWhenReady(), drive.brake())),
+			AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
+			Commands.parallel(rightTrenchToNeutral.cmd(), superstructure.deployIntake()),
+            Commands.deadline(superstructure.collectFuelCommand().withTimeout(5), superstructure.runIntakeIfDeployed()),
+			superstructure.driveToNeutralTrajectory(),
+			rightNeutralToTrench.cmd(),
+			rightTrenchToShoot.cmd(),
+			Commands.parallel(superstructure.shoot(), drive.brake()).withTimeout(5),
 			superstructure.climb()
         );
 	}

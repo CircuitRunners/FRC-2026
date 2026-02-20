@@ -59,7 +59,7 @@ public class SimulatedGamePieceConstants {
             }
         }
 
-        // for (int i = 0; i < 30; i++) {
+        // for (int i = 0; i < 15; i++) {
         //     new SimulatedGamePiece(
         //         ThreadLocalRandom.current().nextDouble(-FieldLayout.rightNeutralZone.getXWidth(), FieldLayout.rightNeutralZone.getXWidth())/2.0 + FieldLayout.rightNeutralZone.getCenter().getX(),
         //         ThreadLocalRandom.current().nextDouble(-FieldLayout.rightNeutralZone.getYWidth(), FieldLayout.rightNeutralZone.getYWidth())/2.0 + FieldLayout.rightNeutralZone.getCenter().getY()

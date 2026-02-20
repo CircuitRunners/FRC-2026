@@ -10,12 +10,16 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.drive.FollowTrajectoryCommand;
 import frc.lib.drive.PIDToPoseCommand;
 import frc.lib.drive.PIDToPosesCommand;
 import frc.lib.io.MotorIO.Setpoint;
@@ -28,6 +32,7 @@ import frc.robot.subsystems.climber.ClimberConstants;
 import frc.robot.subsystems.conveyor.Conveyor;
 import frc.robot.subsystems.kicker.Kicker;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.hood.Hood;
 import frc.robot.subsystems.hood.HoodConstants;
 import frc.robot.subsystems.intakeDeploy.IntakeDeploy;
@@ -292,6 +297,20 @@ public class Superstructure extends SubsystemBase {
                 .andThen(collectFuelCommand());
 
         }, Set.of(drive));
+    }
+
+    public Command driveToNeutralTrajectory() {
+      TrajectoryConfig config =
+        new TrajectoryConfig(DriveConstants.kMaxSpeed, DriveConstants.kMaxAcceleration);
+      config.setEndVelocity(DriveConstants.kMaxSpeed);
+      Trajectory traj =
+          TrajectoryGenerator.generateTrajectory(
+              drive.getPose(),
+              List.of(),
+              FieldLayout.handleAllianceFlip(new Pose2d(6.770, 1.027, new Rotation2d(1.068)), RobotConstants.isRedAlliance),
+              config
+      );
+      return new FollowTrajectoryCommand(drive, traj);
     }
 
 
