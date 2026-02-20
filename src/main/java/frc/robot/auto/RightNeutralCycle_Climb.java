@@ -19,7 +19,7 @@ import frc.robot.subsystems.superstructure.Superstructure;
 
 public class RightNeutralCycle_Climb extends AutoModeBase {
 	RobotContainer r;
-	public RightNeutralCycle_Climb(RobotContainer r, Drive drive, Superstructure superstructure, AutoFactory factory) {
+	public RightNeutralCycle_Climb(Drive drive, Superstructure superstructure, AutoFactory factory) {
 		super(factory, "Right Neutral Cycle + Climb");
 		this.r = r;
 		AutoTrajectory rightSideToRightNeutral = trajectory("Right_Side_to_Right_Neutral");
@@ -27,12 +27,11 @@ public class RightNeutralCycle_Climb extends AutoModeBase {
 
 
 		prepRoutine(
-			rightSideToRightNeutral.cmd(),
-            r.collectFuelCommand(),
+			Commands.parallel(rightSideToRightNeutral.cmd(), superstructure.deployIntake()),
+            Commands.deadline(superstructure.collectFuelCommand(), superstructure.runIntakeIfDeployed()),
 			rightNeutralToRightShoot.cmd(),
-			superstructure.shoot(),
+			Commands.deadline(Commands.waitSeconds(AutoConstants.shootAllFuelTime), Commands.parallel(superstructure.shootWhenReady(), drive.brake())),
 			superstructure.climb()
-			
         );
 	}
 }
