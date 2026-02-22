@@ -1,4 +1,4 @@
-package frc.robot.auto;
+package frc.robot.auto.autos;
 
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoTrajectory;
@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.drive.PIDToPoseCommand;
 import frc.lib.util.FieldLayout;
 import frc.robot.RobotConstants;
+import frc.robot.auto.AutoConstants;
 import frc.robot.auto.AutoHelpers;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.superstructure.Superstructure;
@@ -33,7 +34,7 @@ public class LeftNeutralClimb extends AutoModeBase {
 				new PIDToPoseCommand(drive, superstructure, leftNeutralToTrench.getInitialPose().get(), Units.Inches.of(36.0), Units.Degrees.of(10.0)),
 				leftNeutralToTrench.cmd(),
 				cmdWithAccuracy(leftTrenchToShoot),
-				superstructure.shootWhenReady().withTimeout(3),
+				superstructure.shootWhenReady().withTimeout(AutoConstants.shootAllFuelTime),
 				superstructure.climb());
 
 

@@ -303,26 +303,6 @@ public class Superstructure extends SubsystemBase {
       return intakeDeploy.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(voltage)));
     }
 
-    public Command idleIntakeDeploy() {
-      return intakeDeploy.setpointCommand(Setpoint.withNeutralSetpoint());
-    }
-
-    public Command runIntakeRollers(double voltage) {
-      return intakeRollers.setpointCommand(IntakeRollers.INTAKE);
-    }
-
-    public Command idleIntakeRollers() {
-      return intakeRollers.setpointCommand(IntakeRollers.IDLE);
-    }
-
-    public Command runConveyor(double voltage) {
-      return conveyor.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(voltage)));
-    }
-
-    public Command idleConveyor() {
-      return conveyor.setpointCommand(Conveyor.IDLE);
-    }
-
     public static enum State {
       TUCK,
       SHOOTING,

@@ -5,13 +5,15 @@ import choreo.auto.AutoFactory;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
+import frc.robot.auto.autos.LeftNeutralClimb;
+import frc.robot.auto.autos.RightNeutralClimb;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.superstructure.Superstructure;
 public class AutoModeSelector {
 	private AutoChooser mAutoChooser = new AutoChooser();
 
 	public AutoModeSelector(Drive drive, Superstructure superstructure, AutoFactory factory) {
-		mAutoChooser.addRoutine("Right Neutral Cycle + Climb", () -> new RightNeutralCycle_Climb(drive, superstructure, factory).getRoutine());
+		mAutoChooser.addRoutine("Right Neutral Cycle + Climb", () -> new RightNeutralClimb(drive, superstructure, factory).getRoutine());
 		mAutoChooser.addRoutine("Left Neutral Cycle + Climb", () -> new LeftNeutralClimb(drive, superstructure, factory).getRoutine());
     }
 

@@ -21,6 +21,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -67,7 +68,7 @@ public class ObjectPoseEstimator extends SubsystemBase {
         this.gamePieceType = gamePieceType;
         this.camera = camera;
         this.objectPositionsToDetectionTimestamp = new HashMap<>();
-        SimulatedGamePieceConstants.initializeFuel();
+        if (RobotBase.isSimulation()) SimulatedGamePieceConstants.initializeFuel();
         SmartDashboard.putData("ObjectDetectionField", field);
     }
 

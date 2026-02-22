@@ -111,7 +111,7 @@ public class PIDToPosesCommand extends Command {
 	public PIDToPosesCommand(Drive drive, Superstructure superstructure, List<Pose2d> finalPose) {
         
 
-		this(drive, superstructure, finalPose, DriveConstants.getObjectDetectionTranslationController(), DriveConstants.mAutoAlignHeadingController);
+		this(drive, superstructure, finalPose, DriveConstants.getObjectDetectionTranslationController(), DriveConstants.getObjectDetectionHeadingController());
 	}
 
     /* AUTO ALIGN PID TO POSE COMMANDS */

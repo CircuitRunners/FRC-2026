@@ -1,4 +1,4 @@
-package frc.robot.auto;
+package frc.robot.auto.autos;
 
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoTrajectory;
@@ -12,13 +12,14 @@ import frc.robot.subsystems.drive.Drive;
 import frc.robot.Robot;
 import frc.robot.RobotConstants;
 import frc.robot.RobotContainer;
+import frc.robot.auto.AutoConstants;
 import frc.robot.auto.AutoHelpers;
 import frc.robot.auto.AutoModeBase;
 import frc.robot.subsystems.superstructure.Superstructure;
 
 
-public class RightNeutralCycle_Climb extends AutoModeBase {
-	public RightNeutralCycle_Climb(Drive drive, Superstructure superstructure, AutoFactory factory) {
+public class RightNeutralClimb extends AutoModeBase {
+	public RightNeutralClimb(Drive drive, Superstructure superstructure, AutoFactory factory) {
 		super(drive, superstructure, factory, "Right Neutral Cycle + Climb");
 		AutoTrajectory rightTrenchToNeutral = trajectory("rightTrenchToNeutral");
 		AutoTrajectory rightNeutralToTrench = trajectory("rightNeutralToTrench");
@@ -34,8 +35,8 @@ public class RightNeutralCycle_Climb extends AutoModeBase {
             //Commands.deadline(superstructure.collectFuelCommand().withTimeout(5), superstructure.runIntakeIfDeployed()),
 			new PIDToPoseCommand(drive, superstructure, rightNeutralToTrench.getInitialPose().get()),
 			rightNeutralToTrench.cmd(),
-			rightTrenchToShoot.cmd(),
-			Commands.parallel(superstructure.shoot(), drive.brake()).withTimeout(5),
+			cmdWithAccuracy(rightTrenchToShoot),
+			superstructure.shootWhenReady().withTimeout(AutoConstants.shootAllFuelTime),
 			superstructure.climb()
         );
 	}
