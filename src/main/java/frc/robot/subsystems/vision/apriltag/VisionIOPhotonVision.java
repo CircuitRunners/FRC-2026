@@ -16,6 +16,7 @@ package frc.robot.subsystems.vision.apriltag;
 import static frc.robot.subsystems.vision.apriltag.VisionConstants.*;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import java.util.HashSet;
@@ -44,15 +45,12 @@ public class VisionIOPhotonVision implements VisionIO {
     this.robotPoseSupplier = robotPoseSupplier;
 
     poseEstimator =
-        new PhotonPoseEstimator(aprilTagLayout, PoseStrategy.CONSTRAINED_SOLVEPNP, robotToCamera);
-    poseEstimator.setMultiTagFallbackStrategy(PoseStrategy.CLOSEST_TO_REFERENCE_POSE);
+        new PhotonPoseEstimator(aprilTagLayout, robotToCamera);
   }
 
   @Override
   public void updateInputs(VisionIOInputs inputs) {
     inputs.connected = camera.isConnected();
-
-    poseEstimator.setReferencePose(robotPoseSupplier.get());
 
     Set<Short> tagIds = new HashSet<>();
     List<PoseObservation> poseObservations = new LinkedList<>();
@@ -67,7 +65,10 @@ public class VisionIOPhotonVision implements VisionIO {
         inputs.latestTargetObservation = new TargetObservation(new Rotation2d(), new Rotation2d());
       }
 
-      Optional<EstimatedRobotPose> estimate = poseEstimator.update(result);
+      Optional<EstimatedRobotPose> estimate = poseEstimator.estimateCoprocMultiTagPose(result);
+      if (estimate.isEmpty()) {
+        estimate = poseEstimator.estimateClosestToReferencePose(result, new Pose3d(robotPoseSupplier.get())); 
+      }
 
       estimate.ifPresent(
           (poseEstimate) -> {

@@ -19,7 +19,7 @@ import frc.robot.Ports;
 import frc.robot.Robot;
 
 public class HoodConstants {
-    public static final double kGearing = 1.0 / 1.0;
+    public static final double kGearing = (36.0 / 12.0) * (181.0 / 10.0);
 
     public static final Angle kKitbotPosition = Units.Degrees.of(10.0);
     public static final Angle kMaxAngle = Units.Degrees.of(67.0);

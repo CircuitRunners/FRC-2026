@@ -24,7 +24,7 @@ import frc.robot.RobotConstants;
 
 // PH -> PlaceHolder
 public class IntakeDeployConstants {
-    public static final double kGearing = 40.0;
+    public static final double kGearing = (52.0 / 10.0);
 
 	public static final Angle kDeployPosition = Units.Degrees.of(new TunableNumber("kDeployPosition", 3.0, true).get());
 	public static final Angle kStowPosition = Units.Degrees.of(new TunableNumber("kDeployPosition", 83.0, true).get());
@@ -36,10 +36,10 @@ public class IntakeDeployConstants {
 
     public static TalonFXConfiguration getFXConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
-        config.Slot0.kP = new TunableNumber("Intake kP", 180.0, true).get(); // PH
-        config.Slot0.kD = new TunableNumber("Intake kD", 0.0, true).get(); // PH
-        config.Slot0.kS = new TunableNumber("Intake kS", 0.0, true).get(); // PH
-        config.Slot0.kG = new TunableNumber("Intake kG", 0.0, true).get(); // PH
+        config.Slot0.kP = 180.0; // PH
+        config.Slot0.kD = 0.0; // PH
+        config.Slot0.kS = 0.0; // PH
+        config.Slot0.kG = 0.0; // PH
 
         config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
         config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;

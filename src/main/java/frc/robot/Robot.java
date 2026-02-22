@@ -17,12 +17,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.drive.PIDToPoseCommand;
+import frc.lib.logging.LoggedTracer;
 import frc.lib.util.Stopwatch;
 
 @Logged
 public class Robot extends TimedRobot {
-  private Command m_autonomousCommand;
-
   private final RobotContainer m_robotContainer;
   private Command mAutonomousCommand;
   public static final Stopwatch autoTimer = new Stopwatch();
@@ -37,6 +36,7 @@ public class Robot extends TimedRobot {
 
     // Clear shooting parameters
     m_robotContainer.getShotCalculator().clearShootingParameters();
+    LoggedTracer.record("Robot Loop Time");
   }
 
   @Override
@@ -65,7 +65,7 @@ public class Robot extends TimedRobot {
 		autoTimer.start();
 
 		if (mAutonomousCommand != null) {
-			mAutonomousCommand.schedule();
+			CommandScheduler.getInstance().schedule(mAutonomousCommand);
 		}
   }
 
@@ -79,8 +79,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.cancel();
+    if (mAutonomousCommand != null) {
+      mAutonomousCommand.cancel();
     }
   }
 

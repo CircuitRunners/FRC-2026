@@ -31,8 +31,8 @@ public class RightNeutralCycle_Climb extends AutoModeBase {
 		prepRoutine(
 			AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
 			Commands.parallel(rightTrenchToNeutral.cmd(), superstructure.deployIntake()),
-            Commands.deadline(superstructure.collectFuelCommand().withTimeout(5), superstructure.runIntakeIfDeployed()),
-			superstructure.driveToNeutralTrajectory(),
+            //Commands.deadline(superstructure.collectFuelCommand().withTimeout(5), superstructure.runIntakeIfDeployed()),
+			new PIDToPoseCommand(drive, superstructure, rightNeutralToTrench.getInitialPose().get()),
 			rightNeutralToTrench.cmd(),
 			rightTrenchToShoot.cmd(),
 			Commands.parallel(superstructure.shoot(), drive.brake()).withTimeout(5),

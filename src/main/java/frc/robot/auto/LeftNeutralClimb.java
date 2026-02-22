@@ -29,7 +29,7 @@ public class LeftNeutralClimb extends AutoModeBase {
 		prepRoutine(
 				AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
 				leftTrenchToNeutral.cmd(),
-				new PIDToPoseCommand(drive, superstructure, new Pose2d(7.6, 5, new Rotation2d(-1)), Units.Inches.of(12.0), Units.Degrees.of(10.0)),
+				new PIDToPoseCommand(drive, superstructure, FieldLayout.handleAllianceFlip(new Pose2d(7.6, 5, new Rotation2d(-1)), RobotConstants.isRedAlliance), Units.Inches.of(12.0), Units.Degrees.of(10.0)),
 				new PIDToPoseCommand(drive, superstructure, leftNeutralToTrench.getInitialPose().get(), Units.Inches.of(36.0), Units.Degrees.of(10.0)),
 				leftNeutralToTrench.cmd(),
 				cmdWithAccuracy(leftTrenchToShoot),

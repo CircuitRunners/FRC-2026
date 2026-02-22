@@ -19,10 +19,10 @@ import frc.robot.Robot;
 
 //PH -> PlaceHolder
 public class IntakeRollerConstants {
-    private static final double kGearing = (6.0 / 9.0);
+    private static final double kGearing = (24.0 / 18.0);
 
-    public static final Voltage kIntakeVoltage = Volts.of(12.0); // PH
-    public static final Voltage kExhaustVoltage = Volts.of(12); // PH
+    public static final Voltage kIntakeVoltage = Volts.of(5.0); // PH
+    public static final Voltage kExhaustVoltage = Volts.of(-5.0); // PH
 
     public static TalonFXConfiguration getFXConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();

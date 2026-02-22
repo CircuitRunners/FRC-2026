@@ -18,13 +18,15 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
+import frc.lib.util.FieldLayout;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class VisionConstants {
 
   public static AprilTagFieldLayout aprilTagLayout =
-      AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+      FieldLayout.kAprilTagMap;
 
   public static String camera0Name = "camera_0";
   public static String camera1Name = "camera_1";
@@ -68,16 +70,16 @@ public class VisionConstants {
       new ArrayList<>() {
         {
 
-          add(1);
-          add(2);
-          add(3);
-          add(4);
-          add(5);
-          add(12);
-          add(13);
-          add(14);
-          add(15);
-          add(16);
+          // add(1);
+          // add(2);
+          // add(3);
+          // add(4);
+          // add(5);
+          // add(12);
+          // add(13);
+          // add(14);
+          // add(15);
+          // add(16);
         }
       };
 

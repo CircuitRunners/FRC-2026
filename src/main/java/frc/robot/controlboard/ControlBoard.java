@@ -14,9 +14,17 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.lib.io.MotorIO.Setpoint;
 import frc.lib.util.FieldLayout;
+import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.conveyor.Conveyor;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
+import frc.robot.subsystems.hood.Hood;
+import frc.robot.subsystems.intakeDeploy.IntakeDeploy;
+import frc.robot.subsystems.intakeRollers.IntakeRollers;
+import frc.robot.subsystems.kicker.Kicker;
+import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.superstructure.Superstructure.State;
 
@@ -24,17 +32,34 @@ import java.util.function.Supplier;
 
 public class ControlBoard {
     private Drive drive;
-    private Superstructure superstructure;
-    public ControlBoard(Drive drive, Superstructure superstructure) {
+	private Shooter shooter;
+	private Hood hood;
+    private IntakeDeploy intakeDeploy;
+	private IntakeRollers intakeRollers;
+	private Kicker kicker;
+	private Conveyor conveyor;
+	private Climber climber;
+	private Superstructure superstructure;
+
+	
+    public ControlBoard(Drive drive, Shooter shooter, Hood hood, IntakeDeploy intakeDeploy, IntakeRollers intakeRollers, Kicker kicker, Conveyor conveyor, Climber climber, Superstructure superstructure) {
         this.drive = drive;
+		this.shooter = shooter;
+		this.hood = hood;
+		this.intakeDeploy = intakeDeploy;
+		this.intakeRollers = intakeRollers;
+		this.kicker = kicker;
+		this.conveyor = conveyor;
+		this.climber = climber;
         this.superstructure = superstructure;
+
     }
 
     private static ControlBoard instance = null;
 
-    public static ControlBoard getInstance(Drive drive, Superstructure superstructure) {
+    public static ControlBoard getInstance(Drive drive, Shooter shooter, Hood hood, IntakeDeploy intakeDeploy, IntakeRollers intakeRollers, Kicker kicker, Conveyor conveyor, Climber climber, Superstructure superstructure) {
         if (instance == null) {
-            instance = new ControlBoard(drive, superstructure);
+            instance = new ControlBoard(drive, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, climber, superstructure);
         }
         return instance;
     }
@@ -84,7 +109,7 @@ public class ControlBoard {
 								() -> drive.getDrivetrain().resetPose(FieldLayout.kAprilTagMap.getTagPose(31).get().toPose2d()), drive)
 						.ignoringDisable(true));
 		driverControls();
-		//debugControls();
+		debugControls();
 	}
 
 	// public OverrideBehavior getOverrideBehavior() {
@@ -138,8 +163,28 @@ public class ControlBoard {
 	// }
 
 
-// // 	private void debugControls() {
-// // 		Superstructure s = superstructure;
+	private void debugControls() {
+		operator.leftTrigger().onTrue(intakeDeploy.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5)))).onFalse(intakeDeploy.setpointCommand(Setpoint.withNeutralSetpoint()));
+		operator.rightTrigger().onTrue(intakeDeploy.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(-5)))).onFalse(intakeDeploy.setpointCommand(Setpoint.withNeutralSetpoint()));
+
+		operator.leftBumper().onTrue(intakeRollers.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5)))).onFalse(intakeRollers.setpointCommand(Setpoint.withNeutralSetpoint()));
+		operator.rightBumper().onTrue(intakeRollers.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(-5)))).onFalse(intakeRollers.setpointCommand(Setpoint.withNeutralSetpoint()));
+
+		operator.povLeft().onTrue(conveyor.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5)))).onFalse(conveyor.setpointCommand(Setpoint.withNeutralSetpoint()));
+		operator.povRight().onTrue(conveyor.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(-5)))).onFalse(conveyor.setpointCommand(Setpoint.withNeutralSetpoint()));
+
+		operator.povUp().onTrue(climber.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5)))).onFalse(climber.setpointCommand(Setpoint.withNeutralSetpoint()));
+		operator.povDown().onTrue(climber.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(-5)))).onFalse(climber.setpointCommand(Setpoint.withNeutralSetpoint()));
+
+		operator.x().onTrue(shooter.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5)))).onFalse(shooter.setpointCommand(Setpoint.withNeutralSetpoint()));
+		operator.b().onTrue(shooter.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(-5)))).onFalse(shooter.setpointCommand(Setpoint.withNeutralSetpoint()));
+
+		operator.a().onTrue(kicker.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5)))).onFalse(kicker.setpointCommand(Setpoint.withNeutralSetpoint()));
+		operator.y().onTrue(kicker.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(-5)))).onFalse(kicker.setpointCommand(Setpoint.withNeutralSetpoint()));
+
+		operator.start().onTrue(hood.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5)))).onFalse(hood.setpointCommand(Setpoint.withNeutralSetpoint()));
+		operator.back().onTrue(hood.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(-5)))).onFalse(hood.setpointCommand(Setpoint.withNeutralSetpoint()));
+	}
 
 // // 		operator.y().onTrue(s.stationIntakeToHold());
 // // 		operator.a()
