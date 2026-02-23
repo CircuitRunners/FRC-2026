@@ -297,14 +297,11 @@ public class Superstructure extends SubsystemBase {
 
     //     }, Set.of(drive));
     // }
-<<<<<<< HEAD
-=======
 
     // Subsystem moving
     public Command runIntakeDeploy(double voltage) {
       return intakeDeploy.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(voltage)));
     }
->>>>>>> 17499aaa8789136c41e3d133d2896351b3ac5cd7
 
     public static enum State {
       TUCK,
