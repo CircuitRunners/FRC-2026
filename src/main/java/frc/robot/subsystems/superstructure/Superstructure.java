@@ -276,28 +276,28 @@ public class Superstructure extends SubsystemBase {
       ).withName("Climb Sequence");
     }
 
-    public Command collectFuelCommand() {
-        return Commands.defer(() -> {
+    // public Command collectFuelCommand() {
+    //     return Commands.defer(() -> {
 
-            var clusters = objectPoseEstimator.getOrderedClusters();
-            if (clusters.isEmpty() || IntakeRollerConstants.numberOfFuel >= IntakeRollerConstants.fuelLimit) {
-                return Commands.none();
-            }
+    //         var clusters = objectPoseEstimator.getOrderedClusters();
+    //         if (clusters.isEmpty() || IntakeRollerConstants.numberOfFuel >= IntakeRollerConstants.fuelLimit) {
+    //             return Commands.none();
+    //         }
 
-            List<Pose2d> poses = new ArrayList<>();
-            Translation2d currentTrans = drive.getPose().getTranslation();
+    //         List<Pose2d> poses = new ArrayList<>();
+    //         Translation2d currentTrans = drive.getPose().getTranslation();
 
-            for (Translation2d t : clusters) {
-                Rotation2d r = t.minus(currentTrans).getAngle();
-                poses.add(new Pose2d(t, r));
-                currentTrans = t;
-            }
+    //         for (Translation2d t : clusters) {
+    //             Rotation2d r = t.minus(currentTrans).getAngle();
+    //             poses.add(new Pose2d(t, r));
+    //             currentTrans = t;
+    //         }
 
-            return new PIDToPosesCommand(drive, this, poses)
-                .andThen(collectFuelCommand());
+    //         return new PIDToPosesCommand(drive, this, poses)
+    //             .andThen(collectFuelCommand());
 
-        }, Set.of(drive));
-    }
+    //     }, Set.of(drive));
+    // }
 
     public static enum State {
       TUCK,

@@ -4,6 +4,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SimulatedGamePiece {
     private static final ArrayList<SimulatedGamePiece> SIMULATED_GAME_PIECES = new ArrayList<>();
@@ -18,6 +19,17 @@ public class SimulatedGamePiece {
         SIMULATED_GAME_PIECES.add(this);
     }
 
+    public static List<Pose2d> getPiecesAsPoses() {
+        List<Pose2d> p = new ArrayList<>();
+        for (Pose3d s : getSimulatedFuelAsPoseArray()) {
+            p.add(new Pose2d(
+                new Translation2d(s.getX(),
+                s.getY()),
+                Rotation2d.kZero
+            ));
+        }
+        return p;
+    }
     public static boolean removeGamePiece(SimulatedGamePiece g) {
         for (int i = 0; i < SIMULATED_GAME_PIECES.size(); i++) {
             if (SIMULATED_GAME_PIECES.get(i) == g) {

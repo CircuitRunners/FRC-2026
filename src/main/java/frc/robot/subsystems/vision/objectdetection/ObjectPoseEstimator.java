@@ -46,7 +46,8 @@ public class ObjectPoseEstimator extends SubsystemBase {
     private final ObjectDetectionCamera camera;
     private final Drive drive;
     public static final Field2d field = new Field2d();
-    
+    public static TrajectoryConfig t = new TrajectoryConfig(DriveConstants.kDriveMaxSpeed, DriveConstants.kMaxAccelerationMetersPerSecondSquared);
+    public final List<Pose2d> fuels = new ArrayList<>();
 
     /**
      * Stores the position of each detected object along with the timestamp of when it was detected.
@@ -70,6 +71,7 @@ public class ObjectPoseEstimator extends SubsystemBase {
         this.objectPositionsToDetectionTimestamp = new HashMap<>();
         if (RobotBase.isSimulation()) SimulatedGamePieceConstants.initializeFuel();
         SmartDashboard.putData("ObjectDetectionField", field);
+        
     }
 
     /**
@@ -80,12 +82,23 @@ public class ObjectPoseEstimator extends SubsystemBase {
     public void periodic() {
         updateTrackedObjectsPositions();
         removeOldObjects();
-        
+        field.setRobotPose(drive.getPose());
+        fuels.clear();
+        for (Pose2d s : SimulatedGamePiece.getPiecesAsPoses()) {
+            if (FieldLayout.handleAllianceFlip(FieldLayout.rightNeutralZone, RobotConstants.isRedAlliance).contains(s.getTranslation())) {
+                fuels.add(s);
+            }
+        }
+        field.getObject("Fuel").setPoses(fuels);
         try {
-            getOrderedClusters();
+            //getOrderedClusters();
+            fsh();
+            
             removeIntakedFuel();
-        } catch(Exception e) {
 
+            
+        } catch(Exception e) {
+            
         }
 
         
@@ -259,154 +272,123 @@ public class ObjectPoseEstimator extends SubsystemBase {
         return Timer.getTimestamp() - timestamp > deletionThresholdSeconds;
     }
 
-    public List<Translation2d> getOrderedClusters() {
-        ArrayList<ClusterResult> w = new ArrayList<>();
-        List<Translation2d> l = new ArrayList<Translation2d>();
-        List<Pose2d> d = new ArrayList<>();
+    public Trajectory fsh() {
 
-        
-        for (SimulatedGamePiece s : SimulatedGamePiece.getSimulatedGamePieces()) {
-            if (FieldLayout.handleAllianceFlip(FieldLayout.rightNeutralZone, true).contains(new Translation2d(s.getPosition().getX(), s.getPosition().getY()))) {
-                l.add(new Translation2d(s.getPosition().getX(), s.getPosition().getY()));
-                d.add(MathHelpers.pose2dFromTranslation(new Translation2d(s.getPosition().getX(), s.getPosition().getY())));
-            }
-        }
-        // for (Translation2d s : getObjectsOnField()) {
-        //     if (FieldLayout.handleAllianceFlip(FieldLayout.rightNeutralZone, RobotConstants.isRedAlliance).contains(s)) {
-        //         l.add((s));
-        //         d.add(MathHelpers.pose2dFromTranslation(s));
-        //     }
-        // }
-        field.getObject("Fuel").setPoses(d);
-        double radius = ObjectDetectionConstants.maxClusterRadius;
-        boolean cont = true;
-        
-        while (cont == true) {
-            BestClusterFinder.ClusterResult result =
-                    BestClusterFinder.findBestCluster(l, radius);
+        Trajectory ts = tsh(drive.getPose(), fuels, t, 10, IntakeRollerConstants.fuelLimit);
+        if (ts != null) field.getObject("traj").setTrajectory(ts);
+        return ts;
 
-            for (Translation2d p : result.points) {
-                for (int j = 0; j < l.size(); j++) {
-                    if (l.get(j).getDistance(p) < 0.005) {
-                        l.remove(l.get(j));
-                    }
-                }
-            }
-            
-            if (result.points.size() < 6) cont = false;
-            else w.add(result);
-        }
-        ArrayList<Pose2d> results = new ArrayList<>();
-        for (ClusterResult c : w) {
-            results.add(MathHelpers.pose2dFromTranslation(c.center));
-        }
-
-        // field.getObject("Centroid").setPoses(results);
-        field.setRobotPose(drive.getPose());
-
-        List<Pose2d> ordered = new ArrayList<>();
-        List<Pose2d> remaining = new ArrayList<>(results);
-
-
-        Pose2d currentPose = drive.getPose();
-
-
-        while (!remaining.isEmpty()) {
-
-            Pose2d closest = remaining.get(0);
-            double closestDistance =
-                    currentPose.getTranslation()
-                            .getDistance(closest.getTranslation());
-
-            for (Pose2d pose : remaining) {
-
-                double distance =
-                        currentPose.getTranslation()
-                                .getDistance(pose.getTranslation());
-
-                if (distance < closestDistance) {
-                    closestDistance = distance;
-                    closest = pose;
-                }
-            }
-
-            ordered.add(closest);
-            currentPose = closest;
-            remaining.remove(closest);
-        }
-
-        boolean improved = true;
-
-        while (improved) {
-            improved = false;
-
-            for (int i = 0; i < ordered.size() - 2; i++) {
-                for (int j = i + 2; j < ordered.size() - 1; j++) {
-
-                    Pose2d A = ordered.get(i);
-                    Pose2d B = ordered.get(i + 1);
-                    Pose2d C = ordered.get(j);
-                    Pose2d D = ordered.get(j + 1);
-
-                    double currentDist =
-                            A.getTranslation().getDistance(B.getTranslation())
-                        + C.getTranslation().getDistance(D.getTranslation());
-
-                    double swappedDist =
-                            A.getTranslation().getDistance(C.getTranslation())
-                        + B.getTranslation().getDistance(D.getTranslation());
-
-                    if (swappedDist < currentDist) {
-                        Collections.reverse(ordered.subList(i + 1, j + 1));
-                        improved = true;
-                    }
-                }
-            }
-        }
-
-
-        List<Translation2d> interiorWaypoints = new ArrayList<>();
-
-        for (int i = 0; i < ordered.size() - 1; i++) {
-            interiorWaypoints.add(ordered.get(i).getTranslation());
-        }
-
-        if (ordered.isEmpty()) {
-            return new ArrayList<>();
-        }
-        Pose2d endPose = ordered.get(ordered.size() - 1);
-
-        interiorWaypoints.add(endPose.getTranslation());
-
-        return interiorWaypoints;
     }
 
+    public Trajectory tsh(
+        Pose2d robotPose, List<Pose2d> detectedFuel, TrajectoryConfig config, double maxHarvestLengthMeters, int intakeCapacity)
+    {
+
+        // ---- Right Neutral Zone Bounds (EDIT THESE)
+        Rectangle2d rect = FieldLayout.handleAllianceFlip(FieldLayout.rightNeutralZone, RobotConstants.isRedAlliance);
+        double zoneMinX = rect.getCenter().getX() - rect.getXWidth()/2;
+        double zoneMaxX = rect.getCenter().getX() + rect.getXWidth()/2;
+        double zoneMinY = rect.getCenter().getY() - rect.getYWidth()/2;
+        double zoneMaxY = rect.getCenter().getY() + rect.getYWidth()/2;
+
+        double bestScore = 0.0;
+        Pose2d bestRepositionPose = null;
+        Pose2d bestHarvestEndPose = null;
+
+        double positionStep = 0.75;
+        double headingStep = 30.0;
+
+        for (double x = zoneMinX; x <= zoneMaxX; x += positionStep) {
+            for (double y = zoneMinY; y <= zoneMaxY; y += positionStep) {
+                for (double headingDeg = -90; headingDeg <= 90; headingDeg += headingStep) {
+
+                    Rotation2d heading = Rotation2d.fromDegrees(headingDeg);
+
+                    Pose2d repositionPose = new Pose2d(x, y, heading);
+
+                    double dirX = heading.getCos();
+                    double dirY = heading.getSin();
+
+                    double corridorWidth = 0.6;
+
+                    int collected = 0;
+                    double farthestFuelDist = 0.0;
+
+                    for (Pose2d fuel : detectedFuel) {
+
+                        double dx = fuel.getX() - x;
+                        double dy = fuel.getY() - y;
+
+                        double forwardDist = dx * dirX + dy * dirY;
+
+                        if (forwardDist < 0 || forwardDist > maxHarvestLengthMeters)
+                            continue;
+
+                        double perpDist = Math.abs(
+                                dx * (-dirY) + dy * dirX
+                        );
+
+                        if (perpDist <= corridorWidth / 2.0) {
+                            collected++;
+                            if (forwardDist > farthestFuelDist) {
+                                farthestFuelDist = forwardDist;
+                            }
+                        }
+                    }
+
+                    if (collected == 0)
+                        continue;
+
+                    collected = Math.min(collected, intakeCapacity);
+
+                    double repositionDist =
+                            robotPose.getTranslation()
+                                    .getDistance(repositionPose.getTranslation());
+
+                    double totalDistance = repositionDist + farthestFuelDist;
+
+                    if (totalDistance < 0.1)
+                        continue;
+
+                    //double score = collected / totalDistance;
+                    double score = collected - 0.15 * totalDistance;
+                    if (score > bestScore) {
+
+                        bestScore = score;
+                        bestRepositionPose = repositionPose;
+
+                        bestHarvestEndPose = new Pose2d(
+                                x + dirX * farthestFuelDist,
+                                y + dirY * farthestFuelDist,
+                                heading
+                        );
+                    }
+                }
+            }
+        }
+
+        if (bestRepositionPose == null || bestHarvestEndPose == null)
+        return null;
 
 
-    // public void removeIntakedFuel() {
-    //     Rectangle2d intake = new Rectangle2d(
-    //         (new Translation2d(0.6408928, IntakeRollerConstants.intakeWidth / 2))
-    //             .plus(drive.getPose().getTranslation()),
-    //         (new Translation2d(0.6408928 - 0.2524, -IntakeRollerConstants.intakeWidth / 2))
-    //             .plus(drive.getPose().getTranslation())
-    //     );
+    Trajectory toReposition =
+        TrajectoryGenerator.generateTrajectory(
+            robotPose,
+            new ArrayList<>(),
+            bestRepositionPose,
+            config
+        );
 
-    //     Iterator<SimulatedGamePiece> iterator =
-    //         SimulatedGamePiece.getSimulatedGamePieces().iterator();
+    Trajectory harvest =
+        TrajectoryGenerator.generateTrajectory(
+            bestRepositionPose,
+            new ArrayList<>(),
+            bestHarvestEndPose,
+            config
+        );
 
-    //     while (iterator.hasNext()) {
-    //         SimulatedGamePiece s = iterator.next();
-
-    //         Translation2d piecePos =
-    //             new Translation2d(s.getPosition().getX(),
-    //                             s.getPosition().getY());
-
-    //         if (intake.contains(piecePos)) {
-    //             iterator.remove();
-    //         }
-    //     }
-    // }
-
+    return toReposition.concatenate(harvest);
+    }
     private Pose2d lastPose = null;
 
     public void removeIntakedFuel() {
