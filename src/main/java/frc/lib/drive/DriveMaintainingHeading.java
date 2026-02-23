@@ -122,7 +122,7 @@ public class DriveMaintainingHeading extends Command{
                         Optional.of(mDrivetrain.getPose().getRotation());
             }
             // dont get stuck in trench
-            if (FieldLayout.nearTrench(mDrivetrain.getPose(), mDrivetrain.getFieldRelativeChassisSpeeds()) && mSuperstructure.getState() != State.SHOOTING) { // might need this if the neartrench is too aggressive
+            if (mSuperstructure.nearTrench && mSuperstructure.getState() != State.SHOOTING) {
                 Rotation2d targetAngle = FieldLayout.clampAwayFromTrench(mDrivetrain.getRotation());
                 mHeadingSetpoint = Optional.of(targetAngle);
 

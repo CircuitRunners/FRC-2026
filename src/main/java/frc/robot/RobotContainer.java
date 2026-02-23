@@ -72,16 +72,16 @@ public class RobotContainer {
         // : new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
     );
 
-    public final ObjectPoseEstimator objectDetector = new ObjectPoseEstimator(
-        drive,
-        ObjectDetectionConstants.OBJECT_POSE_ESTIMATOR_DELETION_THRESHOLD_SECONDS,
-        SimulatedGamePieceConstants.GamePieceType.FUEL,
-        new ObjectDetectionCamera(
-            drive,
-            "ObjectDetection",
-            ObjectDetectionConstants.cameraTransform
-        )
-    );
+    // public final ObjectPoseEstimator objectDetector = new ObjectPoseEstimator(
+    //     drive,
+    //     ObjectDetectionConstants.OBJECT_POSE_ESTIMATOR_DELETION_THRESHOLD_SECONDS,
+    //     SimulatedGamePieceConstants.GamePieceType.FUEL,
+    //     new ObjectDetectionCamera(
+    //         drive,
+    //         "ObjectDetection",
+    //         ObjectDetectionConstants.cameraTransform
+    //     )
+    // );
 
     private final Shooter shooter = new Shooter();
     private final Hood hood = new Hood();
@@ -90,10 +90,10 @@ public class RobotContainer {
     private final Kicker kicker = new Kicker();
     private final Conveyor conveyor = new Conveyor();
     private final Climber climber = new Climber();
-    private final Superstructure superstructure = new Superstructure(drive, vision, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, climber, objectDetector);
+    private final Superstructure superstructure = new Superstructure(drive, vision, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, climber /* , objectDetector*/);
     
 
-    private final ControlBoard controlBoard = ControlBoard.getInstance(drive, superstructure);
+    private final ControlBoard controlBoard = ControlBoard.getInstance(drive, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, climber, superstructure);
     private final ShotCalculator shotCalculator = ShotCalculator.getInstance(drive);
 
     public ShotCalculator getShotCalculator() {
@@ -111,9 +111,9 @@ public class RobotContainer {
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
     /* Setting up bindings for necessary control of the swerve drive platform */
-    // private final SwerveRequest.FieldCentric driveRequest = new SwerveRequest.FieldCentric()
-    //         .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
-    //         .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+    private final SwerveRequest.FieldCentric driveRequest = new SwerveRequest.FieldCentric()
+            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     
     public RobotContainer() {
         SimulationFieldHandler.superstructure = this.superstructure;
@@ -137,8 +137,8 @@ public class RobotContainer {
         // RobotModeTriggers.autonomous()
 		// 		.onFalse(Commands.runOnce(() -> drive.getDrivetrain().setControl(new SwerveRequest.ApplyFieldSpeeds()))
 		// 				.ignoringDisable(true));
-        shooter.setDefaultCommand(shooter.trackTargetCommand(superstructure.shooterSetpoint));
-        hood.setDefaultCommand(hood.trackTargetCommand(superstructure.hoodSetpoint));
+        // shooter.setDefaultCommand(shooter.trackTargetCommand(superstructure.shooterSetpoint));
+        // hood.setDefaultCommand(hood.trackTargetCommand(superstructure.hoodSetpoint));
 
         for (SubsystemBase s : new SubsystemBase[] {
 			intakeDeploy,
@@ -155,22 +155,21 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        drive.setDefaultCommand(
-            driveCommand
-        );
-
+        // drive.setDefaultCommand(
+        //     driveCommand
+        // );
 
         
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
-        // drive.getDrivetrain().setDefaultCommand(
-        //     // Drivetrain will execute this command periodically
-        //     drive.getDrivetrain().applyRequest(() ->
-        //     driveRequest.withVelocityX(-ControlBoardConstants.mDriverController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-        //             .withVelocityY(-ControlBoardConstants.mDriverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-        //             .withRotationalRate(-ControlBoardConstants.mDriverController.getRightX() * MaxAngularRate).withDeadband(MaxSpeed * 0.15).withRotationalDeadband(MaxAngularRate*0.15) // Drive counterclockwise with negative X (left)
-        //     )
-        // );
+        drive.getDrivetrain().setDefaultCommand(
+            // Drivetrain will execute this command periodically
+            drive.getDrivetrain().applyRequest(() ->
+            driveRequest.withVelocityX(-ControlBoardConstants.mDriverController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+                    .withVelocityY(-ControlBoardConstants.mDriverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+                    .withRotationalRate(-ControlBoardConstants.mDriverController.getRightX() * MaxAngularRate).withDeadband(MaxSpeed * 0.15).withRotationalDeadband(MaxAngularRate*0.15) // Drive counterclockwise with negative X (left)
+            )
+        );
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.

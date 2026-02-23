@@ -14,14 +14,9 @@ public class AutoConstants {
 	public static final Time kDefaultTrajectoryTimeout = Units.Seconds.of(1.0);
 
     public static enum AutoType {
-		LEFT,
-		RIGHT,
-		MARK
 	}
 
 	public static enum AutoEndBehavior {
-		ALGAE_GRAB,
-		ALGAE_DRIVE
 	}
 	public static double shootAllFuelTime = 3;
 }

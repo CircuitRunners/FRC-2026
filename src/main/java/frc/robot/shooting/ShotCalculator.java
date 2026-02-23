@@ -179,7 +179,7 @@ public class ShotCalculator {
                 ? Units.Degrees.of(getPassingHoodSetpointForShot(lookaheadLauncherToTargetDistance)).in(Units.Radians)
                 : Units.Degrees.of(getHoodSetpointForShot(lookaheadLauncherToTargetDistance)).in(Units.Radians);
         if (lastDriveAngle == null) lastDriveAngle = driveAngle;
-        if (Double.isNaN(lastHoodAngle)) lastHoodAngle = hoodAngle;
+        if (Double.isNaN(lastHoodAngle)) lastHoodAngle = hoodAngle; //NaN might be not possible, but i dont belive it
         lastDriveAngle = driveAngle;
 
         // Check if inside a box of bad

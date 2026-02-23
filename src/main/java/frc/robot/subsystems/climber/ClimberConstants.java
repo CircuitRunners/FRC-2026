@@ -16,7 +16,7 @@ import frc.robot.Ports;
 import frc.robot.Robot;
 
 public class ClimberConstants {
-	public static final double kGearing = (15.0 / 1.0);
+	public static final double kGearing = (25.0 / 1.0);
 
     public static final Angle kMaxHeight = Units.Rotations.of(8);
 	public static final Angle kClimbHeight = kMaxHeight;

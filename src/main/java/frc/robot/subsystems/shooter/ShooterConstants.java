@@ -4,6 +4,7 @@ import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -30,11 +31,11 @@ public class ShooterConstants {
 
     public static TalonFXConfiguration getFXConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
-        config.Slot1.kS = new TunableNumber("Shooter kS", 0.0, true).get(); // default
-        config.Slot1.kA = new TunableNumber("Shooter kA", 0.0, true).get(); // default
-        config.Slot1.kP = new TunableNumber("Shooter kP", 0.0, true).get(); // default
-        config.Slot1.kI = new TunableNumber("Shooter kI", 0.0, true).get(); // default
-        config.Slot1.kD = new TunableNumber("Shooter kD", 0.0, true).get(); // default
+        config.Slot1.kS = 0.0; // default
+        config.Slot1.kA = 0.0; // default
+        config.Slot1.kP = 0.0; // default
+        config.Slot1.kI = 0.0; // default
+        config.Slot1.kD = 0.0; // default
 
         config.CurrentLimits.StatorCurrentLimitEnable = Robot.isReal();
         config.CurrentLimits.StatorCurrentLimit = 120.0; // default
@@ -49,6 +50,8 @@ public class ShooterConstants {
         config.TorqueCurrent.TorqueNeutralDeadband = 0; // default
 
         config.Feedback.SensorToMechanismRatio = kGearing;
+
+		config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
 		config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 

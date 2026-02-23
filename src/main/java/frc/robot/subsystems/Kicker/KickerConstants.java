@@ -19,7 +19,7 @@ import frc.robot.Robot;
 
 //PH -> PlaceHolder
 public class KickerConstants {
-    private static final double kGearing = (6.0 / 9.0);
+    private static final double kGearing = (18.0 / 18.0);
 
     public static final Voltage kFeedForwardVoltage = Volts.of(12.0); // PH
     public static final Voltage kFeedBackwardVoltage = Volts.of(-12.0); // PH
@@ -50,8 +50,8 @@ public class KickerConstants {
         config.mainConfig = getFXConfig();
         config.time = Minute;
         config.unit = Rotations; 
-        config.mainID = Ports.INTAKE_ROLLERS.id; // PH
-        config.mainBus = Ports.INTAKE_ROLLERS.bus; // PH
+        config.mainID = Ports.KICKER.id; // PH
+        config.mainBus = Ports.KICKER.bus; // PH
         return config;
     }
 

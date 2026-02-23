@@ -10,19 +10,16 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.drive.FollowTrajectoryCommand;
 import frc.lib.drive.PIDToPoseCommand;
 import frc.lib.drive.PIDToPosesCommand;
 import frc.lib.io.MotorIO.Setpoint;
+import frc.lib.logging.LoggedTracer;
 import frc.lib.util.FieldLayout;
 import frc.robot.RobotConstants;
 import frc.robot.controlboard.ControlBoard;
@@ -53,9 +50,9 @@ public class Superstructure extends SubsystemBase {
     private final Kicker kicker;
     private final Conveyor conveyor;
     private final Climber climber;
-    private final ObjectPoseEstimator objectPoseEstimator;
+    //private final ObjectPoseEstimator objectPoseEstimator;
 
-    public Superstructure(Drive drive, Vision vision, Shooter shooter, Hood hood, IntakeDeploy intakeDeploy, IntakeRollers intakeRollers, Kicker kicker, Conveyor conveyor, Climber climber, ObjectPoseEstimator objectPoseEstimator) {
+    public Superstructure(Drive drive, Vision vision, Shooter shooter, Hood hood, IntakeDeploy intakeDeploy, IntakeRollers intakeRollers, Kicker kicker, Conveyor conveyor, Climber climber/* , ObjectPoseEstimator objectPoseEstimator*/) {
         this.drive = drive;
         this.vision = vision;
         this.shooter = shooter;
@@ -65,7 +62,7 @@ public class Superstructure extends SubsystemBase {
         this.kicker = kicker;
         this.conveyor = conveyor;
         this.climber = climber;
-        this.objectPoseEstimator = objectPoseEstimator;
+        //this.objectPoseEstimator = objectPoseEstimator;
     }
 
     private boolean isPathFollowing = false;
@@ -75,6 +72,7 @@ public class Superstructure extends SubsystemBase {
     private boolean intakeDeployed = false;
     public boolean shootOnTheMove = false;
     public boolean headingLockToggle = true;
+    public boolean nearTrench = false;
 
     public double maintainHeadingEpsilon = 0.25;
 
@@ -89,11 +87,12 @@ public class Superstructure extends SubsystemBase {
         updateShooterSetpoint();
         updateHoodSetpoint();
         updateHeadingSetpoint();
-        SmartDashboard.putBoolean("Near Trench", FieldLayout.nearTrench(drive.getPose(), drive.getFieldRelativeChassisSpeeds()));
+        SmartDashboard.putBoolean("Near Trench", nearTrench);
+        LoggedTracer.record("Superstructure Loop Time");
     }
 
     public void updateShooterSetpoint() {
-      if (visionValid() == true) {
+      if (visionValid()) {
         shooterSetpoint = 
             Setpoint.withVelocitySetpoint(
               Units.RotationsPerSecond.of(
@@ -101,21 +100,22 @@ public class Superstructure extends SubsystemBase {
               .getParameters()
               .flywheelSpeed()));
       }
-      else if (visionValid() == false) {
+      else {
         shooterSetpoint = Shooter.KITBOT;
         kitbotMode = true;
-        ControlBoard.getInstance(drive, this).setRumble(true);
+        ControlBoard.getInstance(drive, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, climber, this).setRumble(true);
       }
     }
 
     public void updateHoodSetpoint() {
-      if (visionValid() && !FieldLayout.nearTrench(drive.getPose(), drive.getFieldRelativeChassisSpeeds())) {
+      nearTrench = FieldLayout.nearTrench(drive.getPose(), drive.getFieldRelativeChassisSpeeds());
+      if (visionValid() && !nearTrench) {
         hoodSetpoint = 
             Setpoint.withMotionMagicSetpoint(
               Units.Degrees.of(
               ShotCalculator.getInstance(drive)
               .getParameters()
-              .flywheelSpeed()));
+              .hoodAngle()));
       }
       else {
         hoodSetpoint = Hood.KITBOT;
@@ -125,7 +125,7 @@ public class Superstructure extends SubsystemBase {
     public void updateHeadingSetpoint() {
       boolean passing = !FieldLayout.distanceFromAllianceWall(Units.Meters.of(drive.getPose().getX()), RobotConstants.isRedAlliance).lte(FieldLayout.kAllianceZoneX.minus(Units.Inches.of(14)));
       if (!passing) {
-      headingSetpoint = shootOnTheMove ? ShotCalculator.getInstance(drive).getParameters().heading() : ShotCalculator.getStationaryAimedPose(drive.getPose().getTranslation()).getRotation();
+        headingSetpoint = shootOnTheMove ? ShotCalculator.getInstance(drive).getParameters().heading() : ShotCalculator.getStationaryAimedPose(drive.getPose().getTranslation()).getRotation();
       }
       else {
         headingSetpoint = ShotCalculator.getInstance(drive).getParameters().heading();
@@ -163,9 +163,9 @@ public class Superstructure extends SubsystemBase {
             setState(State.SPIT),
             Commands.waitUntil(() -> false))
             .finallyDo(() -> {
-                intakeRollers.setpointCommand(IntakeRollers.IDLE);
-                conveyor.setpointCommand(Conveyor.IDLE);
-                kicker.setpointCommand(Kicker.IDLE);
+                intakeRollers.applySetpoint(IntakeRollers.IDLE);
+                conveyor.applySetpoint(Conveyor.IDLE);
+                kicker.applySetpoint((Kicker.IDLE));
             })
             .withName("Spit");
     }
@@ -185,14 +185,13 @@ public class Superstructure extends SubsystemBase {
 
     public Command shootWhenReady() {
       return Commands.sequence(
-                Commands.runOnce(() -> { 
-                  if (state != State.SHOOTING) waitUntilSafeToShoot();}),
+                Commands.either(waitUntilSafeToShoot(), Commands.none(), () -> state != State.SHOOTING),
                 shoot(),
                 Commands.either(setState(State.SHOOTINTAKE), setState(State.SHOOTING), () -> state == State.INTAKING),
                 Commands.waitUntil(() -> false))
                 .finallyDo(() -> {
-                  conveyor.setpointCommand(Conveyor.IDLE); 
-                  kicker.setpointCommand(Kicker.IDLE);
+                  conveyor.applySetpoint((Conveyor.IDLE)); 
+                  kicker.applySetpoint((Kicker.IDLE));
                 });
     }
 
@@ -210,7 +209,7 @@ public class Superstructure extends SubsystemBase {
           () -> intakeDeployed),
           Commands.either(setState(State.SHOOTINTAKE), setState(State.INTAKING), () -> state == State.SHOOTING),
           Commands.waitUntil(() -> false))
-          .withName("Intaking").finallyDo(() -> intakeRollers.setpointCommand(IntakeRollers.IDLE).withName("End Intake"));
+          .withName("Intaking").finallyDo(() -> intakeRollers.applySetpoint(IntakeRollers.IDLE)).withName("End Intaking");
     }
 
     public Command tuck() {
@@ -260,7 +259,7 @@ public class Superstructure extends SubsystemBase {
                   setState(State.CLIMBING),
                   climber.setpointCommand(Climber.CLIMB).withName("Climber Raise"),
                   new PIDToPoseCommand(drive, this, finalPose).withName("Final Align"),
-                  climber.setpointCommand(Climber.CLIMB).withName("Climbing")
+                  climber.setpointCommand(Climber.ZERO).withName("Climbing")
               );
             } else {
               return Commands.sequence(
@@ -298,6 +297,14 @@ public class Superstructure extends SubsystemBase {
 
     //     }, Set.of(drive));
     // }
+<<<<<<< HEAD
+=======
+
+    // Subsystem moving
+    public Command runIntakeDeploy(double voltage) {
+      return intakeDeploy.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(voltage)));
+    }
+>>>>>>> 17499aaa8789136c41e3d133d2896351b3ac5cd7
 
     public static enum State {
       TUCK,
@@ -339,7 +346,7 @@ public class Superstructure extends SubsystemBase {
     }
 
     public boolean shouldHeadingLock() {
-      return (state != State.INTAKING && headingLockToggle == true);
+      return (headingLockToggle && state != State.INTAKING && visionValid());
     }
 
     public void setPathFollowing(boolean isFollowing) {
