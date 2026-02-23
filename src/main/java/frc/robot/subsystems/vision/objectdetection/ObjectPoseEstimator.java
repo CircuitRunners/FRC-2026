@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import choreo.auto.AutoTrajectory;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rectangle2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -21,6 +22,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.units.measure.Torque;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -48,6 +50,7 @@ public class ObjectPoseEstimator extends SubsystemBase {
     public static final Field2d field = new Field2d();
     public static TrajectoryConfig t = new TrajectoryConfig(DriveConstants.kDriveMaxSpeed, DriveConstants.kMaxAccelerationMetersPerSecondSquared);
     public final List<Pose2d> fuels = new ArrayList<>();
+    public List<Trajectory> trajectories = new ArrayList<>();
 
     /**
      * Stores the position of each detected object along with the timestamp of when it was detected.
@@ -71,6 +74,8 @@ public class ObjectPoseEstimator extends SubsystemBase {
         this.objectPositionsToDetectionTimestamp = new HashMap<>();
         if (RobotBase.isSimulation()) SimulatedGamePieceConstants.initializeFuel();
         SmartDashboard.putData("ObjectDetectionField", field);
+        t.setEndVelocity(DriveConstants.kDriveMaxSpeed);
+        t.setStartVelocity(DriveConstants.kDriveMaxSpeed);
         
     }
 
@@ -305,6 +310,8 @@ public class ObjectPoseEstimator extends SubsystemBase {
                     Rotation2d heading = Rotation2d.fromDegrees(headingDeg);
 
                     Pose2d repositionPose = new Pose2d(x, y, heading);
+                    //Pose2d repositionPose =
+                     //   new Pose2d(x, y, robotPose.getRotation());
 
                     double dirX = heading.getCos();
                     double dirY = heading.getSin();
@@ -368,11 +375,35 @@ public class ObjectPoseEstimator extends SubsystemBase {
         }
 
         if (bestRepositionPose == null || bestHarvestEndPose == null)
-        return null;
+            return new Trajectory();
 
+    if (drive.getPose().getTranslation().getDistance(bestRepositionPose.getTranslation()) >
+        drive.getPose().getTranslation().getDistance(bestHarvestEndPose.getTranslation())) {
+            // Pose2d br = bestRepositionPose;
+            // Pose2d bh = bestHarvestEndPose;
+            // bestRepositionPose = bh.rotateAround(bh.getTranslation(), Rotation2d.k180deg);
+            // bestHarvestEndPose = br.rotateAround(br.getTranslation(), Rotation2d.k180deg);
+            Pose2d temp = bestRepositionPose;
+            bestRepositionPose = bestHarvestEndPose;
+            bestHarvestEndPose = temp;
 
+            // Rotate headings to match reversed direction
+            bestRepositionPose =
+                new Pose2d(
+                    bestRepositionPose.getTranslation(),
+                    bestRepositionPose.getRotation().plus(Rotation2d.k180deg)
+                );
+
+            bestHarvestEndPose =
+                new Pose2d(
+                    bestHarvestEndPose.getTranslation(),
+                    bestHarvestEndPose.getRotation().plus(Rotation2d.k180deg)
+                );
+
+        }
     Trajectory toReposition =
         TrajectoryGenerator.generateTrajectory(
+            //robotPose.rotateAround(robotPose.getTranslation(), Rotation2d.k180deg),
             robotPose,
             new ArrayList<>(),
             bestRepositionPose,
@@ -386,9 +417,22 @@ public class ObjectPoseEstimator extends SubsystemBase {
             bestHarvestEndPose,
             config
         );
+    field.getObject("repositionpose").setPose(bestRepositionPose);
+    field.getObject("endpose").setPose(bestHarvestEndPose);
 
-    return toReposition.concatenate(harvest);
+    Trajectory uo = toReposition.concatenate(harvest);
+    Trajectory returnTopose = TrajectoryGenerator.generateTrajectory(bestHarvestEndPose, new ArrayList<Translation2d>(), FieldLayout.handleAllianceFlip(new Pose2d(
+        new Translation2d(7.192352771759033, 0.9360877871513367), new Rotation2d(1.5707977574648115)), RobotConstants.isRedAlliance), config
+    );
+    trajectories.clear();
+    trajectories.add(toReposition);
+    trajectories.add(harvest);
+    trajectories.add(returnTopose);
+    return uo.concatenate(returnTopose);
     }
+
+
+
     private Pose2d lastPose = null;
 
     public void removeIntakedFuel() {

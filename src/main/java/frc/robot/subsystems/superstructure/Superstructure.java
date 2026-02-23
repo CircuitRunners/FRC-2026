@@ -15,7 +15,9 @@ import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.drive.FollowTrajectoryCommand;
 import frc.lib.drive.PIDToPoseCommand;
 import frc.lib.drive.PIDToPosesCommand;
 import frc.lib.io.MotorIO.Setpoint;
@@ -50,9 +52,9 @@ public class Superstructure extends SubsystemBase {
     private final Kicker kicker;
     private final Conveyor conveyor;
     private final Climber climber;
-    //private final ObjectPoseEstimator objectPoseEstimator;
+    private final ObjectPoseEstimator objectPoseEstimator;
 
-    public Superstructure(Drive drive, Vision vision, Shooter shooter, Hood hood, IntakeDeploy intakeDeploy, IntakeRollers intakeRollers, Kicker kicker, Conveyor conveyor, Climber climber/* , ObjectPoseEstimator objectPoseEstimator*/) {
+    public Superstructure(Drive drive, Vision vision, Shooter shooter, Hood hood, IntakeDeploy intakeDeploy, IntakeRollers intakeRollers, Kicker kicker, Conveyor conveyor, Climber climber, ObjectPoseEstimator objectPoseEstimator) {
         this.drive = drive;
         this.vision = vision;
         this.shooter = shooter;
@@ -62,7 +64,7 @@ public class Superstructure extends SubsystemBase {
         this.kicker = kicker;
         this.conveyor = conveyor;
         this.climber = climber;
-        //this.objectPoseEstimator = objectPoseEstimator;
+        this.objectPoseEstimator = objectPoseEstimator;
     }
 
     private boolean isPathFollowing = false;
@@ -275,28 +277,13 @@ public class Superstructure extends SubsystemBase {
       ).withName("Climb Sequence");
     }
 
-    // public Command collectFuelCommand() {
-    //     return Commands.defer(() -> {
-
-    //         var clusters = objectPoseEstimator.getOrderedClusters();
-    //         if (clusters.isEmpty() || IntakeRollerConstants.numberOfFuel >= IntakeRollerConstants.fuelLimit) {
-    //             return Commands.none();
-    //         }
-
-    //         List<Pose2d> poses = new ArrayList<>();
-    //         Translation2d currentTrans = drive.getPose().getTranslation();
-
-    //         for (Translation2d t : clusters) {
-    //             Rotation2d r = t.minus(currentTrans).getAngle();
-    //             poses.add(new Pose2d(t, r));
-    //             currentTrans = t;
-    //         }
-
-    //         return new PIDToPosesCommand(drive, this, poses)
-    //             .andThen(collectFuelCommand());
-
-    //     }, Set.of(drive));
-    // }
+    public SequentialCommandGroup getCmd() {
+      return new SequentialCommandGroup(
+        new FollowTrajectoryCommand(drive, objectPoseEstimator.trajectories.get(0)),
+        new FollowTrajectoryCommand(drive, objectPoseEstimator.trajectories.get(1)),
+        new FollowTrajectoryCommand(drive, objectPoseEstimator.trajectories.get(2))
+      );
+    }
 
     // Subsystem moving
     public Command runIntakeDeploy(double voltage) {

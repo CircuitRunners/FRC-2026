@@ -68,7 +68,7 @@ public class FollowTrajectoryCommand extends Command{
                 .get(trajectory.getStates().size() - 1)
                 .poseMeters
                 .getRotation()
-                .plus(Rotation2d.k180deg);
+                .plus(Rotation2d.kZero);
         this.translationController = translationController;
         this.headingController = headingController;
         atTarget = new DelayedBoolean(Timer.getFPGATimestamp(), delayTime.in(Units.Seconds));
@@ -264,7 +264,7 @@ public class FollowTrajectoryCommand extends Command{
 				.getStates()
 				.get(trajectory.getStates().size() - 1)
 				.poseMeters
-				.plus(new Transform2d(new Translation2d(), Rotation2d.k180deg));
+				.plus(new Transform2d(new Translation2d(), /*Rotation2d.k180deg*/Rotation2d.kZero));
 		LogUtil.recordPose2d("Auto Align Traj/Target Pose", finalPose);
 	}
 
