@@ -28,7 +28,10 @@ public class LeftDepotClimb extends AutoModeBase{
             AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
             leftTrenchDepot.cmd(),
             new PIDToPoseCommand(drive, superstructure, FieldLayout.handleAllianceFlip(new Pose2d(7.6, 5, new Rotation2d(-1)), RobotConstants.isRedAlliance), Units.Inches.of(12.0), Units.Degrees.of(10.0)),
-			new PIDToPoseCommand(drive, superstructure, leftTrenchDepot.getInitialPose().get(), Units.Inches.of(36.0), Units.Degrees.of(10.0))
+			new PIDToPoseCommand(drive, superstructure, leftTrenchDepot.getInitialPose().get(), Units.Inches.of(36.0), Units.Degrees.of(10.0)),
+            cmdWithAccuracy(leftDepotToShoot),
+            superstructure.shootWhenReady().withTimeout(AutoConstants.shootAllFuelTime),
+            superstructure.climb()
 
         );
     }
