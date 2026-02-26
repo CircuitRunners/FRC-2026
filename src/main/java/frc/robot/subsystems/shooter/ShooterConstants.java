@@ -46,7 +46,7 @@ public class ShooterConstants {
 		config.CurrentLimits.SupplyCurrentLowerTime = 0.1;
 
         config.TorqueCurrent.PeakForwardTorqueCurrent = 800; // default
-        config.TorqueCurrent.PeakReverseTorqueCurrent = 800; // default
+        config.TorqueCurrent.PeakReverseTorqueCurrent = -800; // default
         config.TorqueCurrent.TorqueNeutralDeadband = 0; // default
 
         config.Feedback.SensorToMechanismRatio = kGearing;

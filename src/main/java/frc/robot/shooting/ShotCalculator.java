@@ -176,8 +176,8 @@ public class ShotCalculator {
         // Calculate remaining parameters
         double hoodAngle =
             passing
-                ? Units.Degrees.of(getPassingHoodSetpointForShot(lookaheadLauncherToTargetDistance)).in(Units.Radians)
-                : Units.Degrees.of(getHoodSetpointForShot(lookaheadLauncherToTargetDistance)).in(Units.Radians);
+                ? Units.Degrees.of(getPassingHoodSetpointForShot(lookaheadLauncherToTargetDistance)).in(Units.Degrees)
+                : Units.Degrees.of(getHoodSetpointForShot(lookaheadLauncherToTargetDistance)).in(Units.Degrees);
         if (lastDriveAngle == null) lastDriveAngle = driveAngle;
         if (Double.isNaN(lastHoodAngle)) lastHoodAngle = hoodAngle; //NaN might be not possible, but i dont belive it
         lastDriveAngle = driveAngle;

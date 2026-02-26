@@ -24,10 +24,10 @@ import frc.robot.RobotConstants;
 
 // PH -> PlaceHolder
 public class IntakeDeployConstants {
-    public static final double kGearing = (52.0 / 10.0);
+    public static final double kGearing = (52.0 / 10.0) * (36.0 / 12.0);
 
 	public static final Angle kDeployPosition = Units.Degrees.of(new TunableNumber("kDeployPosition", 3.0, true).get());
-	public static final Angle kStowPosition = Units.Degrees.of(new TunableNumber("kDeployPosition", 83.0, true).get());
+	public static final Angle kStowPosition = Units.Degrees.of(new TunableNumber("kStowPosition", 83.0, true).get());
 
 	public static final Angle kExhaustPosition = kDeployPosition;
 	public static final Distance kArmLength = Units.Inches.of(14.0);
@@ -47,8 +47,8 @@ public class IntakeDeployConstants {
         config.MotionMagic.MotionMagicCruiseVelocity = 5; // PH
         config.MotionMagic.MotionMagicAcceleration = 7; // PH
 
-        config.Voltage.PeakForwardVoltage = 6; // PH
-        config.Voltage.PeakReverseVoltage = -6; // PH
+        config.Voltage.PeakForwardVoltage = 12; // PH
+        config.Voltage.PeakReverseVoltage = -12; // PH
 
         config.CurrentLimits.SupplyCurrentLimitEnable = true;
         config.CurrentLimits.SupplyCurrentLimit = 40; // PH
@@ -57,10 +57,10 @@ public class IntakeDeployConstants {
 
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
-        config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+        config.SoftwareLimitSwitch.ForwardSoftLimitEnable = false;
         config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = kStowPosition.in(Units.Rotations);
 
-        config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+        config.SoftwareLimitSwitch.ReverseSoftLimitEnable = false;
         config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = kDeployPosition.in(Units.Rotations);
 
         return config;

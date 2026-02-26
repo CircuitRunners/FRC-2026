@@ -52,6 +52,9 @@ import frc.robot.subsystems.intakeRollers.IntakeRollers;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.vision.apriltag.Vision;
+import frc.robot.subsystems.vision.apriltag.VisionConstants;
+import frc.robot.subsystems.vision.apriltag.VisionIOPhotonVision;
+import frc.robot.subsystems.vision.apriltag.VisionIOPhotonVisionSim;
 import frc.robot.subsystems.vision.objectdetection.ObjectDetectionConstants;
 import frc.robot.subsystems.vision.objectdetection.ObjectPoseEstimator;
 import frc.robot.subsystems.vision.objectdetection.objectdetectioncamera.ObjectDetectionCamera;
@@ -62,11 +65,12 @@ import frc.robot.auto.AutoModeSelector;
 @Logged
 public class RobotContainer {
     private final Drive drive = new Drive();
+    private final Hood hood = new Hood();
     private final Vision vision = new Vision(
         drive.getDrivetrain().getVisionConsumer()//,
         // (RobotBase.isSimulation())
         // ? new VisionIOPhotonVisionSim(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose)
-        // : new VisionIOPhotonVision(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose),
+        // : new VisionIOPhotonVision(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose)
         // (RobotBase.isSimulation())
         // ? new VisionIOPhotonVisionSim(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
         // : new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
@@ -82,9 +86,7 @@ public class RobotContainer {
     //         ObjectDetectionConstants.cameraTransform
     //     )
     // );
-
     private final Shooter shooter = new Shooter();
-    private final Hood hood = new Hood();
     private final IntakeDeploy intakeDeploy = new IntakeDeploy();
     private final IntakeRollers intakeRollers = new IntakeRollers();
     private final Kicker kicker = new Kicker();
@@ -140,36 +142,36 @@ public class RobotContainer {
         // shooter.setDefaultCommand(shooter.trackTargetCommand(superstructure.shooterSetpoint));
         // hood.setDefaultCommand(hood.trackTargetCommand(superstructure.hoodSetpoint));
 
-        for (SubsystemBase s : new SubsystemBase[] {
-			intakeDeploy,
-			intakeRollers,
-			climber,
-			conveyor,
-			superstructure,
-            kicker,
-            shooter,
-            hood
-		}) {
-			SmartDashboard.putData(s);
-		}
+        // for (SubsystemBase s : new SubsystemBase[] {
+		// 	intakeDeploy,
+		// 	intakeRollers,
+		// 	climber,
+		// 	conveyor,
+		// 	superstructure,
+        //     kicker,
+        //     shooter,
+        //     hood
+		// }) {
+		// 	SmartDashboard.putData(s);
+		// }
     }
 
     private void configureBindings() {
-        // drive.setDefaultCommand(
-        //     driveCommand
-        // );
+        drive.setDefaultCommand(
+            driveCommand
+        );
 
         
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
-        drive.getDrivetrain().setDefaultCommand(
-            // Drivetrain will execute this command periodically
-            drive.getDrivetrain().applyRequest(() ->
-            driveRequest.withVelocityX(-ControlBoardConstants.mDriverController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(-ControlBoardConstants.mDriverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(-ControlBoardConstants.mDriverController.getRightX() * MaxAngularRate).withDeadband(MaxSpeed * 0.15).withRotationalDeadband(MaxAngularRate*0.15) // Drive counterclockwise with negative X (left)
-            )
-        );
+        // drive.getDrivetrain().setDefaultCommand(
+        //     // Drivetrain will execute this command periodically
+        //     drive.getDrivetrain().applyRequest(() ->
+        //     driveRequest.withVelocityX(-ControlBoardConstants.mDriverController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+        //             .withVelocityY(-ControlBoardConstants.mDriverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+        //             .withRotationalRate(-ControlBoardConstants.mDriverController.getRightX() * MaxAngularRate).withDeadband(MaxSpeed * 0.15).withRotationalDeadband(MaxAngularRate*0.15) // Drive counterclockwise with negative X (left)
+        //     )
+        // );
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
@@ -187,6 +189,7 @@ public class RobotContainer {
 
         // reset the field-centric heading on left bumper press
         //ControlBoardConstants.mDriverController.start().onTrue(drive.getDrivetrain().runOnce(() -> drive.getDrivetrain().seedFieldCentric()));
+        ControlBoardConstants.mOperatorController.rightStick().onTrue(resetToVisionPose());
     }
 
     public Command getAutonomousCommand() {
@@ -226,6 +229,9 @@ public class RobotContainer {
     //         //new PIDToPoseCommand(drive, superstructure, FieldLayout.handleAllianceFlip(new Pose2d(5.7392120361328125,0.6200974583625793,new Rotation2d(1.5707977574648115)), RobotConstants.isRedAlliance), DriveConstants.getDriveToPoseTranslationController()
     //     );              
     // }
+    public Command resetToVisionPose() {
+        return Commands.runOnce(() -> drive.getDrivetrain().resetPose(vision.getLatestVisionPose()));
+    }
 
     
 

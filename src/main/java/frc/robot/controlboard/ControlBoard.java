@@ -164,14 +164,14 @@ public class ControlBoard {
 
 
 	private void debugControls() {
-		operator.leftTrigger().onTrue(intakeDeploy.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5)))).onFalse(intakeDeploy.setpointCommand(Setpoint.withNeutralSetpoint()));
-		operator.rightTrigger().onTrue(intakeDeploy.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(-5)))).onFalse(intakeDeploy.setpointCommand(Setpoint.withNeutralSetpoint()));
+		operator.leftTrigger().onTrue(intakeDeploy.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(1)))).onFalse(intakeDeploy.setpointCommand(Setpoint.withNeutralSetpoint()));
+		operator.rightTrigger().onTrue(intakeDeploy.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(-1)))).onFalse(intakeDeploy.setpointCommand(Setpoint.withNeutralSetpoint()));
 
 		operator.leftBumper().onTrue(intakeRollers.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5)))).onFalse(intakeRollers.setpointCommand(Setpoint.withNeutralSetpoint()));
 		operator.rightBumper().onTrue(intakeRollers.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(-5)))).onFalse(intakeRollers.setpointCommand(Setpoint.withNeutralSetpoint()));
 
-		operator.povLeft().onTrue(conveyor.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5)))).onFalse(conveyor.setpointCommand(Setpoint.withNeutralSetpoint()));
-		operator.povRight().onTrue(conveyor.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(-5)))).onFalse(conveyor.setpointCommand(Setpoint.withNeutralSetpoint()));
+		//operator.povLeft().onTrue(conveyor.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5)))).onFalse(conveyor.setpointCommand(Setpoint.withNeutralSetpoint()));
+		operator.povRight().onTrue(conveyor.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5)))).onFalse(conveyor.setpointCommand(Setpoint.withNeutralSetpoint()));
 
 		operator.povUp().onTrue(climber.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5)))).onFalse(climber.setpointCommand(Setpoint.withNeutralSetpoint()));
 		operator.povDown().onTrue(climber.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(-5)))).onFalse(climber.setpointCommand(Setpoint.withNeutralSetpoint()));
@@ -184,6 +184,11 @@ public class ControlBoard {
 
 		operator.start().onTrue(hood.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5)))).onFalse(hood.setpointCommand(Setpoint.withNeutralSetpoint()));
 		operator.back().onTrue(hood.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(-5)))).onFalse(hood.setpointCommand(Setpoint.withNeutralSetpoint()));
+
+		operator.leftStick().onTrue(superstructure.zero());
+
+		operator.povLeft().onTrue(Commands.parallel(conveyor.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(-12))),
+		kicker.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(-5))))).onFalse(Commands.parallel(kicker.setpointCommand(Setpoint.withNeutralSetpoint()), conveyor.setpointCommand(Setpoint.withNeutralSetpoint())));
 	}
 
 // // 		operator.y().onTrue(s.stationIntakeToHold());

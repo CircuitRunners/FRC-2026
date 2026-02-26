@@ -87,18 +87,20 @@ public class Superstructure extends SubsystemBase {
         updateShooterSetpoint();
         updateHoodSetpoint();
         updateHeadingSetpoint();
-        SmartDashboard.putBoolean("Near Trench", nearTrench);
+        // SmartDashboard.putBoolean("Near Trench", nearTrench);
         LoggedTracer.record("Superstructure Loop Time");
     }
 
     public void updateShooterSetpoint() {
       if (visionValid()) {
+        kitbotMode = false;
         shooterSetpoint = 
             Setpoint.withVelocitySetpoint(
               Units.RotationsPerSecond.of(
               ShotCalculator.getInstance(drive)
               .getParameters()
               .flywheelSpeed()));
+        ControlBoard.getInstance(drive, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, climber, this).setRumble(false);
       }
       else {
         shooterSetpoint = Shooter.KITBOT;
@@ -185,7 +187,7 @@ public class Superstructure extends SubsystemBase {
 
     public Command shootWhenReady() {
       return Commands.sequence(
-                Commands.either(waitUntilSafeToShoot(), Commands.none(), () -> state != State.SHOOTING),
+                Commands.either(waitUntilSafeToShoot(), Commands.none(), () -> state != State.SHOOTING && state != State.SHOOTINTAKE),
                 shoot(),
                 Commands.either(setState(State.SHOOTINTAKE), setState(State.SHOOTING), () -> state == State.INTAKING),
                 Commands.waitUntil(() -> false))
@@ -297,11 +299,6 @@ public class Superstructure extends SubsystemBase {
 
     //     }, Set.of(drive));
     // }
-
-    // Subsystem moving
-    public Command runIntakeDeploy(double voltage) {
-      return intakeDeploy.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(voltage)));
-    }
 
     public static enum State {
       TUCK,

@@ -52,10 +52,10 @@ public class HoodConstants {
 
 		config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
-		config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+		config.SoftwareLimitSwitch.ForwardSoftLimitEnable = false;
 		config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = kMaxAngle.in(Units.Rotations);
 
-		config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+		config.SoftwareLimitSwitch.ReverseSoftLimitEnable = false;
 		config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = kMinAngle.in(Units.Rotations);
 		return config;
     }
