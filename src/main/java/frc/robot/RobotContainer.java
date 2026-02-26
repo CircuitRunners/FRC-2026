@@ -76,23 +76,24 @@ public class RobotContainer {
         // : new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
     );
 
-    // public final ObjectPoseEstimator objectDetector = new ObjectPoseEstimator(
-    //     drive,
-    //     ObjectDetectionConstants.OBJECT_POSE_ESTIMATOR_DELETION_THRESHOLD_SECONDS,
-    //     SimulatedGamePieceConstants.GamePieceType.FUEL,
-    //     new ObjectDetectionCamera(
-    //         drive,
-    //         "ObjectDetection",
-    //         ObjectDetectionConstants.cameraTransform
-    //     )
-    // );
+    public final ObjectPoseEstimator objectDetector = new ObjectPoseEstimator(
+        drive,
+        ObjectDetectionConstants.OBJECT_POSE_ESTIMATOR_DELETION_THRESHOLD_SECONDS,
+        SimulatedGamePieceConstants.GamePieceType.FUEL,
+        new ObjectDetectionCamera(
+            drive,
+            "ObjectDetection",
+            ObjectDetectionConstants.cameraTransform
+        )
+    );
+
     private final Shooter shooter = new Shooter();
     private final IntakeDeploy intakeDeploy = new IntakeDeploy();
     private final IntakeRollers intakeRollers = new IntakeRollers();
     private final Kicker kicker = new Kicker();
     private final Conveyor conveyor = new Conveyor();
     private final Climber climber = new Climber();
-    private final Superstructure superstructure = new Superstructure(drive, vision, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, climber /* , objectDetector*/);
+    private final Superstructure superstructure = new Superstructure(drive, vision, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, climber , objectDetector);
     
 
     private final ControlBoard controlBoard = ControlBoard.getInstance(drive, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, climber, superstructure);
@@ -198,37 +199,12 @@ public class RobotContainer {
 
     private final DriveMaintainingHeading driveCommand = 
         new DriveMaintainingHeading(drive, superstructure, () -> ControlBoardConstants.mDriverController.getLeftY(), () -> ControlBoardConstants.mDriverController.getLeftX(), () -> -ControlBoardConstants.mDriverController.getRightX(), () -> superstructure.maintainHeadingEpsilon);
+    
 
-    // public Command collectFuelCommand() {
-    //     return Commands.sequence(
-    //         Commands.repeatingSequence(
-    //             Commands.defer(() -> {
-    //                 var clusters = OBJECT_POSE_ESTIMATOR.getOrderedClusters();
-    //                 if (clusters.isEmpty()) {
-    //                     return Commands.none();
-    //                 }
-    //                 List<Pose2d> poses = new ArrayList<>();
-    //                 Translation2d currentTrans = drive.getPose().getTranslation();
+    
 
-    //                 for (Translation2d t : clusters) {
-    //                     Rotation2d r = t.minus(currentTrans).getAngle();
-    //                     poses.add(new Pose2d(t, r));
-    //                     currentTrans = t;
-    //                 }
 
-    //                 return new PIDToPosesCommand(
-    //                         drive,
-    //                         superstructure,
-    //                         poses
-    //                 ).andThen(Commands.runOnce(() ->
-    //                     OBJECT_POSE_ESTIMATOR.removeClosestObjectToRobot()
-    //                 ));
 
-    //             }, Set.of(drive))
-    //         ).until(() -> OBJECT_POSE_ESTIMATOR.getOrderedClusters().isEmpty())
-    //         //new PIDToPoseCommand(drive, superstructure, FieldLayout.handleAllianceFlip(new Pose2d(5.7392120361328125,0.6200974583625793,new Rotation2d(1.5707977574648115)), RobotConstants.isRedAlliance), DriveConstants.getDriveToPoseTranslationController()
-    //     );              
-    // }
     public Command resetToVisionPose() {
         return Commands.runOnce(() -> drive.getDrivetrain().resetPose(vision.getLatestVisionPose()));
     }
