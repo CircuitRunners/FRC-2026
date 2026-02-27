@@ -11,6 +11,7 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -27,6 +28,7 @@ public class AutoModeBase {
 	private static AutoType side;
 	private static Drive drive;
 	private static Superstructure superstructure;
+
 
 	public AutoModeBase(Drive drive, Superstructure superstructure, AutoFactory factory, String name) {
 		routine = factory.newRoutine(name);

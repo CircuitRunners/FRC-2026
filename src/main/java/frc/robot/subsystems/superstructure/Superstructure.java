@@ -1,6 +1,9 @@
 package frc.robot.subsystems.superstructure;
 
+import static frc.robot.subsystems.vision.apriltag.VisionConstants.singleTagIdsToReject;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -10,6 +13,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -17,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.drive.FollowNonstopTrajectory;
 import frc.lib.drive.FollowTrajectoryCommand;
 import frc.lib.drive.PIDToPoseCommand;
 import frc.lib.drive.PIDToPosesCommand;
@@ -52,9 +59,9 @@ public class Superstructure extends SubsystemBase {
     private final Kicker kicker;
     private final Conveyor conveyor;
     private final Climber climber;
-    //private final ObjectPoseEstimator objectPoseEstimator;
+    private final ObjectPoseEstimator objectPoseEstimator;
 
-    public Superstructure(Drive drive, Vision vision, Shooter shooter, Hood hood, IntakeDeploy intakeDeploy, IntakeRollers intakeRollers, Kicker kicker, Conveyor conveyor, Climber climber/*, ObjectPoseEstimator objectPoseEstimator*/) {
+    public Superstructure(Drive drive, Vision vision, Shooter shooter, Hood hood, IntakeDeploy intakeDeploy, IntakeRollers intakeRollers, Kicker kicker, Conveyor conveyor, Climber climber, ObjectPoseEstimator objectPoseEstimator) {
         this.drive = drive;
         this.vision = vision;
         this.shooter = shooter;
@@ -64,7 +71,7 @@ public class Superstructure extends SubsystemBase {
         this.kicker = kicker;
         this.conveyor = conveyor;
         this.climber = climber;
-        //this.objectPoseEstimator = objectPoseEstimator;
+        this.objectPoseEstimator = objectPoseEstimator;
     }
 
     private boolean isPathFollowing = false;
@@ -75,6 +82,8 @@ public class Superstructure extends SubsystemBase {
     public boolean shootOnTheMove = false;
     public boolean headingLockToggle = false;
     public boolean nearTrench = false;
+    TrajectoryConfig config = new TrajectoryConfig(DriveConstants.kDriveMaxSpeed, DriveConstants.kMaxAccelerationMetersPerSecondSquared);
+
 
     public double maintainHeadingEpsilon = 0.25;
 
@@ -279,13 +288,15 @@ public class Superstructure extends SubsystemBase {
       ).withName("Climb Sequence");
     }
 
-    // public SequentialCommandGroup getCmd() {
-    //   return new SequentialCommandGroup(
-    //     new FollowTrajectoryCommand(drive, objectPoseEstimator.trajectories.get(0)),
-    //     new FollowTrajectoryCommand(drive, objectPoseEstimator.trajectories.get(1)),
-    //     new FollowTrajectoryCommand(drive, objectPoseEstimator.trajectories.get(2))
-    //   );
-    // }
+    public Command collectFuel(ObjectPoseEstimator.INTAKE_SIDE i) {
+      return Commands.defer(() -> {
+        objectPoseEstimator.updateIntakeSide(i);
+        objectPoseEstimator.updateSingleTrajectory();
+        return new FollowNonstopTrajectory(objectPoseEstimator.singleTrajectory, drive);
+      },
+      Collections.singleton(drive) 
+      );
+    }
 
     public static enum State {
       TUCK,
@@ -296,6 +307,7 @@ public class Superstructure extends SubsystemBase {
       CLIMBING,
       SHOOTINTAKE,
     }
+
 
     public boolean visionValid() {
       double time = vision.timeSinceLastTargetSeen();
