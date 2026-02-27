@@ -19,11 +19,11 @@ import frc.robot.Ports;
 import frc.robot.Robot;
 
 public class HoodConstants {
-    public static final double kGearing = (36.0 / 12.0) * (181.0 / 10.0);
+    public static final double kGearing = (24.0 / 12.0) * (181.0 / 10.0);
 
-    public static final Angle kKitbotPosition = Units.Degrees.of(10.0);
-    public static final Angle kMaxAngle = Units.Degrees.of(67.0);
-    public static final Angle kMinAngle = Units.Degrees.of(0.0);
+    public static final Angle kKitbotPosition = Units.Degrees.of(0.0);
+    public static final Angle kMaxAngle = Units.Degrees.of(28.5);
+    public static final Angle kMinAngle = Units.Degrees.of(11.8);
 
     public static final Angle kEpsilonThreshold = Units.Degrees.of(0.5);
 	
@@ -52,11 +52,11 @@ public class HoodConstants {
 
 		config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
-		config.SoftwareLimitSwitch.ForwardSoftLimitEnable = false;
-		config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = kMaxAngle.in(Units.Rotations);
+		config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+		config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = kMinAngle.in(Units.Rotations);
 
-		config.SoftwareLimitSwitch.ReverseSoftLimitEnable = false;
-		config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = kMinAngle.in(Units.Rotations);
+		config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+		config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = kMaxAngle.in(Units.Rotations);
 		return config;
     }
 

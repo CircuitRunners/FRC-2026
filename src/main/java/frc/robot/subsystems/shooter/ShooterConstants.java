@@ -31,8 +31,8 @@ public class ShooterConstants {
 
     public static TalonFXConfiguration getFXConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
-        config.Slot1.kS = 0.0; // default
-        config.Slot1.kA = 0.0; // default
+        config.Slot1.kS = 6.0;
+		config.Slot1.kV = 0.12;
         config.Slot1.kP = 0.0; // default
         config.Slot1.kI = 0.0; // default
         config.Slot1.kD = 0.0; // default

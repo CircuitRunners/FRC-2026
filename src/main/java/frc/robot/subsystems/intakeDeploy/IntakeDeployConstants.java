@@ -26,8 +26,8 @@ import frc.robot.RobotConstants;
 public class IntakeDeployConstants {
     public static final double kGearing = (52.0 / 10.0) * (36.0 / 12.0);
 
-	public static final Angle kDeployPosition = Units.Degrees.of(new TunableNumber("kDeployPosition", 3.0, true).get());
-	public static final Angle kStowPosition = Units.Degrees.of(new TunableNumber("kStowPosition", 83.0, true).get());
+	public static final Angle kDeployPosition = Units.Degrees.of(new TunableNumber("kDeployPosition", 0.0, true).get());
+	public static final Angle kStowPosition = Units.Degrees.of(new TunableNumber("kStowPosition", 129.0, true).get());
 
 	public static final Angle kExhaustPosition = kDeployPosition;
 	public static final Distance kArmLength = Units.Inches.of(14.0);
@@ -36,7 +36,7 @@ public class IntakeDeployConstants {
 
     public static TalonFXConfiguration getFXConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
-        config.Slot0.kP = 180.0; // PH
+        config.Slot0.kP = 10.0; // PH
         config.Slot0.kD = 0.0; // PH
         config.Slot0.kS = 0.0; // PH
         config.Slot0.kG = 0.0; // PH
@@ -44,11 +44,11 @@ public class IntakeDeployConstants {
         config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
         config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
 
-        config.MotionMagic.MotionMagicCruiseVelocity = 5; // PH
-        config.MotionMagic.MotionMagicAcceleration = 7; // PH
+        config.MotionMagic.MotionMagicCruiseVelocity = 7.0; // PH
+        config.MotionMagic.MotionMagicAcceleration = 15.0; // PH
 
-        config.Voltage.PeakForwardVoltage = 12; // PH
-        config.Voltage.PeakReverseVoltage = -12; // PH
+        config.Voltage.PeakForwardVoltage = 12;
+        config.Voltage.PeakReverseVoltage = -12;
 
         config.CurrentLimits.SupplyCurrentLimitEnable = true;
         config.CurrentLimits.SupplyCurrentLimit = 40; // PH
@@ -57,10 +57,10 @@ public class IntakeDeployConstants {
 
         config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
-        config.SoftwareLimitSwitch.ForwardSoftLimitEnable = false;
+        config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
         config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = kStowPosition.in(Units.Rotations);
 
-        config.SoftwareLimitSwitch.ReverseSoftLimitEnable = false;
+        config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
         config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = kDeployPosition.in(Units.Rotations);
 
         return config;

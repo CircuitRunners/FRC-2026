@@ -52,9 +52,9 @@ public class Superstructure extends SubsystemBase {
     private final Kicker kicker;
     private final Conveyor conveyor;
     private final Climber climber;
-    private final ObjectPoseEstimator objectPoseEstimator;
+    //private final ObjectPoseEstimator objectPoseEstimator;
 
-    public Superstructure(Drive drive, Vision vision, Shooter shooter, Hood hood, IntakeDeploy intakeDeploy, IntakeRollers intakeRollers, Kicker kicker, Conveyor conveyor, Climber climber, ObjectPoseEstimator objectPoseEstimator) {
+    public Superstructure(Drive drive, Vision vision, Shooter shooter, Hood hood, IntakeDeploy intakeDeploy, IntakeRollers intakeRollers, Kicker kicker, Conveyor conveyor, Climber climber/*, ObjectPoseEstimator objectPoseEstimator*/) {
         this.drive = drive;
         this.vision = vision;
         this.shooter = shooter;
@@ -64,7 +64,7 @@ public class Superstructure extends SubsystemBase {
         this.kicker = kicker;
         this.conveyor = conveyor;
         this.climber = climber;
-        this.objectPoseEstimator = objectPoseEstimator;
+        //this.objectPoseEstimator = objectPoseEstimator;
     }
 
     private boolean isPathFollowing = false;
@@ -73,7 +73,7 @@ public class Superstructure extends SubsystemBase {
     private boolean kitbotMode = false;
     private boolean intakeDeployed = false;
     public boolean shootOnTheMove = false;
-    public boolean headingLockToggle = true;
+    public boolean headingLockToggle = false;
     public boolean nearTrench = false;
 
     public double maintainHeadingEpsilon = 0.25;
@@ -102,12 +102,12 @@ public class Superstructure extends SubsystemBase {
               ShotCalculator.getInstance(drive)
               .getParameters()
               .flywheelSpeed()));
-        ControlBoard.getInstance(drive, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, climber, this).setRumble(false);
+        //ControlBoard.getInstance(drive, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, climber, this).setRumble(false);
       }
       else {
         shooterSetpoint = Shooter.KITBOT;
         kitbotMode = true;
-        ControlBoard.getInstance(drive, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, climber, this).setRumble(true);
+        //ControlBoard.getInstance(drive, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, climber, this).setRumble(true);
       }
     }
 
@@ -177,7 +177,7 @@ public class Superstructure extends SubsystemBase {
     public Command waitUntilSafeToShoot() {
       return Commands.waitUntil(() -> shooter.spunUp() 
       && hood.nearPositionSetpoint() 
-      && (kitbotMode || RobotState.isAutonomous() || drive.getRotation().getMeasure().isNear(headingSetpoint.getMeasure(), Units.Degrees.of(5.0))));
+      && (kitbotMode || RobotState.isAutonomous() || drive.getRotation().getMeasure().isNear(headingSetpoint.getMeasure(), Units.Degrees.of(5.0))) || !headingLockToggle);
     }
 
     public Command shoot() {
@@ -226,7 +226,7 @@ public class Superstructure extends SubsystemBase {
 
     public Command driveBrake() {
       return Commands.sequence(
-        Commands.waitUntil(() -> drive.getRotation().getMeasure().isNear(headingSetpoint.getMeasure(), Units.Degrees.of(5.0))),
+        //Commands.waitUntil(() -> drive.getRotation().getMeasure().isNear(headingSetpoint.getMeasure(), Units.Degrees.of(5.0))),
         drive.brake()
       );
     }
@@ -279,13 +279,13 @@ public class Superstructure extends SubsystemBase {
       ).withName("Climb Sequence");
     }
 
-    public SequentialCommandGroup getCmd() {
-      return new SequentialCommandGroup(
-        new FollowTrajectoryCommand(drive, objectPoseEstimator.trajectories.get(0)),
-        new FollowTrajectoryCommand(drive, objectPoseEstimator.trajectories.get(1)),
-        new FollowTrajectoryCommand(drive, objectPoseEstimator.trajectories.get(2))
-      );
-    }
+    // public SequentialCommandGroup getCmd() {
+    //   return new SequentialCommandGroup(
+    //     new FollowTrajectoryCommand(drive, objectPoseEstimator.trajectories.get(0)),
+    //     new FollowTrajectoryCommand(drive, objectPoseEstimator.trajectories.get(1)),
+    //     new FollowTrajectoryCommand(drive, objectPoseEstimator.trajectories.get(2))
+    //   );
+    // }
 
     public static enum State {
       TUCK,
