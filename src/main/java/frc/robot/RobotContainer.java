@@ -17,6 +17,8 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -34,6 +36,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.lib.drive.PIDToPosesCommand;
 import frc.lib.util.FieldLayout;
 import frc.lib.drive.DriveMaintainingHeading;
+import frc.lib.drive.FollowNonstopTrajectory;
 import frc.lib.drive.FollowTrajectoryCommand;
 import frc.lib.drive.PIDToPoseCommand;
 import frc.robot.controlboard.ControlBoard;
@@ -67,25 +70,24 @@ public class RobotContainer {
     private final Drive drive = new Drive();
     private final Hood hood = new Hood();
     private final Vision vision = new Vision(
-        drive.getDrivetrain().getVisionConsumer()//,
-        // (RobotBase.isSimulation())
-        // ? new VisionIOPhotonVisionSim(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose)
-        // : new VisionIOPhotonVision(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose)
-        // (RobotBase.isSimulation())
-        // ? new VisionIOPhotonVisionSim(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
-        // : new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
+        drive.getDrivetrain().getVisionConsumer(),//,
+        (RobotBase.isSimulation())
+        ? new VisionIOPhotonVisionSim(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose)
+        : new VisionIOPhotonVision(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose),
+        (RobotBase.isSimulation())
+        ? new VisionIOPhotonVisionSim(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
+        : new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
     );
-
-    public final ObjectPoseEstimator objectDetector = new ObjectPoseEstimator(
-        drive,
-        ObjectDetectionConstants.OBJECT_POSE_ESTIMATOR_DELETION_THRESHOLD_SECONDS,
-        SimulatedGamePieceConstants.GamePieceType.FUEL,
-        new ObjectDetectionCamera(
-            drive,
-            "ObjectDetection",
-            ObjectDetectionConstants.cameraTransform
-        )
-    );
+    // public final ObjectPoseEstimator objectDetector = new ObjectPoseEstimator(
+    //     drive,
+    //     ObjectDetectionConstants.OBJECT_POSE_ESTIMATOR_DELETION_THRESHOLD_SECONDS,
+    //     SimulatedGamePieceConstants.GamePieceType.FUEL,
+    //     new ObjectDetectionCamera(
+    //         drive,
+    //         "ObjectDetection",
+    //         ObjectDetectionConstants.cameraTransform
+    //     )
+    // );
 
     private final Shooter shooter = new Shooter();
     private final IntakeDeploy intakeDeploy = new IntakeDeploy();
@@ -93,7 +95,7 @@ public class RobotContainer {
     private final Kicker kicker = new Kicker();
     private final Conveyor conveyor = new Conveyor();
     private final Climber climber = new Climber();
-    private final Superstructure superstructure = new Superstructure(drive, vision, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, climber , objectDetector);
+    private final Superstructure superstructure = new Superstructure(drive, vision, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, climber , null);
     
 
     private final ControlBoard controlBoard = ControlBoard.getInstance(drive, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, climber, superstructure);
@@ -208,6 +210,8 @@ public class RobotContainer {
     public Command resetToVisionPose() {
         return Commands.runOnce(() -> drive.getDrivetrain().resetPose(vision.getLatestVisionPose()));
     }
+
+    
 
     
 

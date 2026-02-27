@@ -1,10 +1,15 @@
 package frc.robot.auto.autos;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoTrajectory;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.drive.PIDToPoseCommand;
 import frc.lib.util.FieldLayout;
@@ -16,6 +21,7 @@ import frc.robot.auto.AutoConstants;
 import frc.robot.auto.AutoHelpers;
 import frc.robot.auto.AutoModeBase;
 import frc.robot.subsystems.superstructure.Superstructure;
+import frc.robot.subsystems.vision.objectdetection.ObjectPoseEstimator;
 
 
 public class RightNeutralClimb extends AutoModeBase {
@@ -32,12 +38,13 @@ public class RightNeutralClimb extends AutoModeBase {
 		prepRoutine(
 			AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
 			Commands.parallel(rightTrenchToNeutral.cmd(), superstructure.deployIntake()),
-            superstructure.getCmd(),
-			new PIDToPoseCommand(drive, superstructure, rightNeutralToTrench.getInitialPose().get(), Units.Inches.of(50.0), Units.Degrees.of(10.0)),
+			superstructure.collectFuel(ObjectPoseEstimator.INTAKE_SIDE.RIGHT),
 			rightNeutralToTrench.cmd(),
 			cmdWithAccuracy(rightTrenchToShoot),
 			superstructure.shootWhenReady().withTimeout(AutoConstants.shootAllFuelTime),
 			superstructure.climb()
         );
+
+
 	}
 }
