@@ -24,24 +24,18 @@ import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.vision.objectdetection.ObjectPoseEstimator;
 
 
-public class RightNeutralClimb extends AutoModeBase {
-	public RightNeutralClimb(Drive drive, Superstructure superstructure, AutoFactory factory) {
-		super(drive, superstructure, factory, "Right Neutral Cycle + Climb");
-		AutoTrajectory rightTrenchToNeutral = trajectory("rightTrenchToNeutral");
-		AutoTrajectory rightNeutralToTrench = trajectory("rightNeutralToTrench");
-		AutoTrajectory rightTrenchToShoot = trajectory("rightTrenchToShoot");
-		Pose2d startPose = rightTrenchToNeutral.getInitialPose().get();
-		superstructure.updateSide(ObjectPoseEstimator.INTAKE_SIDE.RIGHT);
+public class CenterPreloadClimbRight extends AutoModeBase {
+	public CenterPreloadClimbRight(Drive drive, Superstructure superstructure, AutoFactory factory) {
+		super(drive, superstructure, factory, "Center Preload + Right Climb");
+		AutoTrajectory centerPreloadClimb = trajectory("centerPreloadClimb");
+
+		Pose2d startPose = centerPreloadClimb.getInitialPose().get();
+		
 
 
 		prepRoutine(
 			AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
-			Commands.parallel(rightTrenchToNeutral.cmd(), superstructure.deployIntake()),
-			Commands.deadline(
-				superstructure.collectFuel(rightNeutralToTrench.getInitialPose().get()).withTimeout(7),
-				superstructure.runIntakeIfDeployed()),
-			rightNeutralToTrench.cmd(),
-			cmdWithAccuracy(rightTrenchToShoot),
+			Commands.parallel(cmdWithAccuracy(centerPreloadClimb), superstructure.deployIntake()),
 			superstructure.shootWhenReady().withTimeout(AutoConstants.shootAllFuelTime),
 			superstructure.climbRight()
         );

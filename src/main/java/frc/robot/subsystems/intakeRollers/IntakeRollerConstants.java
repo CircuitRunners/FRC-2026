@@ -75,6 +75,6 @@ public class IntakeRollerConstants {
 	}
 
     public static final double intakeWidth = .61;
-    public static final int fuelLimit = 30;
+    public static final int fuelLimit = 55;
     public static int numberOfFuel = 0;
 }

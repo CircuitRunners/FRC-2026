@@ -1,4 +1,4 @@
-package frc.robot.auto.autos;
+package frc.robot.auto.autos.unused;
 
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoTrajectory;
