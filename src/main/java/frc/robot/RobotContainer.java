@@ -34,6 +34,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.lib.drive.PIDToPosesCommand;
+import frc.lib.logging.LoggedTracer;
 import frc.lib.util.FieldLayout;
 import frc.lib.drive.DriveMaintainingHeading;
 import frc.lib.drive.FollowNonstopTrajectory;
@@ -65,18 +66,18 @@ import frc.robot.subsystems.vision.objectdetection.simulatedfield.SimulatedGameP
 import frc.robot.subsystems.vision.objectdetection.simulatedfield.SimulationFieldHandler;
 import frc.robot.auto.AutoHelpers;
 import frc.robot.auto.AutoModeSelector;
-@Logged
+
 public class RobotContainer {
     private final Drive drive = new Drive();
     private final Hood hood = new Hood();
     private final Vision vision = new Vision(
-        drive.getDrivetrain().getVisionConsumer(),//,
-        (RobotBase.isSimulation())
-        ? new VisionIOPhotonVisionSim(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose)
-        : new VisionIOPhotonVision(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose),
-        (RobotBase.isSimulation())
-        ? new VisionIOPhotonVisionSim(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
-        : new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
+        drive.getDrivetrain().getVisionConsumer()//,
+        // (RobotBase.isSimulation())
+        // ? new VisionIOPhotonVisionSim(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose)
+        // : new VisionIOPhotonVision(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose)
+        // (RobotBase.isSimulation())
+        // ? new VisionIOPhotonVisionSim(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
+        // : new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
     );
     // public final ObjectPoseEstimator objectDetector = new ObjectPoseEstimator(
     //     drive,
@@ -95,7 +96,7 @@ public class RobotContainer {
     private final Kicker kicker = new Kicker();
     private final Conveyor conveyor = new Conveyor();
     private final Climber climber = new Climber();
-    private final Superstructure superstructure = new Superstructure(drive, vision, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, climber , null);
+    private final Superstructure superstructure = new Superstructure(drive, vision, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, climber, null);
     
 
     private final ControlBoard controlBoard = ControlBoard.getInstance(drive, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, climber, superstructure);
@@ -129,7 +130,6 @@ public class RobotContainer {
 				drive::getPose,
 				drive.getDrivetrain()::resetPose,
 				drive::followChoreoTrajectory,
-                
 				true,
 				drive);
 
@@ -137,6 +137,7 @@ public class RobotContainer {
         mAutoModeSelector = new AutoModeSelector(drive, superstructure, RobotConstants.mAutoFactory);
 		mPreviousAutoName = mAutoModeSelector.getSelectedCommand().getName();
         SmartDashboard.putData("Auto Chooser", mAutoModeSelector.getAutoChooser());
+        
 
         // pretty sure we don't need this, or we need to change it a bit cuz heading lock
         // RobotModeTriggers.autonomous()
@@ -145,18 +146,18 @@ public class RobotContainer {
         // shooter.setDefaultCommand(shooter.trackTargetCommand(superstructure.shooterSetpoint));
         // hood.setDefaultCommand(hood.trackTargetCommand(superstructure.hoodSetpoint));
 
-        // for (SubsystemBase s : new SubsystemBase[] {
-		// 	intakeDeploy,
-		// 	intakeRollers,
-		// 	climber,
-		// 	conveyor,
-		// 	superstructure,
-        //     kicker,
-        //     shooter,
-        //     hood
-		// }) {
-		// 	SmartDashboard.putData(s);
-		// }
+        for (SubsystemBase s : new SubsystemBase[] {
+			// intakeDeploy,
+			// intakeRollers,
+			// climber,
+			// conveyor,
+			// superstructure,
+            // kicker,
+            shooter//,
+            // hood
+		}) {
+			SmartDashboard.putData(s);
+		}
     }
 
     private void configureBindings() {

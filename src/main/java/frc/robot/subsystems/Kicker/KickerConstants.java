@@ -21,8 +21,8 @@ import frc.robot.Robot;
 public class KickerConstants {
     private static final double kGearing = (18.0 / 18.0);
 
-    public static final Voltage kFeedForwardVoltage = Volts.of(12.0); // PH
-    public static final Voltage kFeedBackwardVoltage = Volts.of(-12.0); // PH
+    public static final Voltage kFeedForwardVoltage = Volts.of(-9.0); // PH
+    public static final Voltage kFeedBackwardVoltage = Volts.of(5.0); // PH
 
     public static TalonFXConfiguration getFXConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();

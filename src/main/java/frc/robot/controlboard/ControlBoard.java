@@ -128,7 +128,8 @@ public class ControlBoard {
 
 		driver.a().whileTrue(s.spit()).onFalse(s.setState(Superstructure.State.DEPLOYED));
 
- 		driver.leftBumper().onTrue(s.tuck());
+ 		//driver.leftBumper().onTrue(s.tuck());
+		operator.rightTrigger(0.1).onTrue(intakeRollers.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5)))).onFalse(intakeRollers.setpointCommand(Setpoint.withNeutralSetpoint()));
 
  		// INTAKING ###############################################################################
 
@@ -138,12 +139,22 @@ public class ControlBoard {
 						.onFalse(Commands.either(s.setState(State.SHOOTING), s.setState(State.DEPLOYED), () -> s.getState() == State.SHOOTINTAKE));
  						//.withName("Deploy and/or Intake"));
 
- 		driver.x().whileTrue(
-						Commands.sequence(
-							Commands.runOnce(() -> s.maintainHeadingEpsilon = 0.00),
-							s.shootWhenReady()
-							.withName("Shooting").finallyDo(() -> superstructure.maintainHeadingEpsilon = 0.25)).withName("Shooting")
-		).onFalse(Commands.either(s.setState(State.INTAKING), s.setState(State.DEPLOYED), () -> s.getState() == State.SHOOTINTAKE));
+ 		// driver.x().whileTrue(
+		// 				Commands.sequence(
+		// 					Commands.runOnce(() -> s.maintainHeadingEpsilon = 0.00),
+		// 					s.shootWhenReady()
+		// 					.withName("Shooting").finallyDo(() -> superstructure.maintainHeadingEpsilon = 0.25)).withName("Shooting")
+		// ).onFalse(Commands.either(s.setState(State.INTAKING), s.setState(State.DEPLOYED), () -> s.getState() == State.SHOOTINTAKE));
+
+		driver.x().whileTrue(
+			Commands.run(
+				() -> shooter.applySetpoint(s.shooterSetpoint),
+				shooter
+			)
+		).onFalse(
+			shooter.setpointCommand(Shooter.IDLE)
+		);
+
 
 		driver.b().whileTrue(s.climb()).onFalse(s.setState(Superstructure.State.CLIMBING));
 
@@ -170,8 +181,8 @@ public class ControlBoard {
 		operator.leftBumper().onTrue(intakeRollers.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5)))).onFalse(intakeRollers.setpointCommand(Setpoint.withNeutralSetpoint()));
 		operator.rightBumper().onTrue(intakeRollers.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(-11)))).onFalse(intakeRollers.setpointCommand(Setpoint.withNeutralSetpoint()));
 
-		//operator.povLeft().onTrue(conveyor.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5)))).onFalse(conveyor.setpointCommand(Setpoint.withNeutralSetpoint()));
 		operator.povRight().onTrue(conveyor.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5)))).onFalse(conveyor.setpointCommand(Setpoint.withNeutralSetpoint()));
+		//operator.povRight().onTrue(conveyor.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5)))).onFalse(conveyor.setpointCommand(Setpoint.withNeutralSetpoint()));
 
 		operator.povUp().onTrue(climber.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5)))).onFalse(climber.setpointCommand(Setpoint.withNeutralSetpoint()));
 		operator.povDown().onTrue(climber.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(-5)))).onFalse(climber.setpointCommand(Setpoint.withNeutralSetpoint()));
@@ -188,7 +199,10 @@ public class ControlBoard {
 		operator.leftStick().onTrue(superstructure.zero());
 
 		operator.povLeft().onTrue(Commands.parallel(conveyor.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(-12))),
-		kicker.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(-5))))).onFalse(Commands.parallel(kicker.setpointCommand(Setpoint.withNeutralSetpoint()), conveyor.setpointCommand(Setpoint.withNeutralSetpoint())));
+		kicker.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(-5))),
+		Commands.sequence(
+		intakeDeploy.setpointCommandWithWait(IntakeDeploy.SHAKE), intakeDeploy.setpointCommandWithWait(IntakeDeploy.DEPLOY)))
+		).onFalse(Commands.parallel(kicker.setpointCommand(Setpoint.withNeutralSetpoint()), conveyor.setpointCommand(Setpoint.withNeutralSetpoint())));
 	}
 
 // // 		operator.y().onTrue(s.stationIntakeToHold());

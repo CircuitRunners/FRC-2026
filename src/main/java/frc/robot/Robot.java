@@ -20,14 +20,14 @@ import frc.lib.drive.PIDToPoseCommand;
 import frc.lib.logging.LoggedTracer;
 import frc.lib.util.Stopwatch;
 
-@Logged
+
 public class Robot extends TimedRobot {
   private final RobotContainer m_robotContainer;
   private Command mAutonomousCommand;
   public static final Stopwatch autoTimer = new Stopwatch();
   public Robot() {
     m_robotContainer = new RobotContainer();
-    Epilogue.bind(this);
+    //Epilogue.bind(this);
   }
 
   @Override
@@ -36,7 +36,7 @@ public class Robot extends TimedRobot {
 
     // Clear shooting parameters
     m_robotContainer.getShotCalculator().clearShootingParameters();
-    LoggedTracer.record("Robot Loop Time");
+    //LoggedTracer.record("Robot Loop Time");
   }
 
   @Override

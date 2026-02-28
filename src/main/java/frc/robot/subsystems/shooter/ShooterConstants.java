@@ -25,22 +25,20 @@ public class ShooterConstants {
     public static final double kGearing = 1.0 / 1.0;
     public static Transform2d robotToShooter = new Transform2d(Units.Inches.of(0), Units.Inches.of(6.881), Rotation2d.kZero);
 
-    public static final AngularVelocity kMinVelocity = Units.RotationsPerSecond.of(2000);
+    public static final AngularVelocity kMinVelocity = Units.RotationsPerSecond.of(30.0);
 
-    public static final AngularVelocity kEpsilonThreshold = Units.RotationsPerSecond.of(100);
+    public static final AngularVelocity kEpsilonThreshold = Units.RotationsPerSecond.of(1.0);
 
     public static TalonFXConfiguration getFXConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
-        config.Slot1.kS = 6.0;
-		config.Slot1.kV = 0.12;
-        config.Slot1.kP = 0.0; // default
-        config.Slot1.kI = 0.0; // default
-        config.Slot1.kD = 0.0; // default
+        config.Slot1.kS = 6.55;
+		config.Slot1.kV = 0.08;
+        config.Slot1.kP = 7.0;
 
         config.CurrentLimits.StatorCurrentLimitEnable = Robot.isReal();
         config.CurrentLimits.StatorCurrentLimit = 120.0; // default
 
-		config.CurrentLimits.SupplyCurrentLimitEnable = Robot.isReal();
+		config.CurrentLimits.SupplyCurrentLimitEnable = Robot.isReal();	
 		config.CurrentLimits.SupplyCurrentLimit = 60.0;
 		config.CurrentLimits.SupplyCurrentLowerLimit = 60.0;
 		config.CurrentLimits.SupplyCurrentLowerTime = 0.1;
@@ -53,7 +51,7 @@ public class ShooterConstants {
 
 		config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
-		config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+		config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
 		return config;
     }
@@ -66,6 +64,7 @@ public class ShooterConstants {
 		config.mainID = Ports.SHOOTER.id;
 		config.mainBus = Ports.SHOOTER.bus;
 		config.followerConfig = getFXConfig();
+		config.followerIDs = new int[] {Ports.SHOOTER_FOLLOWER.id};
 		config.followerMotorAlignment = new MotorAlignmentValue[] {MotorAlignmentValue.Opposed};
 		config.followerBuses = new CANBus[] {Ports.SHOOTER_FOLLOWER.bus};
 		return config;

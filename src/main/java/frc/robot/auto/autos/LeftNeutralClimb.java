@@ -31,7 +31,7 @@ public class LeftNeutralClimb extends AutoModeBase {
 		prepRoutine(
 				AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
 				leftTrenchToNeutral.cmd(),
-				superstructure.collectFuel(ObjectPoseEstimator.INTAKE_SIDE.LEFT),
+				//superstructure.collectFuel(ObjectPoseEstimator.INTAKE_SIDE.LEFT),
 				leftNeutralToTrench.cmd(),
 				cmdWithAccuracy(leftTrenchToShoot),
 				superstructure.shootWhenReady().withTimeout(AutoConstants.shootAllFuelTime),
