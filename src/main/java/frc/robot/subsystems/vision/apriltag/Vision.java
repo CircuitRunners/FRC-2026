@@ -82,7 +82,7 @@ public class Vision extends SubsystemBase {
 
   @Override
   public void periodic() {
-    LoggedTracer.record("Vision Loop Time");
+    //LoggedTracer.record("Vision Loop Time");
     for (int i = 0; i < io.length; i++) {
       io[i].updateInputs(inputs[i]);
       //Logger.processInputs("Vision/Camera" + Integer.toString(i), inputs[i]);

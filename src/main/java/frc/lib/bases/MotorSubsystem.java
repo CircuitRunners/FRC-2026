@@ -34,7 +34,7 @@ public class MotorSubsystem<IO extends MotorIO> extends SubsystemBase {
 	@Override
 	public void periodic() {
 		io.updateInputs();
-		outputTelemetry();
+		//outputTelemetry();
 	}
 
 	/**

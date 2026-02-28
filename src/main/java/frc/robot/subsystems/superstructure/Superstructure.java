@@ -30,6 +30,7 @@ import frc.lib.drive.PIDToPosesCommand;
 import frc.lib.io.MotorIO.Setpoint;
 import frc.lib.logging.LoggedTracer;
 import frc.lib.util.FieldLayout;
+import frc.lib.util.TunableNumber;
 import frc.robot.RobotConstants;
 import frc.robot.controlboard.ControlBoard;
 import frc.robot.shooting.ShotCalculator;
@@ -48,7 +49,7 @@ import frc.robot.subsystems.intakeRollers.IntakeRollers;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.vision.apriltag.Vision;
 import frc.robot.subsystems.vision.objectdetection.ObjectPoseEstimator;
-@Logged
+
 public class Superstructure extends SubsystemBase {
     private final Drive drive;
     private final Vision vision;
@@ -96,28 +97,29 @@ public class Superstructure extends SubsystemBase {
     @Override
     public void periodic() {
         updateShooterSetpoint();
-        updateHoodSetpoint();
-        updateHeadingSetpoint();
+        // updateHoodSetpoint();
+        // updateHeadingSetpoint();
         // SmartDashboard.putBoolean("Near Trench", nearTrench);
-        LoggedTracer.record("Superstructure Loop Time");
+        //LoggedTracer.record("Superstructure Loop Time");
     }
 
     public void updateShooterSetpoint() {
-      if (visionValid()) {
-        kitbotMode = false;
-        shooterSetpoint = 
-            Setpoint.withVelocitySetpoint(
-              Units.RotationsPerSecond.of(
-              ShotCalculator.getInstance(drive)
-              .getParameters()
-              .flywheelSpeed()));
-        //ControlBoard.getInstance(drive, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, climber, this).setRumble(false);
-      }
-      else {
-        shooterSetpoint = Shooter.KITBOT;
-        kitbotMode = true;
-        //ControlBoard.getInstance(drive, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, climber, this).setRumble(true);
-      }
+      shooterSetpoint = Setpoint.withVelocitySetpoint(Units.RotationsPerSecond.of(new TunableNumber("Shooter Vel", 30.0, true).get()));
+      // if (visionValid()) {
+      //   kitbotMode = false;
+      //   shooterSetpoint = 
+      //       Setpoint.withVelocitySetpoint(
+      //         Units.RotationsPerSecond.of(
+      //         ShotCalculator.getInstance(drive)
+      //         .getParameters()
+      //         .flywheelSpeed()));
+      //   //ControlBoard.getInstance(drive, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, climber, this).setRumble(false);
+      // }
+      // else {
+      //   shooterSetpoint = Shooter.KITBOT;
+      //   kitbotMode = true;
+      //   //ControlBoard.getInstance(drive, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, climber, this).setRumble(true);
+      // }
     }
 
     public void updateHoodSetpoint() {
@@ -185,7 +187,7 @@ public class Superstructure extends SubsystemBase {
 
     public Command waitUntilSafeToShoot() {
       return Commands.waitUntil(() -> shooter.spunUp() 
-      && hood.nearPositionSetpoint() 
+      //&& hood.nearPositionSetpoint() 
       && (kitbotMode || RobotState.isAutonomous() || drive.getRotation().getMeasure().isNear(headingSetpoint.getMeasure(), Units.Degrees.of(5.0))) || !headingLockToggle);
     }
 
@@ -198,13 +200,15 @@ public class Superstructure extends SubsystemBase {
 
     public Command shootWhenReady() {
       return Commands.sequence(
+                shooter.setpointCommand(shooterSetpoint),
                 Commands.either(waitUntilSafeToShoot(), Commands.none(), () -> state != State.SHOOTING && state != State.SHOOTINTAKE),
                 shoot(),
                 Commands.either(setState(State.SHOOTINTAKE), setState(State.SHOOTING), () -> state == State.INTAKING),
                 Commands.waitUntil(() -> false))
                 .finallyDo(() -> {
-                  conveyor.applySetpoint((Conveyor.IDLE)); 
-                  kicker.applySetpoint((Kicker.IDLE));
+                  conveyor.applySetpoint(Conveyor.IDLE); 
+                  kicker.applySetpoint(Kicker.IDLE);
+                  shooter.applySetpoint(Shooter.IDLE);
                 });
     }
 
@@ -215,14 +219,21 @@ public class Superstructure extends SubsystemBase {
 
     public Command runIntakeIfDeployed() {
       return Commands.sequence(Commands.either(
-          intakeRollers.setpointCommand(IntakeRollers.INTAKE),
+          Commands.parallel(
+            intakeRollers.setpointCommand(IntakeRollers.INTAKE),
+            conveyor.setpointCommand(Conveyor.FEED_BACKWARDS),
+            kicker.setpointCommand(Kicker.FEED_BACKWARDS)),
           Commands.sequence(
               deployIntake(),
               intakeRollers.setpointCommand(IntakeRollers.INTAKE)),
           () -> intakeDeployed),
           Commands.either(setState(State.SHOOTINTAKE), setState(State.INTAKING), () -> state == State.SHOOTING),
           Commands.waitUntil(() -> false))
-          .withName("Intaking").finallyDo(() -> intakeRollers.applySetpoint(IntakeRollers.IDLE)).withName("End Intaking");
+          .withName("Intaking").finallyDo(() -> {
+            intakeRollers.applySetpoint(IntakeRollers.IDLE);
+            conveyor.applySetpoint(Conveyor.IDLE);
+            kicker.applySetpoint(Kicker.IDLE);})
+            .withName("End Intaking");
     }
 
     public Command tuck() {
@@ -288,113 +299,14 @@ public class Superstructure extends SubsystemBase {
       ).withName("Climb Sequence");
     }
 
-    public Command climbLeft() {
-      return Commands.defer(
-          () -> {
-            Pose2d ladderSide =
-                FieldLayout.leftTower;
-
-            boolean isLeftTower = ladderSide.equals(FieldLayout.leftTower);
-
-            Pose2d initialPose = FieldLayout.handleAllianceFlip(
-                ladderSide.transformBy(
-                    new Transform2d(
-                        SuperstructureConstants.climberOffset
-                            .toTranslation2d()
-                            .plus(new Translation2d(
-                                Units.Inches.of(!isLeftTower ? -5.0 : 5.0),
-                                Units.Inches.of(0.0))),
-                                Rotation2d.kZero)), 
-                        RobotConstants.isRedAlliance);
-
-            Pose2d finalPose = initialPose 
-                  .transformBy(
-                    new Transform2d(
-                        Units.Inches.of(!isLeftTower ? 5.0 : -5.0),
-                        Units.Inches.of(!isLeftTower ? 5.875 / 2.0 : -5.875 / 2.0),
-                        !isLeftTower ? Rotation2d.kZero : Rotation2d.k180deg));
-            if (isLeftTower) finalPose = finalPose.transformBy(new Transform2d(SuperstructureConstants.climberOffset.getMeasureX().times(2.0), Units.Inches.of(0.0), Rotation2d.kZero));
-              
-            if (isLeftTower) {
-              return Commands.sequence(
-                  setState(State.CLIMBING),
-                  climber.setpointCommand(Climber.CLIMB).withName("Climber Raise"),
-                  new PIDToPoseCommand(drive, this, finalPose).withName("Final Align"),
-                  climber.setpointCommand(Climber.ZERO).withName("Climbing")
-              );
-            } else {
-              return Commands.sequence(
-                  setState(State.CLIMBING),
-                  new PIDToPoseCommand(drive, this, initialPose).withName("Initial Align"),
-                  climber.setpointCommand(Climber.CLIMB).withName("Climber Raise"),
-                  new PIDToPoseCommand(drive, this, finalPose).withName("Final Align"),
-                  climber.setpointCommand(Climber.ZERO).withName("Climbing")
-              );
-            }
-          },
-          Set.of(drive, climber)
-      ).withName("Climb Sequence");
-    }
-
-    public Command climbRight() {
-      return Commands.defer(
-          () -> {
-            Pose2d ladderSide =
-                FieldLayout.rightTower;
-
-            boolean isLeftTower = ladderSide.equals(FieldLayout.leftTower);
-
-            Pose2d initialPose = FieldLayout.handleAllianceFlip(
-                ladderSide.transformBy(
-                    new Transform2d(
-                        SuperstructureConstants.climberOffset
-                            .toTranslation2d()
-                            .plus(new Translation2d(
-                                Units.Inches.of(!isLeftTower ? -5.0 : 5.0),
-                                Units.Inches.of(0.0))),
-                                Rotation2d.kZero)), 
-                        RobotConstants.isRedAlliance);
-
-            Pose2d finalPose = initialPose 
-                  .transformBy(
-                    new Transform2d(
-                        Units.Inches.of(!isLeftTower ? 5.0 : -5.0),
-                        Units.Inches.of(!isLeftTower ? 5.875 / 2.0 : -5.875 / 2.0),
-                        !isLeftTower ? Rotation2d.kZero : Rotation2d.k180deg));
-            if (isLeftTower) finalPose = finalPose.transformBy(new Transform2d(SuperstructureConstants.climberOffset.getMeasureX().times(2.0), Units.Inches.of(0.0), Rotation2d.kZero));
-              
-            if (isLeftTower) {
-              return Commands.sequence(
-                  setState(State.CLIMBING),
-                  climber.setpointCommand(Climber.CLIMB).withName("Climber Raise"),
-                  new PIDToPoseCommand(drive, this, finalPose).withName("Final Align"),
-                  climber.setpointCommand(Climber.ZERO).withName("Climbing")
-              );
-            } else {
-              return Commands.sequence(
-                  setState(State.CLIMBING),
-                  new PIDToPoseCommand(drive, this, initialPose).withName("Initial Align"),
-                  climber.setpointCommand(Climber.CLIMB).withName("Climber Raise"),
-                  new PIDToPoseCommand(drive, this, finalPose).withName("Final Align"),
-                  climber.setpointCommand(Climber.ZERO).withName("Climbing")
-              );
-            }
-          },
-          Set.of(drive, climber)
-      ).withName("Climb Sequence");
-    }
-
-    public Command collectFuel(Pose2d repos) {
+    public Command collectFuel(ObjectPoseEstimator.INTAKE_SIDE i) {
       return Commands.defer(() -> {
-        
-        objectPoseEstimator.updateSingleTrajectory(repos);
+        objectPoseEstimator.updateIntakeSide(i);
+        objectPoseEstimator.updateSingleTrajectory();
         return new FollowNonstopTrajectory(objectPoseEstimator.singleTrajectory, drive);
       },
       Collections.singleton(drive) 
       );
-    }
-    public void updateSide(ObjectPoseEstimator.INTAKE_SIDE i) {
-      objectPoseEstimator.updateIntakeSide(i);
     }
 
     public static enum State {

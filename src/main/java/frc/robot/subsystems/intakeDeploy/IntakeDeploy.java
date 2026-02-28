@@ -10,6 +10,8 @@ public class IntakeDeploy extends ServoMotorSubsystem<MotorIOTalonFX> {
 	public static final Setpoint DEPLOY = Setpoint.withMotionMagicSetpoint(IntakeDeployConstants.kDeployPosition);
 	public static final Setpoint EXHAUST = Setpoint.withMotionMagicSetpoint(IntakeDeployConstants.kExhaustPosition);
 
+    public static final Setpoint SHAKE = Setpoint.withMotionMagicSetpoint(IntakeDeployConstants.kUpShakePosition);
+
     public IntakeDeploy() {
         super(
             IntakeDeployConstants.getMotorIO(),
@@ -17,7 +19,7 @@ public class IntakeDeploy extends ServoMotorSubsystem<MotorIOTalonFX> {
             IntakeDeployConstants.kEpsilonThreshold,
             IntakeDeployConstants.getServoHomingConfig()
         );
-        // setCurrentPosition(IntakeDeployConstants.kStowPosition);
+        setCurrentPosition(IntakeDeployConstants.kDeployPosition);
         // applySetpoint(STOW);
     }
 }

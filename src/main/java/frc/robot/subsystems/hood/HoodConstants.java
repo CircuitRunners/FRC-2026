@@ -2,6 +2,7 @@ package frc.robot.subsystems.hood;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
@@ -22,7 +23,7 @@ public class HoodConstants {
     public static final double kGearing = (24.0 / 12.0) * (181.0 / 10.0);
 
     public static final Angle kKitbotPosition = Units.Degrees.of(0.0);
-    public static final Angle kMaxAngle = Units.Degrees.of(28.5);
+    public static final Angle kMaxAngle = Units.Degrees.of(36.14);
     public static final Angle kMinAngle = Units.Degrees.of(11.8);
 
     public static final Angle kEpsilonThreshold = Units.Degrees.of(0.5);
@@ -31,10 +32,10 @@ public class HoodConstants {
 
     public static TalonFXConfiguration getFXConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
-        config.Slot0.kP = 0.0;
+        config.Slot0.kP = 60.0;
         config.Slot0.kD = 0.0;
-        config.Slot0.kS = 0.0;
-        config.Slot0.kG = 0.0;
+        config.Slot0.kS = 0.32;
+        config.Slot0.kG = 0.4;
 
         config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
 		config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
@@ -53,10 +54,12 @@ public class HoodConstants {
 		config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
 		config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-		config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = kMinAngle.in(Units.Rotations);
+		config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = kMaxAngle.in(Units.Rotations);
 
 		config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-		config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = kMaxAngle.in(Units.Rotations);
+		config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = kMinAngle.in(Units.Rotations);
+
+		config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 		return config;
     }
 
@@ -66,7 +69,7 @@ public class HoodConstants {
 		config.mainID = Ports.HOOD.id;
 		config.mainBus = Ports.HOOD.bus;
 		config.time = Units.Seconds;
-		config.unit = Units.Degrees;
+		config.unit = Units.Rotations;
 		return config;
 	}
 

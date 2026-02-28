@@ -26,8 +26,10 @@ import frc.robot.RobotConstants;
 public class IntakeDeployConstants {
     public static final double kGearing = (52.0 / 10.0) * (36.0 / 12.0);
 
-	public static final Angle kDeployPosition = Units.Degrees.of(new TunableNumber("kDeployPosition", 0.0, true).get());
-	public static final Angle kStowPosition = Units.Degrees.of(new TunableNumber("kStowPosition", 129.0, true).get());
+	public static final Angle kDeployPosition = Units.Degrees.of(0);
+	public static final Angle kStowPosition = Units.Degrees.of(129);
+
+    public static final Angle kUpShakePosition = Units.Degrees.of(20);
 
 	public static final Angle kExhaustPosition = kDeployPosition;
 	public static final Distance kArmLength = Units.Inches.of(14.0);
