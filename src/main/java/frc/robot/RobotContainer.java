@@ -79,16 +79,16 @@ public class RobotContainer {
         // ? new VisionIOPhotonVisionSim(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
         // : new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
     );
-    // public final ObjectPoseEstimator objectDetector = new ObjectPoseEstimator(
-    //     drive,
-    //     ObjectDetectionConstants.OBJECT_POSE_ESTIMATOR_DELETION_THRESHOLD_SECONDS,
-    //     SimulatedGamePieceConstants.GamePieceType.FUEL,
-    //     new ObjectDetectionCamera(
-    //         drive,
-    //         "ObjectDetection",
-    //         ObjectDetectionConstants.cameraTransform
-    //     )
-    // );
+    public final ObjectPoseEstimator objectDetector = new ObjectPoseEstimator(
+        drive,
+        ObjectDetectionConstants.OBJECT_POSE_ESTIMATOR_DELETION_THRESHOLD_SECONDS,
+        SimulatedGamePieceConstants.GamePieceType.FUEL,
+        new ObjectDetectionCamera(
+            drive,
+            "ObjectDetection",
+            ObjectDetectionConstants.cameraTransform
+        )
+    );
 
     private final Shooter shooter = new Shooter();
     private final IntakeDeploy intakeDeploy = new IntakeDeploy();

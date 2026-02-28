@@ -20,9 +20,8 @@ public class AutoModeSelector {
 		mAutoChooser.addRoutine("Right Neutral Cycle + Climb", () -> new RightNeutralClimb(drive, superstructure, factory).getRoutine());
 		mAutoChooser.addRoutine("Left Neutral Cycle + Climb", () -> new LeftNeutralClimb(drive, superstructure, factory).getRoutine());
 
-		//useObjectDetections.addOption("hell yea!", true);
-		useObjectDetections.addOption("no :(", false);
-		useObjectDetections.setDefaultOption("hell yea!", true);
+		useObjectDetections.setDefaultOption("no :(", false);
+		useObjectDetections.addOption("hell yea!", true);
 		SmartDashboard.putData("object detection", useObjectDetections);
     }
 
