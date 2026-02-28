@@ -35,6 +35,7 @@ import frc.lib.util.FieldLayout;
 import frc.lib.util.MathHelpers;
 import frc.robot.RobotConstants;
 import frc.robot.RobotContainer;
+import frc.robot.auto.AutoModeSelector;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.intakeRollers.IntakeRollerConstants;
@@ -76,7 +77,7 @@ public class ObjectPoseEstimator extends SubsystemBase {
         this.gamePieceType = gamePieceType;
         this.camera = camera;
         this.objectPositionsToDetectionTimestamp = new HashMap<>();
-        if (RobotBase.isSimulation()) SimulatedGamePieceConstants.initializeFuel();
+        if (RobotBase.isSimulation() || AutoModeSelector.useObjectDetections.getSelected() == false) SimulatedGamePieceConstants.initializeFuel();
         SmartDashboard.putData("ObjectDetectionField", field);
         t.setEndVelocity(DriveConstants.kDriveMaxSpeed);
         t.setStartVelocity(DriveConstants.kDriveMaxSpeed);

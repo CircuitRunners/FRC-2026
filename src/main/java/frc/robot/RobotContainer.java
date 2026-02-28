@@ -78,16 +78,16 @@ public class RobotContainer {
         ? new VisionIOPhotonVisionSim(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
         : new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
     );
-    // public final ObjectPoseEstimator objectDetector = new ObjectPoseEstimator(
-    //     drive,
-    //     ObjectDetectionConstants.OBJECT_POSE_ESTIMATOR_DELETION_THRESHOLD_SECONDS,
-    //     SimulatedGamePieceConstants.GamePieceType.FUEL,
-    //     new ObjectDetectionCamera(
-    //         drive,
-    //         "ObjectDetection",
-    //         ObjectDetectionConstants.cameraTransform
-    //     )
-    // );
+    public final ObjectPoseEstimator objectDetector = new ObjectPoseEstimator(
+        drive,
+        ObjectDetectionConstants.OBJECT_POSE_ESTIMATOR_DELETION_THRESHOLD_SECONDS,
+        SimulatedGamePieceConstants.GamePieceType.FUEL,
+        new ObjectDetectionCamera(
+            drive,
+            "ObjectDetection",
+            ObjectDetectionConstants.cameraTransform
+        )
+    );
 
     private final Shooter shooter = new Shooter();
     private final IntakeDeploy intakeDeploy = new IntakeDeploy();
@@ -95,7 +95,7 @@ public class RobotContainer {
     private final Kicker kicker = new Kicker();
     private final Conveyor conveyor = new Conveyor();
     private final Climber climber = new Climber();
-    private final Superstructure superstructure = new Superstructure(drive, vision, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, climber , null);
+    private final Superstructure superstructure = new Superstructure(drive, vision, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, climber , objectDetector);
     
 
     private final ControlBoard controlBoard = ControlBoard.getInstance(drive, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, climber, superstructure);
