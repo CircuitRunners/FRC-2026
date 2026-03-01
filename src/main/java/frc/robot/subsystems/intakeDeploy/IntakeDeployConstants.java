@@ -29,7 +29,7 @@ public class IntakeDeployConstants {
 	public static final Angle kDeployPosition = Units.Degrees.of(0);
 	public static final Angle kStowPosition = Units.Degrees.of(129);
 
-    public static final Angle kUpShakePosition = Units.Degrees.of(20);
+    public static final Angle kUpShakePosition = Units.Degrees.of(30);
 
 	public static final Angle kExhaustPosition = kDeployPosition;
 	public static final Distance kArmLength = Units.Inches.of(14.0);

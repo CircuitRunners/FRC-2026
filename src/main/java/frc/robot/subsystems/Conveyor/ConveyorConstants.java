@@ -22,27 +22,27 @@ public class ConveyorConstants {
     private static final double kGearing = (24.0 / 18.0);
 
     public static final Voltage kFeedForwardVoltage = Volts.of(-8.0); // PH
-    public static final Voltage kFeedBackwardVoltage = Volts.of(5.0); // PH
+    public static final Voltage kFeedBackwardVoltage = Volts.of(3.0); // PH
 
     public static TalonFXConfiguration getFXConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
 
         config.CurrentLimits.StatorCurrentLimitEnable = Robot.isReal();
-        config.CurrentLimits.StatorCurrentLimit = 120; // PH?
+        config.CurrentLimits.StatorCurrentLimit = 80;
 
-        config.CurrentLimits.SupplyCurrentLimitEnable = Robot.isReal();
-		    config.CurrentLimits.SupplyCurrentLimit = 60.0; // PH
-		    config.CurrentLimits.SupplyCurrentLowerLimit = 60.0; // PH
-		    config.CurrentLimits.SupplyCurrentLowerTime = 0.1; // PH
+        config.CurrentLimits.SupplyCurrentLimitEnable = false;
+		config.CurrentLimits.SupplyCurrentLimit = 60.0; // PH
+		config.CurrentLimits.SupplyCurrentLowerLimit = 60.0; // PH
+		config.CurrentLimits.SupplyCurrentLowerTime = 0.1; // PH
 
-		    config.Voltage.PeakForwardVoltage = 12.0; // PH
-		    config.Voltage.PeakReverseVoltage = -12.0; // PH
+		config.Voltage.PeakForwardVoltage = 12.0; // PH
+		config.Voltage.PeakReverseVoltage = -12.0; // PH
 
-		    config.Feedback.SensorToMechanismRatio = kGearing;
+		config.Feedback.SensorToMechanismRatio = kGearing;
 
-		    config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+		config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
-		    return config;
+		return config;
     }
 
     public static MotorIOTalonFXConfig getIOConfig() {

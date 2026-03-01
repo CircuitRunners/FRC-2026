@@ -66,7 +66,7 @@ import frc.robot.subsystems.vision.objectdetection.simulatedfield.SimulatedGameP
 import frc.robot.subsystems.vision.objectdetection.simulatedfield.SimulationFieldHandler;
 import frc.robot.auto.AutoHelpers;
 import frc.robot.auto.AutoModeSelector;
-
+@Logged
 public class RobotContainer {
     private final Drive drive = new Drive();
     private final Hood hood = new Hood();
@@ -79,16 +79,17 @@ public class RobotContainer {
         // ? new VisionIOPhotonVisionSim(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
         // : new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
     );
-    public final ObjectPoseEstimator objectDetector = new ObjectPoseEstimator(
-        drive,
-        ObjectDetectionConstants.OBJECT_POSE_ESTIMATOR_DELETION_THRESHOLD_SECONDS,
-        SimulatedGamePieceConstants.GamePieceType.FUEL,
-        new ObjectDetectionCamera(
-            drive,
-            "ObjectDetection",
-            ObjectDetectionConstants.cameraTransform
-        )
-    );
+    public final ObjectPoseEstimator objectDetector = null;
+    //new ObjectPoseEstimator(
+    //     drive,
+    //     ObjectDetectionConstants.OBJECT_POSE_ESTIMATOR_DELETION_THRESHOLD_SECONDS,
+    //     SimulatedGamePieceConstants.GamePieceType.FUEL,
+    //     new ObjectDetectionCamera(
+    //         drive,
+    //         "ObjectDetection",
+    //         ObjectDetectionConstants.cameraTransform
+    //     )
+    // );
 
     private final Shooter shooter = new Shooter();
     private final IntakeDeploy intakeDeploy = new IntakeDeploy();
@@ -143,8 +144,8 @@ public class RobotContainer {
         // RobotModeTriggers.autonomous()
 		// 		.onFalse(Commands.runOnce(() -> drive.getDrivetrain().setControl(new SwerveRequest.ApplyFieldSpeeds()))
 		// 				.ignoringDisable(true));
-        // shooter.setDefaultCommand(shooter.trackTargetCommand(superstructure.shooterSetpoint));
-        // hood.setDefaultCommand(hood.trackTargetCommand(superstructure.hoodSetpoint));
+        //shooter.setDefaultCommand(shooter.trackTargetCommand(superstructure.shooterSetpoint));
+        //hood.setDefaultCommand(Commands.defer(() -> hood.trackTargetCommand(superstructure.hoodSetpoint), Set.of(hood)));
 
         for (SubsystemBase s : new SubsystemBase[] {
 			// intakeDeploy,
@@ -203,11 +204,6 @@ public class RobotContainer {
     private final DriveMaintainingHeading driveCommand = 
         new DriveMaintainingHeading(drive, superstructure, () -> ControlBoardConstants.mDriverController.getLeftY(), () -> ControlBoardConstants.mDriverController.getLeftX(), () -> -ControlBoardConstants.mDriverController.getRightX(), () -> superstructure.maintainHeadingEpsilon);
     
-
-    
-
-
-
     public Command resetToVisionPose() {
         return Commands.runOnce(() -> drive.getDrivetrain().resetPose(vision.getLatestVisionPose()));
     }

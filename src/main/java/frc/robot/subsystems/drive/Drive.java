@@ -114,7 +114,7 @@ public class Drive extends SubsystemBase {
     }
 
     public Rotation2d getRotation() {
-        return getState().RawHeading;
+        return getPose().getRotation();
     }
 
     public static boolean onOpponentSide(boolean isRedAlliance, Pose2d pose) {

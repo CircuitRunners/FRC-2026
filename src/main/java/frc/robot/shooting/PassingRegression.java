@@ -6,8 +6,9 @@ public class PassingRegression {
                         // @x --> distance from target (in meters)
                         // @y --> hood angle (in degrees)
 
-                        { 0.0, 0.0 },
-                        { 100000.0, 0.0 }
+                        { 5.46, 33.0 },
+                        { 6.62, 33.0 },
+                        { 7.8,  33.0 }
         };
 
         public static double[][] kPassingFlywheelManualRPM = {
@@ -15,8 +16,9 @@ public class PassingRegression {
 
                         // @x --> distance from target (in meters)
                         // @y --> shooter velocity (in rpm)
-                        { 0.0, 0.0 },
-                        { 100000.0, 0.0 }
+                        { 5.46, 1500.0 },
+                        { 6.62, 1700.0 },
+                        { 7.8,  1900.0 }
         };
 
         public static double[][] kPassingTimeOfFlightMap = {

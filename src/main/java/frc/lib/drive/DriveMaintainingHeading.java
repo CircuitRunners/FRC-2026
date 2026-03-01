@@ -71,7 +71,7 @@ public class DriveMaintainingHeading extends Command{
     private final SwerveRequest.FieldCentric driveNoHeading = 
         new SwerveRequest.FieldCentric()
             .withDeadband(
-                DriveConstants.kDriveMaxSpeed * 0.05
+                DriveConstants.kDriveMaxSpeed * 0.15
             )
             .withRotationalDeadband(
                 DriveConstants.kDriveMaxAngularRate * DriveConstants.kSteerJoystickDeadband

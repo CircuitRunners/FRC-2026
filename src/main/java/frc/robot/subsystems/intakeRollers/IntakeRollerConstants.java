@@ -21,14 +21,14 @@ import frc.robot.Robot;
 public class IntakeRollerConstants {
     private static final double kGearing = (24.0 / 18.0);
 
-    public static final Voltage kIntakeVoltage = Volts.of(-8.0); // PH
+    public static final Voltage kIntakeVoltage = Volts.of(-5.0); // PH
     public static final Voltage kExhaustVoltage = Volts.of(5.0); // PH
 
     public static TalonFXConfiguration getFXConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
 
         config.CurrentLimits.StatorCurrentLimitEnable = Robot.isReal();
-        config.CurrentLimits.StatorCurrentLimit = 120; // PH?
+        config.CurrentLimits.StatorCurrentLimit = 60; // PH?
 
         config.CurrentLimits.SupplyCurrentLimitEnable = Robot.isReal();
 		config.CurrentLimits.SupplyCurrentLimit = 60.0; // PH

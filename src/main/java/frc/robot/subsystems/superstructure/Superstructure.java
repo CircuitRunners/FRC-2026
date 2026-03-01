@@ -31,6 +31,7 @@ import frc.lib.io.MotorIO.Setpoint;
 import frc.lib.logging.LoggedTracer;
 import frc.lib.util.FieldLayout;
 import frc.lib.util.TunableNumber;
+import frc.robot.Robot;
 import frc.robot.RobotConstants;
 import frc.robot.controlboard.ControlBoard;
 import frc.robot.shooting.ShotCalculator;
@@ -50,6 +51,7 @@ import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.vision.apriltag.Vision;
 import frc.robot.subsystems.vision.objectdetection.ObjectPoseEstimator;
 
+@Logged
 public class Superstructure extends SubsystemBase {
     private final Drive drive;
     private final Vision vision;
@@ -81,7 +83,7 @@ public class Superstructure extends SubsystemBase {
     private boolean kitbotMode = false;
     private boolean intakeDeployed = false;
     public boolean shootOnTheMove = false;
-    public boolean headingLockToggle = false;
+    public boolean headingLockToggle = true;
     public boolean nearTrench = false;
     TrajectoryConfig config = new TrajectoryConfig(DriveConstants.kDriveMaxSpeed, DriveConstants.kMaxAccelerationMetersPerSecondSquared);
 
@@ -186,9 +188,9 @@ public class Superstructure extends SubsystemBase {
     }
 
     public Command waitUntilSafeToShoot() {
-      return Commands.waitUntil(() -> shooter.spunUp() 
+      return Commands.waitUntil(() -> (shooter.spunUp() || Robot.isSimulation())
       //&& hood.nearPositionSetpoint() 
-      && (kitbotMode || RobotState.isAutonomous() || drive.getRotation().getMeasure().isNear(headingSetpoint.getMeasure(), Units.Degrees.of(5.0))) || !headingLockToggle);
+      && (!headingLockToggle || kitbotMode || drive.getRotation().getMeasure().isNear(headingSetpoint.getMeasure(), Units.Degrees.of(5.0)) || RobotState.isAutonomous()));
     }
 
     public Command shoot() {
@@ -200,16 +202,22 @@ public class Superstructure extends SubsystemBase {
 
     public Command shootWhenReady() {
       return Commands.sequence(
-                shooter.setpointCommand(shooterSetpoint),
-                Commands.either(waitUntilSafeToShoot(), Commands.none(), () -> state != State.SHOOTING && state != State.SHOOTINTAKE),
-                shoot(),
-                Commands.either(setState(State.SHOOTINTAKE), setState(State.SHOOTING), () -> state == State.INTAKING),
-                Commands.waitUntil(() -> false))
-                .finallyDo(() -> {
-                  conveyor.applySetpoint(Conveyor.IDLE); 
-                  kicker.applySetpoint(Kicker.IDLE);
-                  shooter.applySetpoint(Shooter.IDLE);
-                });
+              Commands.runOnce(() -> {
+                  state = (state == State.INTAKING)
+                          ? State.SHOOTINTAKE
+                          : State.SHOOTING;
+              }),
+              waitUntilSafeToShoot(),
+              Commands.parallel(
+                  conveyor.setpointCommand(Conveyor.FEED_FORWARD),
+                  kicker.setpointCommand(Kicker.FEED_FORWARD)
+          ),
+          Commands.waitUntil(() -> false))
+      .finallyDo(() -> {
+          conveyor.applySetpoint(Conveyor.IDLE);
+          kicker.applySetpoint(Kicker.IDLE);
+          shooter.applySetpoint(Shooter.IDLE);
+      });
     }
 
     public Command deployIntake() {
@@ -350,7 +358,7 @@ public class Superstructure extends SubsystemBase {
     }
 
     public boolean shouldHeadingLock() {
-      return (headingLockToggle && state != State.INTAKING && visionValid());
+      return (headingLockToggle && state != State.INTAKING && (visionValid() || Robot.isSimulation()));
     }
 
     public void setPathFollowing(boolean isFollowing) {

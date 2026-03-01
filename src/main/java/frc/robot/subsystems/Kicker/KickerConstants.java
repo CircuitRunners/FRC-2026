@@ -31,16 +31,16 @@ public class KickerConstants {
         config.CurrentLimits.StatorCurrentLimit = 120; // PH?
 
         config.CurrentLimits.SupplyCurrentLimitEnable = Robot.isReal();
-		    config.CurrentLimits.SupplyCurrentLimit = 60.0; // PH
-		    config.CurrentLimits.SupplyCurrentLowerLimit = 60.0; // PH
-		    config.CurrentLimits.SupplyCurrentLowerTime = 0.1; // PH
+		config.CurrentLimits.SupplyCurrentLimit = 60.0; // PH
+		config.CurrentLimits.SupplyCurrentLowerLimit = 60.0; // PH
+		config.CurrentLimits.SupplyCurrentLowerTime = 0.1; // PH
 
-		    config.Voltage.PeakForwardVoltage = 12.0; // PH
-		    config.Voltage.PeakReverseVoltage = -12.0; // PH
+		config.Voltage.PeakForwardVoltage = 12.0; // PH
+		config.Voltage.PeakReverseVoltage = -12.0; // PH
 
-		    config.Feedback.SensorToMechanismRatio = kGearing;
+		config.Feedback.SensorToMechanismRatio = kGearing;
 
-		    config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+		config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
 		return config;
     }
