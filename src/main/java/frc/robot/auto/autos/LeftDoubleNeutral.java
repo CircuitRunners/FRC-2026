@@ -16,14 +16,16 @@ import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.vision.objectdetection.ObjectPoseEstimator;
 import frc.robot.auto.AutoModeBase;
 
-public class LeftNeutralClimb extends AutoModeBase {
+public class LeftDoubleNeutral extends AutoModeBase {
 
-	public LeftNeutralClimb(Drive drive, Superstructure superstructure, AutoFactory factory) {
-		super(drive, superstructure, factory, "Left Neutral Cycle + Climb");
+	public LeftDoubleNeutral(Drive drive, Superstructure superstructure, AutoFactory factory) {
+		super(drive, superstructure, factory, "Left Double Neutral Cycle");
 
 		AutoTrajectory leftTrenchToNeutral = trajectory("leftTrenchToNeutral");
 		AutoTrajectory leftNeutralToTrench = trajectory("leftNeutralToTrench");
 		AutoTrajectory leftTrenchToShoot = trajectory("leftTrenchToShoot");
+        AutoTrajectory leftShootToTrench = trajectory("leftShootToTrench");
+        
 
 		Pose2d startPose = leftTrenchToNeutral.getInitialPose().get();
 
@@ -39,7 +41,15 @@ public class LeftNeutralClimb extends AutoModeBase {
 			leftNeutralToTrench.cmd(),
 			cmdWithAccuracy(leftTrenchToShoot),
 			superstructure.shootWhenReady().withTimeout(AutoConstants.shootAllFuelTime),
-			superstructure.climbLeft()
+            leftShootToTrench.cmd(),
+            Commands.parallel(leftTrenchToNeutral.cmd(), superstructure.deployIntake()),
+			Commands.deadline(
+				superstructure.collectFuel(leftNeutralToTrench.getInitialPose().get()).withTimeout(7),
+				superstructure.runIntakeIfDeployed()),
+			leftNeutralToTrench.cmd(),
+			cmdWithAccuracy(leftTrenchToShoot),
+			superstructure.shootWhenReady().withTimeout(AutoConstants.shootAllFuelTime)
+			
         );
 
 
