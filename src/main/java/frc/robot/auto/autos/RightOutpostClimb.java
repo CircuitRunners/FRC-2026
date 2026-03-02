@@ -15,21 +15,18 @@ import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.auto.AutoModeBase;
 
-public class LeftDepotClimb extends AutoModeBase{
-    public LeftDepotClimb(Drive drive, Superstructure superstructure, AutoFactory autoFactory){
-        super(drive,superstructure,autoFactory,"Left Depot + Climb");
+public class RightOutpostClimb extends AutoModeBase{
+    public RightOutpostClimb(Drive drive, Superstructure superstructure, AutoFactory autoFactory){
+        super(drive,superstructure,autoFactory,"Right Outpost + Climb");
+        AutoTrajectory rightOutpostToClimb = trajectory("rightOutpostToClimb");
 
-        AutoTrajectory leftTrenchDepot = trajectory("leftTrenchToDepot");
-        AutoTrajectory leftDepotTrench =  trajectory("leftDepotToTrench");
-        AutoTrajectory leftTrenchShoot = trajectory("leftTrenchToShoot");
-        AutoTrajectory leftDepotClimb = trajectory("leftDepotToClimb");
+        
 
         Pose2d startPose = FieldLayout.handleAllianceFlip(new Pose2d(4.64, 7.44, Rotation2d.kZero), RobotConstants.isRedAlliance);
 
         prepRoutine(
             AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
-            leftTrenchDepot.cmd(),
-            Commands.waitSeconds(2),
+            rightOutpostToClimb.cmd(),
             superstructure.shootWhenReady().withTimeout(AutoConstants.shootAllFuelTime),
             superstructure.climb()
 
