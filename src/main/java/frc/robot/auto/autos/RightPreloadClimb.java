@@ -15,16 +15,16 @@ import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.auto.AutoModeBase;
 
-public class LeftPreloadClimb extends AutoModeBase{
-    public LeftPreloadClimb(Drive drive, Superstructure superstructure, AutoFactory autoFactory){
-        super(drive, superstructure, autoFactory, "Left Preload + Climb");
-        AutoTrajectory leftPreloadToClimb = trajectory("leftPreloadClimb");
+public class RightPreloadClimb extends AutoModeBase{
+    public RightPreloadClimb(Drive drive, Superstructure superstructure, AutoFactory autoFactory){
+        super(drive, superstructure, autoFactory, "Right Preload + Climb");
+        AutoTrajectory RightPreloadToClimb = trajectory("RightPreloadClimb");
         Pose2d startPose = FieldLayout.handleAllianceFlip(new Pose2d(4.64, 7.44, Rotation2d.kZero), RobotConstants.isRedAlliance);
 
 
         prepRoutine(
             AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
-            leftPreloadToClimb.cmd(),
+            RightPreloadToClimb.cmd(),
             superstructure.shootWhenReady(),
             superstructure.climb()
         );
