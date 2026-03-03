@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.util.MathHelpers;
+import frc.robot.auto.AutoModeSelector;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.vision.objectdetection.ObjectPoseEstimator;
 import frc.robot.subsystems.vision.objectdetection.objectdetectioncamera.ObjectDetectionCameraIO.ObjectDetectionCameraInputs;
@@ -110,7 +111,7 @@ public class ObjectDetectionCamera extends SubsystemBase {
     }
 
     private ObjectDetectionCameraIO generateIO(String hostname, Transform3d cameraTransform) {
-        if (RobotBase.isSimulation())
+        if (RobotBase.isSimulation() || AutoModeSelector.useObjectDetections.getSelected() == false)
             return new SimulationObjectDetectionCameraIO(drive, hostname, cameraTransform);
         return new PhotonObjectDetectionCameraIO(hostname);
     }

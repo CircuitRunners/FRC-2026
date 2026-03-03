@@ -30,7 +30,7 @@ public class AutoModeSelector {
 
 		
 
-		
+		//
 		useObjectDetections.setDefaultOption("no :(", false);
 		useObjectDetections.addOption("hell yea!", true);
 		SmartDashboard.putData("object detection", useObjectDetections);
