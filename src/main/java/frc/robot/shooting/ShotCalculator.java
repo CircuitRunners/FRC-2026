@@ -73,7 +73,7 @@ public class ShotCalculator {
     private static final double passingMaxDistance;
     private static final double phaseDelay;
     // presets
-    public static final double hubPresetDistance = 0.96;
+    public static final double hubPresetDistance = 1.2;
     public static final double towerPresetDistance = 2.5;
     public static final double trenchPresetDistance = 3.03;
     public static final double outpostPresetDistance = 4.84;
@@ -109,8 +109,8 @@ public class ShotCalculator {
             FieldLayout.leftBumpEnd.in(Units.Meters));
 
     static {
-        minDistance = 0.9;
-        maxDistance = 4.9;
+        minDistance = 1.2;
+        maxDistance = 5.3;
         // TODO: define actual values when we tune the map
         passingMinDistance = 0.0;
         passingMaxDistance = 12.0;

@@ -17,30 +17,29 @@ import frc.lib.sim.RollerSim.RollerSimConstants;
 import frc.robot.Ports;
 import frc.robot.Robot;
 
-//PH -> PlaceHolder
 public class IntakeRollerConstants {
     private static final double kGearing = (24.0 / 18.0);
 
-    public static final Voltage kIntakeVoltage = Volts.of(-5.0); // PH
-    public static final Voltage kExhaustVoltage = Volts.of(5.0); // PH
+    public static final Voltage kIntakeVoltage = Volts.of(7.0);
+    public static final Voltage kExhaustVoltage = Volts.of(-5.0);
 
     public static TalonFXConfiguration getFXConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
 
         config.CurrentLimits.StatorCurrentLimitEnable = Robot.isReal();
-        config.CurrentLimits.StatorCurrentLimit = 60; // PH?
+        config.CurrentLimits.StatorCurrentLimit = 120;
 
         config.CurrentLimits.SupplyCurrentLimitEnable = Robot.isReal();
-		config.CurrentLimits.SupplyCurrentLimit = 60.0; // PH
-		config.CurrentLimits.SupplyCurrentLowerLimit = 60.0; // PH
-		config.CurrentLimits.SupplyCurrentLowerTime = 0.1; // PH
+		config.CurrentLimits.SupplyCurrentLimit = 60.0;
+		config.CurrentLimits.SupplyCurrentLowerLimit = 60.0;
+		config.CurrentLimits.SupplyCurrentLowerTime = 0.1;
 
-		config.Voltage.PeakForwardVoltage = 12.0; // PH
-		config.Voltage.PeakReverseVoltage = -12.0; // PH
+		config.Voltage.PeakForwardVoltage = 12.0;
+		config.Voltage.PeakReverseVoltage = -12.0;
 
 		config.Feedback.SensorToMechanismRatio = kGearing;
 
-		config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+		config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
 		return config;
     }
@@ -50,8 +49,8 @@ public class IntakeRollerConstants {
         config.mainConfig = getFXConfig();
         config.time = Minute;
         config.unit = Rotations;
-        config.mainID = Ports.INTAKE_ROLLERS.id; // PH
-        config.mainBus = Ports.INTAKE_ROLLERS.bus; // PH
+        config.mainID = Ports.INTAKE_ROLLERS.id;
+        config.mainBus = Ports.INTAKE_ROLLERS.bus;
         return config;
     }
 

@@ -17,10 +17,9 @@ import frc.lib.io.MotorIOTalonFXSim;
 import frc.lib.sim.PivotSim;
 import frc.lib.sim.PivotSim.PivotSimConstants;
 import frc.robot.Ports;
-import frc.robot.Robot;
 
 public class HoodConstants {
-    public static final double kGearing = (24.0 / 12.0) * (181.0 / 10.0);
+    public static final double kGearing = (25.0 / 12.0) * (181.0 / 10.0);
 
     public static final Angle kKitbotPosition = Units.Degrees.of(0.0);
     public static final Angle kMaxAngle = Units.Degrees.of(36.14);
@@ -32,15 +31,15 @@ public class HoodConstants {
 
     public static TalonFXConfiguration getFXConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
-        config.Slot0.kP = 60.0;
+        config.Slot0.kP = 160.0;
         config.Slot0.kD = 0.0;
-        config.Slot0.kS = 0.32;
+        config.Slot0.kS = 0.33;
         config.Slot0.kG = 0.4;
 
-        config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
+        config.Slot0.GravityType = GravityTypeValue.Elevator_Static;
 		config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
 
-		config.MotionMagic.MotionMagicCruiseVelocity = 7.0;
+		config.MotionMagic.MotionMagicCruiseVelocity = 1.0;
 		config.MotionMagic.MotionMagicAcceleration = 15.0;
 
 		config.Voltage.PeakForwardVoltage = 12.0;

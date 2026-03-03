@@ -33,13 +33,20 @@ public class CenterPreloadClimbLeft extends AutoModeBase {
 		
 
 
+		// prepRoutine(
+		// 	AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
+		// 	Commands.parallel(cmdWithAccuracy(centerPreloadClimb), superstructure.runIntakeIfDeployed()),
+		// 	superstructure.shootWhenReady().withTimeout(AutoConstants.shootAllFuelTime),
+		// 	superstructure.climbLeft()
+        // );
+
 		prepRoutine(
 			AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
-			Commands.parallel(cmdWithAccuracy(centerPreloadClimb), superstructure.deployIntake()),
-			superstructure.shootWhenReady().withTimeout(AutoConstants.shootAllFuelTime),
-			superstructure.climbLeft()
-        );
-
+		cmdWithAccuracy(centerPreloadClimb),
+		Commands.sequence(
+							Commands.parallel(superstructure.shootRun(),
+							superstructure.hoodRun(),
+							superstructure.shootWhenReady())).withTimeout(AutoConstants.shootAllFuelTime));
 
 	}
 }

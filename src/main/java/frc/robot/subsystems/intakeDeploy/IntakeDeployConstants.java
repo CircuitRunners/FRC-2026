@@ -22,7 +22,6 @@ import frc.robot.Ports;
 import frc.robot.Robot;
 import frc.robot.RobotConstants;
 
-// PH -> PlaceHolder
 public class IntakeDeployConstants {
     public static final double kGearing = (52.0 / 10.0) * (36.0 / 12.0);
 
@@ -38,22 +37,22 @@ public class IntakeDeployConstants {
 
     public static TalonFXConfiguration getFXConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
-        config.Slot0.kP = 10.0; // PH
-        config.Slot0.kD = 0.0; // PH
-        config.Slot0.kS = 0.0; // PH
-        config.Slot0.kG = 0.0; // PH
+        config.Slot0.kP = 10.0;
+        config.Slot0.kD = 0.0;
+        config.Slot0.kS = 0.0;
+        config.Slot0.kG = 0.0;
 
         config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
         config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
 
-        config.MotionMagic.MotionMagicCruiseVelocity = 7.0; // PH
-        config.MotionMagic.MotionMagicAcceleration = 15.0; // PH
+        config.MotionMagic.MotionMagicCruiseVelocity = 7.0;
+        config.MotionMagic.MotionMagicAcceleration = 15.0;
 
         config.Voltage.PeakForwardVoltage = 12;
         config.Voltage.PeakReverseVoltage = -12;
 
         config.CurrentLimits.SupplyCurrentLimitEnable = true;
-        config.CurrentLimits.SupplyCurrentLimit = 40; // PH
+        config.CurrentLimits.SupplyCurrentLimit = 40;
 
         config.Feedback.SensorToMechanismRatio = kGearing;
 
@@ -72,8 +71,8 @@ public class IntakeDeployConstants {
     public static MotorIOTalonFXConfig getIOConfig() {
         MotorIOTalonFXConfig config = new MotorIOTalonFXConfig();
         config.mainConfig = getFXConfig();
-        config.mainID = Ports.INTAKE_DEPLOY.id; // PH
-        config.mainBus = Ports.INTAKE_DEPLOY.bus; // PH
+        config.mainID = Ports.INTAKE_DEPLOY.id;
+        config.mainBus = Ports.INTAKE_DEPLOY.bus;
         config.time = Seconds;
         config.unit = Degrees;
         return config;
@@ -105,8 +104,8 @@ public class IntakeDeployConstants {
 		ServoHomingConfig config = new ServoHomingConfig();
 		config.kHomePosition = kDeployPosition;
 		config.kHomingTimeout = Seconds.of(0.2); 
-		config.kHomingVoltage = Units.Volts.of(-1); // PH
-		config.kSetHomedVelocity = Units.DegreesPerSecond.of(1.0); // PH
+		config.kHomingVoltage = Units.Volts.of(-1);
+		config.kSetHomedVelocity = Units.DegreesPerSecond.of(1.0);
 
 		return config;
 	}

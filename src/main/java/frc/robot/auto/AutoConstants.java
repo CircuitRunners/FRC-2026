@@ -18,5 +18,5 @@ public class AutoConstants {
 
 	public static enum AutoEndBehavior {
 	}
-	public static double shootAllFuelTime = 3;
+	public static double shootAllFuelTime = 6;
 }

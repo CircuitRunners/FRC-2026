@@ -122,7 +122,7 @@ public class DriveMaintainingHeading extends Command{
                         Optional.of(mDrivetrain.getPose().getRotation());
             }
             // dont get stuck in trench
-            if (mSuperstructure.nearTrench && mSuperstructure.getState() != State.SHOOTING) {
+            /*if (mSuperstructure.nearTrench && mSuperstructure.getState() != State.SHOOTING) {
                 Rotation2d targetAngle = FieldLayout.clampAwayFromTrench(mDrivetrain.getRotation());
                 mHeadingSetpoint = Optional.of(targetAngle);
 
@@ -134,7 +134,7 @@ public class DriveMaintainingHeading extends Command{
                                 mHeadingSetpoint.get()
                             )
                 );
-            } else if (//FieldLayout.distanceFromAllianceWall(Units.Meters.of(mDrivetrain.getPose().getX()), RobotConstants.isRedAlliance).lte(FieldLayout.kAllianceZoneX.minus(Units.Inches.of(14)))
+            } else*/ if (//FieldLayout.distanceFromAllianceWall(Units.Meters.of(mDrivetrain.getPose().getX()), RobotConstants.isRedAlliance).lte(FieldLayout.kAllianceZoneX.minus(Units.Inches.of(14)))
                      mSuperstructure.shouldHeadingLock()) {
                 Rotation2d targetAngle = mSuperstructure.headingSetpoint;
 

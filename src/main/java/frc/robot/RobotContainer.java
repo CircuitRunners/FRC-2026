@@ -2,10 +2,6 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -71,10 +67,10 @@ public class RobotContainer {
     private final Drive drive = new Drive();
     private final Hood hood = new Hood();
     private final Vision vision = new Vision(
-        drive.getDrivetrain().getVisionConsumer()//,
-        // (RobotBase.isSimulation())
-        // ? new VisionIOPhotonVisionSim(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose)
-        // : new VisionIOPhotonVision(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose)
+        drive.getDrivetrain().getVisionConsumer(),
+        (RobotBase.isSimulation())
+        ? new VisionIOPhotonVisionSim(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose)
+        : new VisionIOPhotonVision(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose)
         // (RobotBase.isSimulation())
         // ? new VisionIOPhotonVisionSim(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
         // : new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
@@ -154,29 +150,29 @@ public class RobotContainer {
 			// conveyor,
 			// superstructure,
             // kicker,
-            shooter//,
-            // hood
+            shooter,
+            hood
 		}) {
 			SmartDashboard.putData(s);
 		}
     }
 
     private void configureBindings() {
-        // drive.setDefaultCommand(
-        //     driveCommand
-        // );
+        drive.setDefaultCommand(
+            driveCommand
+        );
 
         
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
-        drive.getDrivetrain().setDefaultCommand(
-            // Drivetrain will execute this command periodically
-            drive.getDrivetrain().applyRequest(() ->
-            driveRequest.withVelocityX(-ControlBoardConstants.mDriverController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(-ControlBoardConstants.mDriverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(-ControlBoardConstants.mDriverController.getRightX() * MaxAngularRate).withDeadband(MaxSpeed * 0.15).withRotationalDeadband(MaxAngularRate*0.15) // Drive counterclockwise with negative X (left)
-            )
-        );
+        // drive.getDrivetrain().setDefaultCommand(
+        //     // Drivetrain will execute this command periodically
+        //     drive.getDrivetrain().applyRequest(() ->
+        //     driveRequest.withVelocityX(-ControlBoardConstants.mDriverController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+        //             .withVelocityY(-ControlBoardConstants.mDriverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+        //             .withRotationalRate(-ControlBoardConstants.mDriverController.getRightX() * MaxAngularRate).withDeadband(MaxSpeed * 0.15).withRotationalDeadband(MaxAngularRate*0.15) // Drive counterclockwise with negative X (left)
+        //     )
+        // );
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.

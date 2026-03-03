@@ -11,18 +11,21 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.hal.AllianceStationID;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.lib.drive.PIDToPoseCommand;
+import frc.lib.logging.LogUtil.GcStatsCollector;
 import frc.lib.logging.LoggedTracer;
 import frc.lib.util.Stopwatch;
 @Logged
 public class Robot extends TimedRobot {
   private final RobotContainer m_robotContainer;
   private Command mAutonomousCommand;
+  private GcStatsCollector mGcStatsCollector = new GcStatsCollector();
   public static final Stopwatch autoTimer = new Stopwatch();
   public Robot() {
     m_robotContainer = new RobotContainer();
@@ -31,11 +34,18 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
+    LoggedTracer.reset();
+    try {
+			Threads.setCurrentThreadPriority(true, 4);
+			CommandScheduler.getInstance().run();
+			Threads.setCurrentThreadPriority(false, 0);
+		} catch (Exception e) {
+			SmartDashboard.putString("Logged Robot/Latest Error", e.getMessage());
+		}
     CommandScheduler.getInstance().run(); 
 
     // Clear shooting parameters
     m_robotContainer.getShotCalculator().clearShootingParameters();
-    //LoggedTracer.record("Robot Loop Time");
   }
 
   @Override

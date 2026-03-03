@@ -49,6 +49,7 @@ import frc.robot.subsystems.intakeRollers.IntakeRollerConstants;
 import frc.robot.subsystems.intakeRollers.IntakeRollers;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.vision.apriltag.Vision;
+import frc.robot.subsystems.vision.apriltag.VisionConstants;
 import frc.robot.subsystems.vision.objectdetection.ObjectPoseEstimator;
 
 @Logged
@@ -83,7 +84,7 @@ public class Superstructure extends SubsystemBase {
     private boolean kitbotMode = false;
     private boolean intakeDeployed = false;
     public boolean shootOnTheMove = false;
-    public boolean headingLockToggle = true;
+    public boolean headingLockToggle = false;
     public boolean nearTrench = false;
     TrajectoryConfig config = new TrajectoryConfig(DriveConstants.kDriveMaxSpeed, DriveConstants.kMaxAccelerationMetersPerSecondSquared);
 
@@ -99,34 +100,36 @@ public class Superstructure extends SubsystemBase {
     @Override
     public void periodic() {
         updateShooterSetpoint();
-        // updateHoodSetpoint();
-        // updateHeadingSetpoint();
+        updateHoodSetpoint();
+        updateHeadingSetpoint();
         // SmartDashboard.putBoolean("Near Trench", nearTrench);
-        //LoggedTracer.record("Superstructure Loop Time");
+        SmartDashboard.putNumber("Distance From Hub", drive.getPose().getTranslation().getDistance(FieldLayout.blueHubCenter));
+        SmartDashboard.putBoolean("Shooter Spun Up", shooter.spunUp());
     }
 
     public void updateShooterSetpoint() {
-      shooterSetpoint = Setpoint.withVelocitySetpoint(Units.RotationsPerSecond.of(new TunableNumber("Shooter Vel", 30.0, true).get()));
-      // if (visionValid()) {
-      //   kitbotMode = false;
-      //   shooterSetpoint = 
-      //       Setpoint.withVelocitySetpoint(
-      //         Units.RotationsPerSecond.of(
-      //         ShotCalculator.getInstance(drive)
-      //         .getParameters()
-      //         .flywheelSpeed()));
-      //   //ControlBoard.getInstance(drive, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, climber, this).setRumble(false);
-      // }
-      // else {
-      //   shooterSetpoint = Shooter.KITBOT;
-      //   kitbotMode = true;
-      //   //ControlBoard.getInstance(drive, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, climber, this).setRumble(true);
-      // }
+      //shooterSetpoint = Setpoint.withVelocitySetpoint(Units.RotationsPerSecond.of(Units.RPM.of(new TunableNumber("Shooter Vel", 1800.0, true).get()).in(Units.RotationsPerSecond)));
+      if (visionValid()) {
+        kitbotMode = false;
+        shooterSetpoint = 
+            Setpoint.withVelocitySetpoint(
+              Units.RotationsPerSecond.of(Units.RPM.of(
+              ShotCalculator.getInstance(drive)
+              .getParameters()
+              .flywheelSpeed()).in(Units.RotationsPerSecond)));
+        ControlBoard.getInstance(drive, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, climber, this).setRumble(false);
+      }
+      else {
+        shooterSetpoint = Shooter.KITBOT;
+        kitbotMode = true;
+        //ControlBoard.getInstance(drive, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, climber, this).setRumble(true);
+      }
     }
 
     public void updateHoodSetpoint() {
+        //hoodSetpoint = Setpoint.withMotionMagicSetpoint(Units.Degrees.of(new TunableNumber("Hood Angle", 11.8, true).get()));
       nearTrench = FieldLayout.nearTrench(drive.getPose(), drive.getFieldRelativeChassisSpeeds());
-      if (visionValid() && !nearTrench) {
+      if (visionValid() /*&& !nearTrench*/) {
         hoodSetpoint = 
             Setpoint.withMotionMagicSetpoint(
               Units.Degrees.of(
@@ -189,7 +192,7 @@ public class Superstructure extends SubsystemBase {
 
     public Command waitUntilSafeToShoot() {
       return Commands.waitUntil(() -> (shooter.spunUp() || Robot.isSimulation())
-      //&& hood.nearPositionSetpoint() 
+      && hood.nearPositionSetpoint() 
       && (!headingLockToggle || kitbotMode || drive.getRotation().getMeasure().isNear(headingSetpoint.getMeasure(), Units.Degrees.of(5.0)) || RobotState.isAutonomous()));
     }
 
@@ -208,16 +211,25 @@ public class Superstructure extends SubsystemBase {
                           : State.SHOOTING;
               }),
               waitUntilSafeToShoot(),
-              Commands.parallel(
+                  kicker.setpointCommand(Kicker.FEED_FORWARD),
+                  Commands.waitTime(Units.Milliseconds.of(500)),
                   conveyor.setpointCommand(Conveyor.FEED_FORWARD),
-                  kicker.setpointCommand(Kicker.FEED_FORWARD)
-          ),
+                  /*intakeRollers.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(1)))*/
           Commands.waitUntil(() -> false))
       .finallyDo(() -> {
           conveyor.applySetpoint(Conveyor.IDLE);
           kicker.applySetpoint(Kicker.IDLE);
           shooter.applySetpoint(Shooter.IDLE);
+          hood.applySetpoint(Hood.ZERO);
       });
+    }
+
+    public Command shootRun() {
+      return shooter.followSetpointCommand(() -> shooterSetpoint);
+    }
+
+    public Command hoodRun() {
+      return hood.followSetpointCommand(() -> hoodSetpoint);
     }
 
     public Command deployIntake() {

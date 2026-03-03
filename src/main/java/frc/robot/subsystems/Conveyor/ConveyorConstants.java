@@ -17,26 +17,25 @@ import frc.lib.sim.RollerSim.RollerSimConstants;
 import frc.robot.Ports;
 import frc.robot.Robot;
 
-//PH -> PlaceHolder
 public class ConveyorConstants {
-    private static final double kGearing = (24.0 / 18.0);
+    private static final double kGearing = (36.0 / 12.0);
 
-    public static final Voltage kFeedForwardVoltage = Volts.of(-8.0); // PH
-    public static final Voltage kFeedBackwardVoltage = Volts.of(3.0); // PH
+    public static final Voltage kFeedForwardVoltage = Volts.of(-12.0);
+    public static final Voltage kFeedBackwardVoltage = Volts.of(2.0);
 
     public static TalonFXConfiguration getFXConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
 
         config.CurrentLimits.StatorCurrentLimitEnable = Robot.isReal();
-        config.CurrentLimits.StatorCurrentLimit = 80;
+        config.CurrentLimits.StatorCurrentLimit = 100;
 
         config.CurrentLimits.SupplyCurrentLimitEnable = false;
-		config.CurrentLimits.SupplyCurrentLimit = 60.0; // PH
-		config.CurrentLimits.SupplyCurrentLowerLimit = 60.0; // PH
-		config.CurrentLimits.SupplyCurrentLowerTime = 0.1; // PH
+		config.CurrentLimits.SupplyCurrentLimit = 60.0;
+		config.CurrentLimits.SupplyCurrentLowerLimit = 60.0;
+		config.CurrentLimits.SupplyCurrentLowerTime = 0.1;
 
-		config.Voltage.PeakForwardVoltage = 12.0; // PH
-		config.Voltage.PeakReverseVoltage = -12.0; // PH
+		config.Voltage.PeakForwardVoltage = 12.0;
+		config.Voltage.PeakReverseVoltage = -12.0;
 
 		config.Feedback.SensorToMechanismRatio = kGearing;
 

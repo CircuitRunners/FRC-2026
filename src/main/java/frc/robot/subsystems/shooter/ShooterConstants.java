@@ -23,7 +23,7 @@ import frc.robot.Robot;
 
 public class ShooterConstants {
     public static final double kGearing = 1.0 / 1.0;
-    public static Transform2d robotToShooter = new Transform2d(Units.Inches.of(0), Units.Inches.of(6.881), Rotation2d.kZero);
+    public static Transform2d robotToShooter = new Transform2d(Units.Inches.of(-6.881), Units.Inches.of(0), Rotation2d.kZero);
 
     public static final AngularVelocity kMinVelocity = Units.RotationsPerSecond.of(30.0);
 
@@ -31,21 +31,21 @@ public class ShooterConstants {
 
     public static TalonFXConfiguration getFXConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
-        config.Slot1.kS = 6.55;
-		config.Slot1.kV = 0.08;
+        config.Slot1.kS = 8.1;
+		config.Slot1.kV = 0.052;
         config.Slot1.kP = 7.0;
 
         config.CurrentLimits.StatorCurrentLimitEnable = Robot.isReal();
-        config.CurrentLimits.StatorCurrentLimit = 120.0; // default
+        config.CurrentLimits.StatorCurrentLimit = 120.0;
 
 		config.CurrentLimits.SupplyCurrentLimitEnable = Robot.isReal();	
 		config.CurrentLimits.SupplyCurrentLimit = 60.0;
 		config.CurrentLimits.SupplyCurrentLowerLimit = 60.0;
 		config.CurrentLimits.SupplyCurrentLowerTime = 0.1;
 
-        config.TorqueCurrent.PeakForwardTorqueCurrent = 800; // default
-        config.TorqueCurrent.PeakReverseTorqueCurrent = -800; // default
-        config.TorqueCurrent.TorqueNeutralDeadband = 0; // default
+        config.TorqueCurrent.PeakForwardTorqueCurrent = 800;
+        config.TorqueCurrent.PeakReverseTorqueCurrent = -800;
+        config.TorqueCurrent.TorqueNeutralDeadband = 0;
 
         config.Feedback.SensorToMechanismRatio = kGearing;
 
