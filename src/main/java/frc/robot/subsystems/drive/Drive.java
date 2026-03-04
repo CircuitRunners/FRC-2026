@@ -28,7 +28,6 @@ import frc.lib.util.MathHelpers;
 import frc.robot.RobotConstants;
 import frc.robot.subsystems.superstructure.SuperstructureConstants;
 
-@Logged
 /**
  * The class represents the drivetrain of the robot. It manages telemetry output, pose tracking, and updating drivetrain  states.
  * I certify the work I am submitting is my original work. I have not shared nor exchanged information from anyone, nor will I do so in the future.

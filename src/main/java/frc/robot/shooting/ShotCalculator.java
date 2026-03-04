@@ -35,6 +35,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.lib.util.FieldLayout;
 import frc.lib.util.Util;
 import frc.lib.util.Bounds;
@@ -150,6 +151,7 @@ public class ShotCalculator {
                 passing ? getPassingTarget() : FieldLayout.blueHubCenter, RobotConstants.isRedAlliance);
         Pose2d launcherPosition = estimatedPose.transformBy(ShooterConstants.robotToShooter);
         double launcherToTargetDistance = target.getDistance(launcherPosition.getTranslation());
+        SmartDashboard.putNumber("Shooter to Target", launcherToTargetDistance);
 
         // Calculate field relative launcher velocity
         var robotVelocity = drive.getFieldRelativeChassisSpeeds();

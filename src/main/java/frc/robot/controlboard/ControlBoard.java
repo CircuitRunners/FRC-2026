@@ -124,7 +124,7 @@ public class ControlBoard {
 
 		driver.a().whileTrue(s.spit()).onFalse(s.setState(Superstructure.State.DEPLOYED));
 
- 		//driver.leftBumper().onTrue(s.tuck());
+ 		driver.leftBumper().onTrue(s.tuck());
 		driver.rightTrigger(0.1).onTrue(intakeRollers.setpointCommand(IntakeRollers.EXHAUST)).onFalse(intakeRollers.setpointCommand(Setpoint.withNeutralSetpoint()));
 
  		// INTAKING ###############################################################################
@@ -145,7 +145,7 @@ public class ControlBoard {
 							Commands.parallel(shooter.followSetpointCommand(() -> s.shooterSetpoint),
 							hood.followSetpointCommand(() -> s.hoodSetpoint),
 							s.shootWhenReady()))
-							.finallyDo(() -> superstructure.maintainHeadingEpsilon = 0.25)
+							.finallyDo(() -> superstructure.maintainHeadingEpsilon = 999)
 		).onFalse(Commands.either(s.setState(State.INTAKING), s.setState(State.DEPLOYED), () -> s.getState() == State.SHOOTINTAKE));
 
 		// driver.x().whileTrue(
@@ -202,15 +202,7 @@ public class ControlBoard {
 
 		operator.leftStick().onTrue(superstructure.zero());
 
-		operator.povLeft().onTrue(Commands.parallel(
-			conveyor.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(-12))),
-			kicker.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(-5))),
-			Commands.sequence(
-				intakeDeploy.setpointCommandWithWait(IntakeDeploy.SHAKE), intakeDeploy.setpointCommandWithWait(IntakeDeploy.DEPLOY)).repeatedly())
-		).onFalse(Commands.parallel(
-			kicker.setpointCommand(Kicker.IDLE),
-			conveyor.setpointCommand(Conveyor.IDLE),
-			intakeDeploy.setpointCommand(IntakeDeploy.DEPLOY)));
+		operator.povLeft().onTrue(superstructure.shakeIntake());
 	}
 
 	public Command rumbleCommand(Time duration) {

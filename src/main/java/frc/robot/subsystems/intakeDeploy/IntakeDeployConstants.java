@@ -26,9 +26,9 @@ public class IntakeDeployConstants {
     public static final double kGearing = (52.0 / 10.0) * (36.0 / 12.0);
 
 	public static final Angle kDeployPosition = Units.Degrees.of(0);
-	public static final Angle kStowPosition = Units.Degrees.of(129);
+	public static final Angle kStowPosition = Units.Degrees.of(122.5);
 
-    public static final Angle kUpShakePosition = Units.Degrees.of(30);
+    public static final Angle kUpShakePosition = Units.Degrees.of(50);
 
 	public static final Angle kExhaustPosition = kDeployPosition;
 	public static final Distance kArmLength = Units.Inches.of(14.0);
@@ -37,15 +37,15 @@ public class IntakeDeployConstants {
 
     public static TalonFXConfiguration getFXConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
-        config.Slot0.kP = 10.0;
+        config.Slot0.kP = 40.0;
         config.Slot0.kD = 0.0;
         config.Slot0.kS = 0.0;
-        config.Slot0.kG = 0.0;
+        config.Slot0.kG = 0.7;
 
         config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
         config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
 
-        config.MotionMagic.MotionMagicCruiseVelocity = 7.0;
+        config.MotionMagic.MotionMagicCruiseVelocity = 0.8;
         config.MotionMagic.MotionMagicAcceleration = 15.0;
 
         config.Voltage.PeakForwardVoltage = 12;

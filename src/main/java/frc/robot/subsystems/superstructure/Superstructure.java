@@ -89,7 +89,7 @@ public class Superstructure extends SubsystemBase {
     TrajectoryConfig config = new TrajectoryConfig(DriveConstants.kDriveMaxSpeed, DriveConstants.kMaxAccelerationMetersPerSecondSquared);
 
 
-    public double maintainHeadingEpsilon = 0.25;
+    public double maintainHeadingEpsilon = 999;
 
     private State state = State.TUCK;
 
@@ -103,7 +103,7 @@ public class Superstructure extends SubsystemBase {
         updateHoodSetpoint();
         updateHeadingSetpoint();
         // SmartDashboard.putBoolean("Near Trench", nearTrench);
-        SmartDashboard.putNumber("Distance From Hub", drive.getPose().getTranslation().getDistance(FieldLayout.blueHubCenter));
+        SmartDashboard.putNumber("Distance From Hub", drive.getPose().getTranslation().getDistance(FieldLayout.handleAllianceFlip(FieldLayout.blueHubCenter, RobotConstants.isRedAlliance)));
         SmartDashboard.putBoolean("Shooter Spun Up", shooter.spunUp());
     }
 
@@ -127,7 +127,7 @@ public class Superstructure extends SubsystemBase {
     }
 
     public void updateHoodSetpoint() {
-        //hoodSetpoint = Setpoint.withMotionMagicSetpoint(Units.Degrees.of(new TunableNumber("Hood Angle", 11.8, true).get()));
+    //hoodSetpoint = Setpoint.withMotionMagicSetpoint(Units.Degrees.of(new TunableNumber("Hood Angle", 11.8, true).get()));
       nearTrench = FieldLayout.nearTrench(drive.getPose(), drive.getFieldRelativeChassisSpeeds());
       if (visionValid() /*&& !nearTrench*/) {
         hoodSetpoint = 
@@ -212,13 +212,14 @@ public class Superstructure extends SubsystemBase {
               }),
               waitUntilSafeToShoot(),
                   kicker.setpointCommand(Kicker.FEED_FORWARD),
-                  Commands.waitTime(Units.Milliseconds.of(500)),
+                  Commands.waitTime(Units.Milliseconds.of(800)),
                   conveyor.setpointCommand(Conveyor.FEED_FORWARD),
-                  /*intakeRollers.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(1)))*/
-          Commands.waitUntil(() -> false))
+                  Commands.waitSeconds(1),
+                  shakeIntake().alongWith(
+          Commands.waitUntil(() -> false)))
       .finallyDo(() -> {
           conveyor.applySetpoint(Conveyor.IDLE);
-          kicker.applySetpoint(Kicker.IDLE);
+          kicker.applySetpoint(Kicker.FEED_BACKWARDS);
           shooter.applySetpoint(Shooter.IDLE);
           hood.applySetpoint(Hood.ZERO);
       });
@@ -233,8 +234,18 @@ public class Superstructure extends SubsystemBase {
     }
 
     public Command deployIntake() {
-      return Commands.sequence(setIntakeStatus(true), intakeDeploy.setpointCommand(IntakeDeploy.DEPLOY))
+      return Commands.sequence(intakeDeploy.setpointCommandWithWait(IntakeDeploy.DEPLOY), setIntakeStatus(true))
       .withName("Intake Deploy");
+    }
+
+    public Command shakeIntake() {
+      return Commands.sequence(
+        intakeDeploy.setpointCommandWithWait(IntakeDeploy.SHAKE), Commands.waitSeconds(0.5), intakeDeploy.setpointCommandWithWait(IntakeDeploy.DEPLOY).repeatedly()).alongWith(intakeRollers.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5))))
+        .finallyDo(() -> {
+			kicker.applySetpoint(Kicker.IDLE);
+			conveyor.applySetpoint(Conveyor.IDLE);
+			intakeDeploy.applySetpoint(IntakeDeploy.DEPLOY);
+      intakeRollers.applySetpoint(IntakeRollers.IDLE);});
     }
 
     public Command runIntakeIfDeployed() {

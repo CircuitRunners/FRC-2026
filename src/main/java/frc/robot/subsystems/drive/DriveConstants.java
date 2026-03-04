@@ -26,7 +26,7 @@ import frc.lib.util.Util;
 import frc.robot.RobotConstants;
 
 public class DriveConstants {
-    public static final double kDriveMaxAngularRate = 8.2; // 254
+    public static final double kDriveMaxAngularRate = 8.2 * 0.70; // 254
     public static final AngularVelocity kMaxAngularRate = Units.RadiansPerSecond.of(2.75 * Math.PI); // 1678
     public static final double kMaxAngularSpeedRadiansPerSecondSquared = 20.0;
     public static final double kDriveMaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // 254
