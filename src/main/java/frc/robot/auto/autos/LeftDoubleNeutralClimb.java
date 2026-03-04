@@ -15,9 +15,9 @@ import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.auto.AutoModeBase;
 
-public class LeftNeutralClimb extends AutoModeBase {
+public class LeftDoubleNeutralClimb extends AutoModeBase {
 
-	public LeftNeutralClimb(Drive drive, Superstructure superstructure, AutoFactory factory) {
+	public LeftDoubleNeutralClimb(Drive drive, Superstructure superstructure, AutoFactory factory) {
 		super(drive, superstructure, factory, "left neutral climb auto");
 
 		AutoTrajectory leftTrenchToNeutral = trajectory("leftTrenchToNeutral");
