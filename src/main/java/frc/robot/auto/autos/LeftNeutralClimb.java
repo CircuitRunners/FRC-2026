@@ -41,8 +41,8 @@ public class LeftNeutralClimb extends AutoModeBase {
 			Commands.sequence(
 							Commands.parallel(superstructure.shootRun(),
 							superstructure.hoodRun(),
-							superstructure.shootWhenReady())).withTimeout(AutoConstants.shootAllFuelTime),
-			superstructure.climb()
+							superstructure.shootWhenReady())).withTimeout(AutoConstants.shootAllFuelTime)
+			//superstructure.climb()
         );
 
 
