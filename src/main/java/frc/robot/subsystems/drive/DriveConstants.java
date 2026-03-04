@@ -30,7 +30,7 @@ public class DriveConstants {
     public static final AngularVelocity kMaxAngularRate = Units.RadiansPerSecond.of(2.75 * Math.PI); // 1678
     public static final double kMaxAngularSpeedRadiansPerSecondSquared = 20.0;
     public static final double kDriveMaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // 254
-    public static final double kDriveMaxSpeedIntake = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // 254
+    public static final double kDriveMaxSpeedIntake = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) -2; // 254
 
     public static final LinearVelocity kMaxSpeed = TunerConstants.kSpeedAt12Volts; // 1678
     public static final double kMaxAccelerationMetersPerSecondSquared = 10.0;
@@ -163,8 +163,8 @@ public class DriveConstants {
 	}
 
 	public static SynchronousPIDF getObjectDetectionTranslationController() {
-		SynchronousPIDF controller = new SynchronousPIDF(7.5, 0.0, 0.0);
-		controller.setMaxAbsoluteOutput(kMaxSpeed.in(Units.MetersPerSecond));
+		SynchronousPIDF controller = new SynchronousPIDF(5, 0.0, 0.0);
+		controller.setMaxAbsoluteOutput(kDriveMaxSpeedIntake);
 		return controller;
 	}
 
