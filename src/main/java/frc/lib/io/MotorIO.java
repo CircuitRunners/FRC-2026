@@ -333,7 +333,7 @@ public abstract class MotorIO implements Sendable {
 					"Velocity " + unitType.name() + " per " + time.name() + ":",
 					() -> velocity.in(unitType.per(time)),
 					null);
-			builder.addDoubleProperty("Position " + unitType.name() + ":", () -> position.in(unitType), null);
+			// builder.addDoubleProperty("Position " + unitType.name() + ":", () -> position.in(unitType), null);
 			// builder.addDoubleProperty("Stator Current Amps:", () -> statorCurrent.in(Units.Amps), null);
 			// builder.addDoubleProperty("Supply Current Amps:", () -> supplyCurrent.in(Units.Amps), null);
 			// builder.addDoubleProperty("Motor Voltage:", () -> motorVoltage.in(Units.Volts), null);

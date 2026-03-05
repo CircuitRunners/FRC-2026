@@ -49,6 +49,7 @@ public class DriveConstants {
 
     public static final SynchronousPIDF mAutoAlignHeadingController = getAutoAlignHeadingController();
 	public static final SynchronousPIDF mAutoAlignTranslationController = getAutoAlignTranslationController();
+	public static final SynchronousPIDF mIntakeAutoAlignTranslationController = getIntakeAutoAlignTranslationController();
 
 
 	public static final UnaryOperator<SwerveRequest.FieldCentric> getPIDToPoseRequestUpdater(Drive drive, Pose2d targetPose) {
@@ -159,6 +160,12 @@ public class DriveConstants {
 	public static SynchronousPIDF getAutoAlignTranslationController() {
 		SynchronousPIDF controller = new SynchronousPIDF(3.15, 0.0, 0.0);
 		controller.setMaxAbsoluteOutput(kMaxSpeed.in(Units.MetersPerSecond));
+		return controller;
+	}
+
+	public static SynchronousPIDF getIntakeAutoAlignTranslationController() {
+		SynchronousPIDF controller = new SynchronousPIDF(3.15, 0.0, 0.0);
+		controller.setMaxAbsoluteOutput(kMaxSpeed.times(0.5).in(Units.MetersPerSecond));
 		return controller;
 	}
 

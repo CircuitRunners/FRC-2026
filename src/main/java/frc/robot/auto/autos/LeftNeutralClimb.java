@@ -14,6 +14,7 @@ import frc.robot.RobotConstants;
 import frc.robot.auto.AutoConstants;
 import frc.robot.auto.AutoHelpers;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.vision.objectdetection.ObjectPoseEstimator;
 import frc.robot.auto.AutoModeBase;
@@ -30,7 +31,7 @@ public class LeftNeutralClimb extends AutoModeBase {
 
 		Pose2d startPose = leftTrenchToNeutral.getInitialPose().get();
 
-		superstructure.updateSide(ObjectPoseEstimator.INTAKE_SIDE.LEFT);
+		//superstructure.updateSide(ObjectPoseEstimator.INTAKE_SIDE.LEFT);
 
 
 		prepRoutine(
@@ -42,11 +43,12 @@ public class LeftNeutralClimb extends AutoModeBase {
 				// leftNeutralToFuel.cmd(),
 				new PIDToPoseCommand(drive, superstructure, FieldLayout.handleAllianceFlip(new Pose2d(new Translation2d(
 					7.620832920074463, FieldLayout.kFieldWidth.in(Units.Meters) - 1.069169521331787), Rotation2d.fromDegrees(-90)), RobotConstants.isRedAlliance),
-					Units.Inches.of(10.0), Units.Degrees.of(20.0)
+					Units.Inches.of(5.0), Units.Degrees.of(20.0)
 				),
 				new PIDToPoseCommand(drive, superstructure, FieldLayout.handleAllianceFlip(new Pose2d(new Translation2d(
 					7.620832920074463, FieldLayout.kFieldWidth.in(Units.Meters) - 2.8354833126068115), Rotation2d.fromDegrees(-90)), RobotConstants.isRedAlliance),
-					Units.Inches.of(10.0), Units.Degrees.of(20.0)
+					Units.Inches.of(10.0), Units.Degrees.of(20.0),
+					DriveConstants.getIntakeAutoAlignTranslationController()
 				),
 
 				new PIDToPoseCommand(drive, superstructure, leftNeutralToTrench.getInitialPose().get(), Units.Inches.of(10.0), Units.Degrees.of(20.0))

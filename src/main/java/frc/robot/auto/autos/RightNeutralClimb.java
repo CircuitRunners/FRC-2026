@@ -29,7 +29,7 @@ public class RightNeutralClimb extends AutoModeBase {
 
 		Pose2d startPose = rightTrenchToNeutral.getInitialPose().get();
 
-		superstructure.updateSide(ObjectPoseEstimator.INTAKE_SIDE.RIGHT);
+		//superstructure.updateSide(ObjectPoseEstimator.INTAKE_SIDE.RIGHT);
 
 
 		prepRoutine(

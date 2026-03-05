@@ -145,7 +145,7 @@ public class ControlBoard {
 							Commands.parallel(shooter.followSetpointCommand(() -> s.shooterSetpoint),
 							hood.followSetpointCommand(() -> s.hoodSetpoint),
 							s.shootWhenReady()))
-							.finallyDo(() -> superstructure.maintainHeadingEpsilon = 999)
+							.finallyDo(() -> superstructure.maintainHeadingEpsilon = 0.25)
 		).onFalse(Commands.either(s.setState(State.INTAKING), s.setState(State.DEPLOYED), () -> s.getState() == State.SHOOTINTAKE));
 
 		// driver.x().whileTrue(

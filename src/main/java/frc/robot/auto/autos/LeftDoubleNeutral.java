@@ -31,7 +31,7 @@ public class LeftDoubleNeutral extends AutoModeBase {
 
 		Pose2d startPose = leftTrenchToNeutral.getInitialPose().get();
 
-		superstructure.updateSide(ObjectPoseEstimator.INTAKE_SIDE.LEFT);
+		//superstructure.updateSide(ObjectPoseEstimator.INTAKE_SIDE.LEFT);
 
 
 		prepRoutine(

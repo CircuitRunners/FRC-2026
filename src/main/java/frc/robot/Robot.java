@@ -6,7 +6,7 @@ package frc.robot;
 
 import java.util.Optional;
 
-import edu.wpi.first.epilogue.Epilogue;
+//import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.hal.AllianceStationID;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -29,19 +29,18 @@ public class Robot extends TimedRobot {
   public static final Stopwatch autoTimer = new Stopwatch();
   public Robot() {
     m_robotContainer = new RobotContainer();
-    Epilogue.bind(this);
+    //Epilogue.bind(this);
   }
 
   @Override
   public void robotPeriodic() {
-    LoggedTracer.reset();
-    try {
-			Threads.setCurrentThreadPriority(true, 4);
-			CommandScheduler.getInstance().run();
-			Threads.setCurrentThreadPriority(false, 0);
-		} catch (Exception e) {
-			SmartDashboard.putString("Logged Robot/Latest Error", e.getMessage());
-		}
+    // try {
+		// 	Threads.setCurrentThreadPriority(true, 4);
+		// 	CommandScheduler.getInstance().run();
+		// 	Threads.setCurrentThreadPriority(false, 0);
+		// } catch (Exception e) {
+		// 	SmartDashboard.putString("Logged Robot/Latest Error", e.getMessage());
+		// }
     CommandScheduler.getInstance().run(); 
 
     // Clear shooting parameters

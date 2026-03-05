@@ -89,7 +89,7 @@ public class Superstructure extends SubsystemBase {
     TrajectoryConfig config = new TrajectoryConfig(DriveConstants.kDriveMaxSpeed, DriveConstants.kMaxAccelerationMetersPerSecondSquared);
 
 
-    public double maintainHeadingEpsilon = 999;
+    public double maintainHeadingEpsilon = 0.25;
 
     private State state = State.TUCK;
 
@@ -109,7 +109,7 @@ public class Superstructure extends SubsystemBase {
 
     public void updateShooterSetpoint() {
       //shooterSetpoint = Setpoint.withVelocitySetpoint(Units.RotationsPerSecond.of(Units.RPM.of(new TunableNumber("Shooter Vel", 1800.0, true).get()).in(Units.RotationsPerSecond)));
-      if (visionValid()) {
+      if (true) {
         kitbotMode = false;
         shooterSetpoint = 
             Setpoint.withVelocitySetpoint(
@@ -117,7 +117,7 @@ public class Superstructure extends SubsystemBase {
               ShotCalculator.getInstance(drive)
               .getParameters()
               .flywheelSpeed()).in(Units.RotationsPerSecond)));
-        ControlBoard.getInstance(drive, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, climber, this).setRumble(false);
+        //ControlBoard.getInstance(drive, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, climber, this).setRumble(false);
       }
       else {
         shooterSetpoint = Shooter.KITBOT;
@@ -129,7 +129,7 @@ public class Superstructure extends SubsystemBase {
     public void updateHoodSetpoint() {
     //hoodSetpoint = Setpoint.withMotionMagicSetpoint(Units.Degrees.of(new TunableNumber("Hood Angle", 11.8, true).get()));
       nearTrench = FieldLayout.nearTrench(drive.getPose(), drive.getFieldRelativeChassisSpeeds());
-      if (visionValid() /*&& !nearTrench*/) {
+      if (true /*&& !nearTrench*/) {
         hoodSetpoint = 
             Setpoint.withMotionMagicSetpoint(
               Units.Degrees.of(
