@@ -1,9 +1,11 @@
 package frc.robot.auto;
 
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Time;
+import frc.robot.subsystems.drive.DriveConstants;
 
 public class AutoConstants {
     public static final double kPThetaController = 5.0;
@@ -19,4 +21,11 @@ public class AutoConstants {
 	public static enum AutoEndBehavior {
 	}
 	public static double shootAllFuelTime = 6;
+
+	public static TrajectoryConfig intakeConfig = (new TrajectoryConfig(DriveConstants.kDriveMaxSpeedIntake, DriveConstants.kMaxAccelerationMetersPerSecondSquared))
+		.setEndVelocity(DriveConstants.kDriveMaxSpeedIntake);
+	public static TrajectoryConfig regularConfig = new TrajectoryConfig(DriveConstants.kDriveMaxSpeed, DriveConstants.kMaxAccelerationMetersPerSecondSquared)
+		.setEndVelocity(DriveConstants.kDriveMaxSpeed);
+
+
 }
