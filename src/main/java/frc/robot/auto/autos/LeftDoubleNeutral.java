@@ -59,23 +59,25 @@ public class LeftDoubleNeutral extends AutoModeBase {
 			), superstructure.runIntakeIfDeployed()),
 			leftNeutralToTrench.cmd(),
 			cmdWithAccuracy(leftTrenchToShoot),
+			Commands.runOnce(() -> drive.getDrivetrain().setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(new ChassisSpeeds()))),
 			Commands.sequence(
 							Commands.parallel(superstructure.shootRun(),
 							superstructure.hoodRun(),
 							superstructure.shootWhenReady())).withTimeout(AutoConstants.shootAllFuelTime),
 			leftShootToTrench.cmd(),
 			Commands.parallel(leftTrenchToNeutral.cmd()),
-			Commands.parallel(
+			Commands.deadline(
 			Commands.sequence(
 				//superstructure.collectFuel(leftNeutralToTrench.getInitialPose().get()).withTimeout(7),
 				// leftNeutralToFuel.cmd(),
 				new PIDToPoseCommand(drive, superstructure, FieldLayout.handleAllianceFlip(new Pose2d(new Translation2d(
-					7.620832920074463, FieldLayout.kFieldWidth.in(Units.Meters) - 1.069169521331787), Rotation2d.fromDegrees(-90)), RobotConstants.isRedAlliance),
+					6.0, FieldLayout.kFieldWidth.in(Units.Meters) - 1.069169521331787), Rotation2d.fromDegrees(-90)), RobotConstants.isRedAlliance),
 					Units.Inches.of(10.0), Units.Degrees.of(20.0)
 				),
 				new PIDToPoseCommand(drive, superstructure, FieldLayout.handleAllianceFlip(new Pose2d(new Translation2d(
-					7.620832920074463, FieldLayout.kFieldWidth.in(Units.Meters) - 2.8354833126068115), Rotation2d.fromDegrees(-90)), RobotConstants.isRedAlliance),
-					Units.Inches.of(10.0), Units.Degrees.of(20.0)
+					6.0, FieldLayout.kFieldWidth.in(Units.Meters) - 3.2354833126068115), Rotation2d.fromDegrees(-100)), RobotConstants.isRedAlliance),
+					Units.Inches.of(10.0), Units.Degrees.of(20.0),
+					DriveConstants.getIntakeAutoAlignTranslationController()
 				),
 
 				new PIDToPoseCommand(drive, superstructure, leftNeutralToTrench.getInitialPose().get(), Units.Inches.of(10.0), Units.Degrees.of(20.0))

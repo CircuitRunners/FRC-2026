@@ -17,6 +17,7 @@ import frc.robot.RobotConstants;
 import frc.robot.auto.AutoConstants;
 import frc.robot.auto.AutoHelpers;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.vision.objectdetection.ObjectPoseEstimator;
 import frc.robot.auto.AutoModeBase;
@@ -40,7 +41,7 @@ public class RightDoubleNeutral extends AutoModeBase {
 		prepRoutine(
 			AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
 			Commands.parallel(rightTrenchToNeutral.cmd(), superstructure.deployIntake()),
-			Commands.parallel(
+			Commands.deadline(
 			Commands.sequence(
 				//superstructure.collectFuel(rightNeutralToTrench.getInitialPose().get()).withTimeout(7),
 				// rightNeutralToFuel.cmd(),
@@ -50,10 +51,11 @@ public class RightDoubleNeutral extends AutoModeBase {
 				),
 				new PIDToPoseCommand(drive, superstructure, FieldLayout.handleAllianceFlip(new Pose2d(new Translation2d(
 					7.620832920074463, 3.2354833126068115), Rotation2d.fromDegrees(90)), RobotConstants.isRedAlliance),
-					Units.Inches.of(10.0), Units.Degrees.of(20.0)
+					Units.Inches.of(10.0), Units.Degrees.of(20.0),
+					DriveConstants.getIntakeAutoAlignTranslationController()
 				),
 
-				new PIDToPoseCommand(drive, superstructure, rightNeutralToTrench.getInitialPose().get(), Units.Inches.of(10.0), Units.Degrees.of(20.0))
+				new PIDToPoseCommand(drive, superstructure, rightNeutralToTrench.getInitialPose().get(), Units.Inches.of(24.0), Units.Degrees.of(20.0))
 			), superstructure.runIntakeIfDeployed()),
 			rightNeutralToTrench.cmd(),
 			cmdWithAccuracy(rightTrenchToShoot),
@@ -64,17 +66,18 @@ public class RightDoubleNeutral extends AutoModeBase {
 							superstructure.shootWhenReady())).withTimeout(AutoConstants.shootAllFuelTime),
 			rightShootToTrench.cmd(),
 			Commands.parallel(rightTrenchToNeutral.cmd()),
-			Commands.parallel(
+			Commands.deadline(
 			Commands.sequence(
 				//superstructure.collectFuel(rightNeutralToTrench.getInitialPose().get()).withTimeout(7),
 				// rightNeutralToFuel.cmd(),
 				new PIDToPoseCommand(drive, superstructure, FieldLayout.handleAllianceFlip(new Pose2d(new Translation2d(
-					7.620832920074463, 1.069169521331787), Rotation2d.fromDegrees(90)), RobotConstants.isRedAlliance),
+					6.0, 1.069169521331787), Rotation2d.fromDegrees(90)), RobotConstants.isRedAlliance),
 					Units.Inches.of(10.0), Units.Degrees.of(20.0)
 				),
 				new PIDToPoseCommand(drive, superstructure, FieldLayout.handleAllianceFlip(new Pose2d(new Translation2d(
-					7.620832920074463, 2.8354833126068115), Rotation2d.fromDegrees(90)), RobotConstants.isRedAlliance),
-					Units.Inches.of(10.0), Units.Degrees.of(20.0)
+					6.0, 3.2354833126068115), Rotation2d.fromDegrees(100.0)), RobotConstants.isRedAlliance),
+					Units.Inches.of(10.0), Units.Degrees.of(20.0),
+					DriveConstants.getIntakeAutoAlignTranslationController()
 				),
 
 				new PIDToPoseCommand(drive, superstructure, rightNeutralToTrench.getInitialPose().get(), Units.Inches.of(10.0), Units.Degrees.of(20.0))

@@ -39,7 +39,7 @@ public class RightNeutralClimb extends AutoModeBase {
 		prepRoutine(
 			AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
 			Commands.parallel(rightTrenchToNeutral.cmd(), superstructure.deployIntake()),
-			Commands.parallel(
+			Commands.deadline(
 			Commands.sequence(
 				//superstructure.collectFuel(rightNeutralToTrench.getInitialPose().get()).withTimeout(7),
 				// rightNeutralToFuel.cmd(),

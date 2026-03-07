@@ -4,7 +4,7 @@
  "type":"Swerve",
  "variables":{
   "expressions":{
-   "FIELD_LENGTH_Y":{
+   "fieldY":{
     "dimension":"Length",
     "var":{
      "exp":"8.07 m",
