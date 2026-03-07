@@ -139,7 +139,7 @@ public class ControlBoard {
 							Commands.runOnce(() -> s.maintainHeadingEpsilon = 0.00),
 							Commands.parallel(shooter.setpointCommand(Setpoint.withVelocitySetpoint(Units.RotationsPerSecond.of(Units.RPM.of(1750).in(Units.RotationsPerSecond)))),
 							hood.setpointCommand(Setpoint.withMotionMagicSetpoint(Units.Degrees.of(11.8))),
-							s.shootWhenReady()))
+							s.shootWhenReadyTeleop()))
 							.finallyDo(() -> superstructure.maintainHeadingEpsilon = 0.25)
 		).onFalse(Commands.either(s.setState(State.INTAKING), s.setState(State.DEPLOYED), () -> s.getState() == State.SHOOTINTAKE));
 
@@ -160,7 +160,7 @@ public class ControlBoard {
 							Commands.runOnce(() -> s.maintainHeadingEpsilon = 0.00),
 							Commands.parallel(shooter.followSetpointCommand(() -> s.shooterSetpoint),
 							hood.followSetpointCommand(() -> s.hoodSetpoint),
-							s.shootWhenReady()))
+							s.shootWhenReadyTeleop()))
 							.finallyDo(() -> superstructure.maintainHeadingEpsilon = 0.25)
 		).onFalse(Commands.either(s.setState(State.INTAKING), s.setState(State.DEPLOYED), () -> s.getState() == State.SHOOTINTAKE));
 
@@ -169,7 +169,7 @@ public class ControlBoard {
 							Commands.runOnce(() -> s.maintainHeadingEpsilon = 0.00),
 							Commands.parallel(shooter.setpointCommand(Setpoint.withVelocitySetpoint(Units.RotationsPerSecond.of(Units.RPM.of(2000).in(Units.RotationsPerSecond)))),
 							hood.setpointCommand(Setpoint.withMotionMagicSetpoint(Units.Degrees.of(15.5))),
-							s.shootWhenReady()))
+							s.shootWhenReadyTeleop()))
 							.finallyDo(() -> superstructure.maintainHeadingEpsilon = 0.25)
 		).onFalse(Commands.either(s.setState(State.INTAKING), s.setState(State.DEPLOYED), () -> s.getState() == State.SHOOTINTAKE));
 

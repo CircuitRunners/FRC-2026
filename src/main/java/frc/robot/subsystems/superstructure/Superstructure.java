@@ -218,14 +218,43 @@ public class Superstructure extends SubsystemBase {
                   kicker.setpointCommand(Kicker.FEED_FORWARD),
                   Commands.waitTime(Units.Milliseconds.of(800)),
                   conveyor.setpointCommand(Conveyor.FEED_FORWARD),
-                  shakeIntake().repeatedly()
-                  //Commands.waitUntil(() -> false))
+                  Commands.waitSeconds(1),
+                  shakeIntake(),
+                  Commands.waitSeconds(0.5),
+                  shakeIntake(),
+                  Commands.waitUntil(() -> false))
       .finallyDo(() -> {
           conveyor.applySetpoint(Conveyor.IDLE);
           kicker.applySetpoint(Kicker.FEED_BACKWARDS);
           shooter.applySetpoint(Shooter.IDLE);
           hood.applySetpoint(Hood.ZERO);
-      }));
+      });
+    }
+
+    public Command agitate() {
+      return Commands.sequence(conveyor.setpointCommand(Conveyor.FEED_BACKWARDS),
+      Commands.waitSeconds(0.2),
+      conveyor.setpointCommand(Conveyor.FEED_FORWARD));
+    }
+
+    public Command shootWhenReadyTeleop() {
+      return Commands.sequence(
+              Commands.runOnce(() -> {
+                  state = (state == State.INTAKING)
+                          ? State.SHOOTINTAKE
+                          : State.SHOOTING;
+              }),
+              waitUntilSafeToShoot(),
+                  kicker.setpointCommand(Kicker.FEED_FORWARD),
+                  Commands.waitTime(Units.Milliseconds.of(800)),
+                  conveyor.setpointCommand(Conveyor.FEED_FORWARD),
+                  Commands.waitUntil(() -> false))
+      .finallyDo(() -> {
+          conveyor.applySetpoint(Conveyor.IDLE);
+          kicker.applySetpoint(Kicker.FEED_BACKWARDS);
+          shooter.applySetpoint(Shooter.IDLE);
+          hood.applySetpoint(Hood.ZERO);
+      });
     }
 
     public Command shootRun() {
@@ -248,7 +277,7 @@ public class Superstructure extends SubsystemBase {
 
     public Command shakeIntake() {
       return Commands.sequence(
-        intakeDeploy.setpointCommandWithWait(IntakeDeploy.SHAKE), Commands.waitSeconds(0.5), intakeDeploy.setpointCommandWithWait(IntakeDeploy.DEPLOY).alongWith(intakeRollers.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5)))));
+        intakeDeploy.setpointCommandWithWait(IntakeDeploy.SHAKE), Commands.waitSeconds(0.5), intakeDeploy.setpointCommandWithWait(IntakeDeploy.DEPLOY)).alongWith(intakeRollers.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5))));
     }
 
     public Command runIntakeIfDeployed() {

@@ -46,11 +46,11 @@ public class RightDoubleNeutral extends AutoModeBase {
 				//superstructure.collectFuel(rightNeutralToTrench.getInitialPose().get()).withTimeout(7),
 				// rightNeutralToFuel.cmd(),
 				new PIDToPoseCommand(drive, superstructure, FieldLayout.handleAllianceFlip(new Pose2d(new Translation2d(
-					7.620832920074463, 1.069169521331787), Rotation2d.fromDegrees(90)), RobotConstants.isRedAlliance),
+					7.9, 1.069169521331787), Rotation2d.fromDegrees(90)), RobotConstants.isRedAlliance),
 					Units.Inches.of(10.0), Units.Degrees.of(20.0)
 				),
 				new PIDToPoseCommand(drive, superstructure, FieldLayout.handleAllianceFlip(new Pose2d(new Translation2d(
-					7.620832920074463, 3.2354833126068115), Rotation2d.fromDegrees(90)), RobotConstants.isRedAlliance),
+					7.9, 3.2354833126068115), Rotation2d.fromDegrees(90)), RobotConstants.isRedAlliance),
 					Units.Inches.of(10.0), Units.Degrees.of(20.0),
 					DriveConstants.getIntakeAutoAlignTranslationController()
 				),
