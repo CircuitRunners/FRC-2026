@@ -150,8 +150,8 @@ public class RobotContainer {
 			// conveyor,
 			// superstructure,
             // kicker,
-            shooter,
-            hood
+            //shooter,
+            //hood
 		}) {
 			SmartDashboard.putData(s);
 		}
@@ -163,14 +163,20 @@ public class RobotContainer {
         );
 
         
-        // Note that X is defined as forward according to WPILib convention,
-        // and Y is defined as to the left according to WPILib convention.
         // drive.getDrivetrain().setDefaultCommand(
         //     // Drivetrain will execute this command periodically
         //     drive.getDrivetrain().applyRequest(() ->
         //     driveRequest.withVelocityX(-ControlBoardConstants.mDriverController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
         //             .withVelocityY(-ControlBoardConstants.mDriverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
         //             .withRotationalRate(-ControlBoardConstants.mDriverController.getRightX() * MaxAngularRate).withDeadband(MaxSpeed * 0.15).withRotationalDeadband(MaxAngularRate*0.15) // Drive counterclockwise with negative X (left)
+        //     )
+        // );
+
+        // drive.getDrivetrain().setDefaultCommand(
+        //     drive.getDrivetrain().applyRequest(() ->
+        //     driveRequest.withVelocityX(-ControlBoardConstants.mOperatorController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+        //             .withVelocityY(-ControlBoardConstants.mOperatorController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+        //             .withRotationalRate(-ControlBoardConstants.mOperatorController.getRightX() * MaxAngularRate).withDeadband(MaxSpeed * 0.15).withRotationalDeadband(MaxAngularRate*0.15) // Drive counterclockwise with negative X (left)
         //     )
         // );
 

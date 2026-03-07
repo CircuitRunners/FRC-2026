@@ -6,7 +6,7 @@ package frc.robot;
 
 import java.util.Optional;
 
-//import edu.wpi.first.epilogue.Epilogue;
+import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.hal.AllianceStationID;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -29,7 +29,7 @@ public class Robot extends TimedRobot {
   public static final Stopwatch autoTimer = new Stopwatch();
   public Robot() {
     m_robotContainer = new RobotContainer();
-    //Epilogue.bind(this);
+    Epilogue.bind(this);
   }
 
   @Override

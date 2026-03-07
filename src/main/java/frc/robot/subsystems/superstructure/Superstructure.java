@@ -1,5 +1,6 @@
 package frc.robot.subsystems.superstructure;
 
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static frc.robot.subsystems.vision.apriltag.VisionConstants.singleTagIdsToReject;
 
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -97,14 +99,16 @@ public class Superstructure extends SubsystemBase {
     public Setpoint shooterSetpoint = Shooter.STOP;
     public Rotation2d headingSetpoint = new Rotation2d();
 
+    public AngularVelocity shooterIncrement = Units.RPM.of(0.0);
+
     @Override
     public void periodic() {
         updateShooterSetpoint();
         updateHoodSetpoint();
         updateHeadingSetpoint();
         // SmartDashboard.putBoolean("Near Trench", nearTrench);
-        SmartDashboard.putNumber("Distance From Hub", drive.getPose().getTranslation().getDistance(FieldLayout.handleAllianceFlip(FieldLayout.blueHubCenter, RobotConstants.isRedAlliance)));
-        SmartDashboard.putBoolean("Shooter Spun Up", shooter.spunUp());
+        // SmartDashboard.putNumber("Distance From Hub", drive.getPose().getTranslation().getDistance(FieldLayout.handleAllianceFlip(FieldLayout.blueHubCenter, RobotConstants.isRedAlliance)));
+        // SmartDashboard.putBoolean("Shooter Spun Up", shooter.spunUp());
     }
 
     public void updateShooterSetpoint() {
@@ -113,10 +117,10 @@ public class Superstructure extends SubsystemBase {
         kitbotMode = false;
         shooterSetpoint = 
             Setpoint.withVelocitySetpoint(
-              Units.RotationsPerSecond.of(Units.RPM.of(
+              Units.RotationsPerSecond.of((Units.RPM.of(
               ShotCalculator.getInstance(drive)
               .getParameters()
-              .flywheelSpeed()).in(Units.RotationsPerSecond)));
+              .flywheelSpeed()).plus(shooterIncrement)).in(Units.RotationsPerSecond)));
         //ControlBoard.getInstance(drive, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, climber, this).setRumble(false);
       }
       else {
@@ -214,15 +218,14 @@ public class Superstructure extends SubsystemBase {
                   kicker.setpointCommand(Kicker.FEED_FORWARD),
                   Commands.waitTime(Units.Milliseconds.of(800)),
                   conveyor.setpointCommand(Conveyor.FEED_FORWARD),
-                  Commands.waitSeconds(1),
-                  shakeIntake().alongWith(
-          Commands.waitUntil(() -> false)))
+                  shakeIntake().repeatedly()
+                  //Commands.waitUntil(() -> false))
       .finallyDo(() -> {
           conveyor.applySetpoint(Conveyor.IDLE);
           kicker.applySetpoint(Kicker.FEED_BACKWARDS);
           shooter.applySetpoint(Shooter.IDLE);
           hood.applySetpoint(Hood.ZERO);
-      });
+      }));
     }
 
     public Command shootRun() {
@@ -234,18 +237,18 @@ public class Superstructure extends SubsystemBase {
     }
 
     public Command deployIntake() {
-      return Commands.sequence(intakeDeploy.setpointCommandWithWait(IntakeDeploy.DEPLOY), setIntakeStatus(true))
-      .withName("Intake Deploy");
+      if (Robot.isReal()) {
+        return Commands.sequence(intakeDeploy.setpointCommandWithWait(IntakeDeploy.DEPLOY), setIntakeStatus(true))
+        .withName("Intake Deploy");
+      }
+      else
+        return Commands.sequence(intakeDeploy.setpointCommand(IntakeDeploy.DEPLOY), setIntakeStatus(true))
+        .withName("Intake Deploy");
     }
 
     public Command shakeIntake() {
       return Commands.sequence(
-        intakeDeploy.setpointCommandWithWait(IntakeDeploy.SHAKE), Commands.waitSeconds(0.5), intakeDeploy.setpointCommandWithWait(IntakeDeploy.DEPLOY).repeatedly()).alongWith(intakeRollers.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5))))
-        .finallyDo(() -> {
-			kicker.applySetpoint(Kicker.IDLE);
-			conveyor.applySetpoint(Conveyor.IDLE);
-			intakeDeploy.applySetpoint(IntakeDeploy.DEPLOY);
-      intakeRollers.applySetpoint(IntakeRollers.IDLE);});
+        intakeDeploy.setpointCommandWithWait(IntakeDeploy.SHAKE), Commands.waitSeconds(0.5), intakeDeploy.setpointCommandWithWait(IntakeDeploy.DEPLOY).alongWith(intakeRollers.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5)))));
     }
 
     public Command runIntakeIfDeployed() {
@@ -478,7 +481,7 @@ public class Superstructure extends SubsystemBase {
     }
 
     public boolean shouldHeadingLock() {
-      return (headingLockToggle && state != State.INTAKING && (visionValid() || Robot.isSimulation()));
+      return (headingLockToggle && state != State.INTAKING /*&& (visionValid() || Robot.isSimulation())*/);
     }
 
     public void setPathFollowing(boolean isFollowing) {

@@ -43,6 +43,7 @@ public class CenterPreloadClimbLeft extends AutoModeBase {
 		prepRoutine(
 			AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
 		cmdWithAccuracy(centerPreloadClimb),
+		superstructure.deployIntake(),
 		Commands.sequence(
 							Commands.parallel(superstructure.shootRun(),
 							superstructure.hoodRun(),

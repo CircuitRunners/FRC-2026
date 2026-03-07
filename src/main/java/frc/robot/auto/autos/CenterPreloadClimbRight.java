@@ -35,9 +35,10 @@ public class CenterPreloadClimbRight extends AutoModeBase {
 
 		prepRoutine(
 			AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
-			Commands.parallel(cmdWithAccuracy(centerPreloadClimb), superstructure.deployIntake()),
-			superstructure.shootWhenReady().withTimeout(AutoConstants.shootAllFuelTime),
-			superstructure.climbRight()
+			cmdWithAccuracy(centerPreloadClimb),
+			superstructure.deployIntake(),
+			superstructure.shootWhenReady().withTimeout(AutoConstants.shootAllFuelTime)//,
+			//superstructure.climbRight()
         );
 
 

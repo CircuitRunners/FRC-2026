@@ -27,6 +27,6 @@ public class PassingRegression {
                         // @x --> distance from target (in meters)
                         // @y --> time of flight (in seconds)
                         { 0.0, 0.0 },
-                        { 100000.0, 0.0 }
+                        { 12.0, 0.0 }
         };
     }

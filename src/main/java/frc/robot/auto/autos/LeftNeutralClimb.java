@@ -1,10 +1,14 @@
 package frc.robot.auto.autos;
 
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.ApplyChassisSpeeds;
+import com.ctre.phoenix6.swerve.SwerveRequest;
+
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoTrajectory;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -46,21 +50,20 @@ public class LeftNeutralClimb extends AutoModeBase {
 					Units.Inches.of(5.0), Units.Degrees.of(20.0)
 				),
 				new PIDToPoseCommand(drive, superstructure, FieldLayout.handleAllianceFlip(new Pose2d(new Translation2d(
-					7.620832920074463, FieldLayout.kFieldWidth.in(Units.Meters) - 2.8354833126068115), Rotation2d.fromDegrees(-90)), RobotConstants.isRedAlliance),
+					7.620832920074463, FieldLayout.kFieldWidth.in(Units.Meters) - 3.2354833126068115), Rotation2d.fromDegrees(-90)), RobotConstants.isRedAlliance),
 					Units.Inches.of(10.0), Units.Degrees.of(20.0),
 					DriveConstants.getIntakeAutoAlignTranslationController()
 				),
 
-				new PIDToPoseCommand(drive, superstructure, leftNeutralToTrench.getInitialPose().get(), Units.Inches.of(10.0), Units.Degrees.of(20.0))
+				new PIDToPoseCommand(drive, superstructure, leftNeutralToTrench.getInitialPose().get(), Units.Inches.of(24.0), Units.Degrees.of(20.0))
 			), superstructure.runIntakeIfDeployed()),
 			leftNeutralToTrench.cmd(),
 			cmdWithAccuracy(leftTrenchToShoot),
+			Commands.runOnce(() -> drive.getDrivetrain().setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(new ChassisSpeeds()))),
 			Commands.sequence(
 							Commands.parallel(superstructure.shootRun(),
 							superstructure.hoodRun(),
-							superstructure.shootWhenReady())).withTimeout(AutoConstants.shootAllFuelTime)
-			//superstructure.climb()
-        );
+							superstructure.shootWhenReady())).withTimeout(AutoConstants.shootAllFuelTime)); //superstructure.climb()
 
 
 	}

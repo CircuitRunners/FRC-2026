@@ -165,7 +165,7 @@ public class DriveConstants {
 
 	public static SynchronousPIDF getIntakeAutoAlignTranslationController() {
 		SynchronousPIDF controller = new SynchronousPIDF(3.15, 0.0, 0.0);
-		controller.setMaxAbsoluteOutput(kMaxSpeed.times(0.5).in(Units.MetersPerSecond));
+		controller.setMaxAbsoluteOutput(kMaxSpeed.times(0.2).in(Units.MetersPerSecond));
 		return controller;
 	}
 

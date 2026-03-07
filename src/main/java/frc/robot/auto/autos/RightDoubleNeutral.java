@@ -46,7 +46,7 @@ public class RightDoubleNeutral extends AutoModeBase {
 					Units.Inches.of(10.0), Units.Degrees.of(20.0)
 				),
 				new PIDToPoseCommand(drive, superstructure, FieldLayout.handleAllianceFlip(new Pose2d(new Translation2d(
-					7.620832920074463, 2.8354833126068115), Rotation2d.fromDegrees(90)), RobotConstants.isRedAlliance),
+					7.620832920074463, 3.2354833126068115), Rotation2d.fromDegrees(90)), RobotConstants.isRedAlliance),
 					Units.Inches.of(10.0), Units.Degrees.of(20.0)
 				),
 

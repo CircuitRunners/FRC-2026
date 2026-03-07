@@ -14,6 +14,7 @@ import frc.robot.RobotConstants;
 import frc.robot.auto.AutoConstants;
 import frc.robot.auto.AutoHelpers;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.vision.objectdetection.ObjectPoseEstimator;
 import frc.robot.auto.AutoModeBase;
@@ -46,11 +47,12 @@ public class LeftDoubleNeutral extends AutoModeBase {
 					Units.Inches.of(10.0), Units.Degrees.of(20.0)
 				),
 				new PIDToPoseCommand(drive, superstructure, FieldLayout.handleAllianceFlip(new Pose2d(new Translation2d(
-					7.620832920074463, FieldLayout.kFieldWidth.in(Units.Meters) - 2.8354833126068115), Rotation2d.fromDegrees(-90)), RobotConstants.isRedAlliance),
-					Units.Inches.of(10.0), Units.Degrees.of(20.0)
+					7.620832920074463, FieldLayout.kFieldWidth.in(Units.Meters) - 3.2354833126068115), Rotation2d.fromDegrees(-90)), RobotConstants.isRedAlliance),
+					Units.Inches.of(10.0), Units.Degrees.of(20.0),
+					DriveConstants.getIntakeAutoAlignTranslationController()
 				),
 
-				new PIDToPoseCommand(drive, superstructure, leftNeutralToTrench.getInitialPose().get(), Units.Inches.of(10.0), Units.Degrees.of(20.0))
+				new PIDToPoseCommand(drive, superstructure, leftNeutralToTrench.getInitialPose().get(), Units.Inches.of(24.0), Units.Degrees.of(20.0))
 			), superstructure.runIntakeIfDeployed()),
 			leftNeutralToTrench.cmd(),
 			cmdWithAccuracy(leftTrenchToShoot),
