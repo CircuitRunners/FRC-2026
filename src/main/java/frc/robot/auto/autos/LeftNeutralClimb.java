@@ -12,6 +12,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.lib.drive.FollowNonstopTrajectory;
 import frc.lib.drive.PIDToPoseCommand;
 import frc.lib.util.FieldLayout;
 import frc.robot.RobotConstants;
@@ -49,6 +50,18 @@ public class LeftNeutralClimb extends AutoModeBase {
 					7.620832920074463, FieldLayout.kFieldWidth.in(Units.Meters) - 1.069169521331787), Rotation2d.fromDegrees(-90)), RobotConstants.isRedAlliance),
 					Units.Inches.of(5.0), Units.Degrees.of(20.0)
 				),
+				// new FollowNonstopTrajectory(
+				// 	TrajectoryGenerator.generateTrajectory(
+				// 		leftTrenchToNeutral.getFinalPose().get(),
+				// 		new ArrayList<Translation2d>(), 
+				// 		FieldLayout.handleAllianceFlip(
+				// 			new Pose2d(
+				// 				new Translation2d(
+				// 					7.620832920074463, FieldLayout.kFieldWidth.in(Units.Meters) - 1.069169521331787),
+				// 			Rotation2d.fromDegrees(-90)),
+				// 		RobotConstants.isRedAlliance),
+				// 	AutoConstants.regularConfig),
+				// drive),
 				new PIDToPoseCommand(drive, superstructure, FieldLayout.handleAllianceFlip(new Pose2d(new Translation2d(
 					7.620832920074463, FieldLayout.kFieldWidth.in(Units.Meters) - 3.2354833126068115), Rotation2d.fromDegrees(-90)), RobotConstants.isRedAlliance),
 					Units.Inches.of(10.0), Units.Degrees.of(20.0),
