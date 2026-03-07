@@ -1,10 +1,13 @@
 package frc.robot.auto.autos;
 
+import com.ctre.phoenix6.swerve.SwerveRequest;
+
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoTrajectory;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -62,7 +65,7 @@ public class LeftDoubleNeutral extends AutoModeBase {
 							superstructure.shootWhenReady())).withTimeout(AutoConstants.shootAllFuelTime),
 			leftShootToTrench.cmd(),
 			Commands.parallel(leftTrenchToNeutral.cmd()),
-			Commands.deadline(
+			Commands.parallel(
 			Commands.sequence(
 				//superstructure.collectFuel(leftNeutralToTrench.getInitialPose().get()).withTimeout(7),
 				// leftNeutralToFuel.cmd(),
@@ -79,6 +82,7 @@ public class LeftDoubleNeutral extends AutoModeBase {
 			), superstructure.runIntakeIfDeployed()),
 			leftNeutralToTrench.cmd(),
 			cmdWithAccuracy(leftTrenchToShoot),
+			Commands.runOnce(() -> drive.getDrivetrain().setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(new ChassisSpeeds()))),
 			Commands.sequence(
 							Commands.parallel(superstructure.shootRun(),
 							superstructure.hoodRun(),
