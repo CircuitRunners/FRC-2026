@@ -126,7 +126,7 @@ public class ControlBoard {
 	public void driverControls() {
 		Superstructure s = superstructure;
 
-		// MISC ###############################################################################
+		// INTAKING ###############################################################################
 
 		driver.rightBumper().whileTrue(s.shakeIntake()).onFalse(
 		intakeDeploy.setpointCommand(IntakeDeploy.DEPLOY));
@@ -134,60 +134,29 @@ public class ControlBoard {
 		driver.rightTrigger().whileTrue(s.spit()).onFalse(s.setState(Superstructure.State.DEPLOYED));
 
  		driver.leftBumper().onTrue(s.tuck());
-		driver.a().whileTrue(
-			Commands.sequence(
-							Commands.runOnce(() -> s.maintainHeadingEpsilon = 0.00),
-							Commands.parallel(shooter.setpointCommand(Setpoint.withVelocitySetpoint(Units.RotationsPerSecond.of(Units.RPM.of(1750).in(Units.RotationsPerSecond)))),
-							hood.setpointCommand(Setpoint.withMotionMagicSetpoint(Units.Degrees.of(11.8))),
-							s.shootWhenReadyTeleop()))
-							.finallyDo(() -> superstructure.maintainHeadingEpsilon = 0.25)
-		).onFalse(Commands.either(s.setState(State.INTAKING), s.setState(State.DEPLOYED), () -> s.getState() == State.SHOOTINTAKE));
-
- 		// INTAKING ###############################################################################
 
  		driver.leftTrigger(0.1)
  				.whileTrue(
- 						s.runIntakeIfDeployed())
-						.onFalse(Commands.either(s.setState(State.SHOOTING), s.setState(State.DEPLOYED), () -> s.getState() == State.SHOOTINTAKE));
+ 						s.runIntakeIfDeployed());
  						//.withName("Deploy and/or Intake"));
 
 		// driver.rightBumper().onTrue(Commands.parallel(conveyor.setpointCommand(Conveyor.FEED_FORWARD),
 		// kicker.setpointCommand(Kicker.FEED_FORWARD)))
 		// .onFalse(Commands.parallel(kicker.setpointCommand(Setpoint.withNeutralSetpoint()), conveyor.setpointCommand(Setpoint.withNeutralSetpoint())));
 
- 		driver.x().whileTrue(
-						Commands.sequence(
-							Commands.runOnce(() -> s.maintainHeadingEpsilon = 0.00),
-							Commands.parallel(shooter.followSetpointCommand(() -> s.shooterSetpoint),
-							hood.followSetpointCommand(() -> s.hoodSetpoint),
-							s.shootWhenReadyTeleop()))
-							.finallyDo(() -> superstructure.maintainHeadingEpsilon = 0.25)
-		).onFalse(Commands.either(s.setState(State.INTAKING), s.setState(State.DEPLOYED), () -> s.getState() == State.SHOOTINTAKE));
+		// SHOOTING ##############################################################################
 
-		driver.y().whileTrue(
-			Commands.sequence(
-							Commands.runOnce(() -> s.maintainHeadingEpsilon = 0.00),
-							Commands.parallel(shooter.setpointCommand(Setpoint.withVelocitySetpoint(Units.RotationsPerSecond.of(Units.RPM.of(2000).in(Units.RotationsPerSecond)))),
-							hood.setpointCommand(Setpoint.withMotionMagicSetpoint(Units.Degrees.of(15.5))),
-							s.shootWhenReadyTeleop()))
-							.finallyDo(() -> superstructure.maintainHeadingEpsilon = 0.25)
-		).onFalse(Commands.either(s.setState(State.INTAKING), s.setState(State.DEPLOYED), () -> s.getState() == State.SHOOTINTAKE));
+ 		driver.x().whileTrue(s.shootWhenReadyTeleop());
 
-		// driver.x().whileTrue(
-		// 	Commands.run(
-		// 		() -> shooter.applySetpoint(s.shooterSetpoint),
-		// 		shooter
-		// 	)
-		// ).onFalse(
-		// 	shooter.setpointCommand(Shooter.IDLE)
-		// );
+		driver.y().whileTrue(s.shootWhenReadyPreset(Units.RotationsPerSecond.of(Units.RPM.of(2000).in(Units.RotationsPerSecond)), Units.Degrees.of(15.5)));
 
-		//driver.b().whileTrue(s.climb()).onFalse(s.setState(Superstructure.State.CLIMBING));
+		driver.a().whileTrue(s.shootWhenReadyPreset(Units.RotationsPerSecond.of(Units.RPM.of(1750).in(Units.RotationsPerSecond)), Units.Degrees.of(11.8)));
 
 		driver.b().onTrue(Commands.runOnce(() -> s.shooterIncrement = s.shooterIncrement.minus(Units.RPM.of(50))));
 
 		driver.back().onTrue(Commands.runOnce(() -> s.shooterIncrement = s.shooterIncrement.plus(Units.RPM.of(50))).andThen(Commands.runOnce(() -> SmartDashboard.putNumber("Shooter Inc", s.shooterIncrement.in(Units.RPM)))));
 
+		// TOGGLES ####################################################################################
 		driver.povLeft().onTrue(s.toggleSOTM().withName("SOTM Toggle").andThen(
 			Commands.sequence(
 				rumbleCommand(Units.Seconds.of(0.1)),
@@ -206,7 +175,7 @@ public class ControlBoard {
 			)
 		));
 
-
+		//driver.b().whileTrue(s.climb()).onFalse(s.setState(Superstructure.State.CLIMBING));
  	}
 
 	// public Command shootingSetOverrideBehavior(Trigger button) {

@@ -63,7 +63,7 @@ public class RightDoubleNeutral extends AutoModeBase {
 			Commands.sequence(
 							Commands.parallel(superstructure.shootRun(),
 							superstructure.hoodRun(),
-							superstructure.shootWhenReady())).withTimeout(AutoConstants.shootAllFuelTime),
+							superstructure.shootWhenReadyAuto())).withTimeout(AutoConstants.shootAllFuelTime),
 			rightShootToTrench.cmd(),
 			Commands.parallel(rightTrenchToNeutral.cmd()),
 			Commands.deadline(
@@ -88,7 +88,7 @@ public class RightDoubleNeutral extends AutoModeBase {
 			Commands.sequence(
 							Commands.parallel(superstructure.shootRun(),
 							superstructure.hoodRun(),
-							superstructure.shootWhenReady())).withTimeout(AutoConstants.shootAllFuelTime)
+							superstructure.shootWhenReadyAuto())).withTimeout(AutoConstants.shootAllFuelTime)
 			//superstructure.climb()
         );
 

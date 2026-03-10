@@ -18,6 +18,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -207,29 +208,36 @@ public class Superstructure extends SubsystemBase {
         withName("Shoot");
     }
 
-    public Command shootWhenReady() {
+    public Command shootWhenReadyAuto() {
       return Commands.sequence(
+          Commands.runOnce(() -> maintainHeadingEpsilon = 0.00),
+          Commands.parallel(
+              shooter.followSetpointCommand(() -> shooterSetpoint),
+              hood.followSetpointCommand(() -> hoodSetpoint),
               Commands.runOnce(() -> {
                   state = (state == State.INTAKING)
                           ? State.SHOOTINTAKE
                           : State.SHOOTING;
               }),
               waitUntilSafeToShoot(),
-                  kicker.setpointCommand(Kicker.FEED_FORWARD),
+              kicker.setpointCommand(Kicker.FEED_FORWARD),
                   Commands.waitTime(Units.Milliseconds.of(800)),
                   conveyor.setpointCommand(Conveyor.FEED_FORWARD),
                   Commands.waitSeconds(1),
                   shakeIntake(),
                   Commands.waitSeconds(0.5),
                   shakeIntake(),
-                  Commands.waitUntil(() -> false))
-      .finallyDo(() -> {
+                  Commands.waitUntil(() -> false)
+          )
+      ).finallyDo(() -> {
           conveyor.applySetpoint(Conveyor.IDLE);
           kicker.applySetpoint(Kicker.FEED_BACKWARDS);
           shooter.applySetpoint(Shooter.IDLE);
           hood.applySetpoint(Hood.ZERO);
+          maintainHeadingEpsilon = 0.25;
+          state = (state == State.SHOOTINTAKE) ? State.INTAKING : State.DEPLOYED;
       });
-    }
+}
 
     public Command agitate() {
       return Commands.sequence(conveyor.setpointCommand(Conveyor.FEED_BACKWARDS),
@@ -239,21 +247,55 @@ public class Superstructure extends SubsystemBase {
 
     public Command shootWhenReadyTeleop() {
       return Commands.sequence(
+          Commands.runOnce(() -> maintainHeadingEpsilon = 0.00),
+          Commands.parallel(
+              shooter.followSetpointCommand(() -> shooterSetpoint),
+              hood.followSetpointCommand(() -> hoodSetpoint),
               Commands.runOnce(() -> {
                   state = (state == State.INTAKING)
                           ? State.SHOOTINTAKE
                           : State.SHOOTING;
               }),
               waitUntilSafeToShoot(),
-                  kicker.setpointCommand(Kicker.FEED_FORWARD),
-                  Commands.waitTime(Units.Milliseconds.of(800)),
-                  conveyor.setpointCommand(Conveyor.FEED_FORWARD),
-                  Commands.waitUntil(() -> false))
-      .finallyDo(() -> {
+              kicker.setpointCommand(Kicker.FEED_FORWARD),
+              Commands.waitTime(Units.Milliseconds.of(800)),
+              conveyor.setpointCommand(Conveyor.FEED_FORWARD),
+              Commands.waitUntil(() -> false)
+          )
+      ).finallyDo(() -> {
           conveyor.applySetpoint(Conveyor.IDLE);
           kicker.applySetpoint(Kicker.FEED_BACKWARDS);
           shooter.applySetpoint(Shooter.IDLE);
           hood.applySetpoint(Hood.ZERO);
+          maintainHeadingEpsilon = 0.25;
+          state = (state == State.SHOOTINTAKE) ? State.INTAKING : State.DEPLOYED;
+      });
+    }
+
+    public Command shootWhenReadyPreset(AngularVelocity rpm, Angle angle) {
+      return Commands.sequence(
+          Commands.runOnce(() -> maintainHeadingEpsilon = 0.00),
+          Commands.parallel(
+              shooter.setpointCommand(Setpoint.withVelocitySetpoint(rpm)),
+              hood.setpointCommand(Setpoint.withMotionMagicSetpoint(angle)),
+              Commands.runOnce(() -> {
+                  state = (state == State.INTAKING)
+                          ? State.SHOOTINTAKE
+                          : State.SHOOTING;
+              }),
+              waitUntilSafeToShoot(),
+              kicker.setpointCommand(Kicker.FEED_FORWARD),
+              Commands.waitTime(Units.Milliseconds.of(800)),
+              conveyor.setpointCommand(Conveyor.FEED_FORWARD),
+              Commands.waitUntil(() -> false)
+          )
+      ).finallyDo(() -> {
+          conveyor.applySetpoint(Conveyor.IDLE);
+          kicker.applySetpoint(Kicker.FEED_BACKWARDS);
+          shooter.applySetpoint(Shooter.IDLE);
+          hood.applySetpoint(Hood.ZERO);
+          maintainHeadingEpsilon = 0.25;
+          state = (state == State.SHOOTINTAKE) ? State.INTAKING : State.DEPLOYED;
       });
     }
 
@@ -295,7 +337,8 @@ public class Superstructure extends SubsystemBase {
           .withName("Intaking").finallyDo(() -> {
             intakeRollers.applySetpoint(IntakeRollers.IDLE);
             conveyor.applySetpoint(Conveyor.IDLE);
-            kicker.applySetpoint(Kicker.IDLE);})
+            kicker.applySetpoint(Kicker.IDLE);
+            state = (state == State.SHOOTINTAKE) ? State.SHOOTING : State.DEPLOYED;})
             .withName("End Intaking");
     }
 
