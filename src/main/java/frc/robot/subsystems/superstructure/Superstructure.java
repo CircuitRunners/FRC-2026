@@ -196,6 +196,8 @@ public class Superstructure extends SubsystemBase {
     }
 
     public Command waitUntilSafeToShoot() {
+      SmartDashboard.putBoolean("spun up", shooter.spunUp());
+      SmartDashboard.putBoolean("hood pos", hood.nearPositionSetpoint());
       return Commands.waitUntil(() -> (shooter.spunUp() || Robot.isSimulation())
       && hood.nearPositionSetpoint() 
       && (!headingLockToggle || kitbotMode || drive.getRotation().getMeasure().isNear(headingSetpoint.getMeasure(), Units.Degrees.of(5.0)) || RobotState.isAutonomous()));
@@ -219,7 +221,7 @@ public class Superstructure extends SubsystemBase {
                           ? State.SHOOTINTAKE
                           : State.SHOOTING;
               }),
-              waitUntilSafeToShoot(),
+              waitUntilSafeToShoot()),
               kicker.setpointCommand(Kicker.FEED_FORWARD),
                   Commands.waitTime(Units.Milliseconds.of(800)),
                   conveyor.setpointCommand(Conveyor.FEED_FORWARD),
@@ -228,7 +230,6 @@ public class Superstructure extends SubsystemBase {
                   Commands.waitSeconds(0.5),
                   shakeIntake(),
                   Commands.waitUntil(() -> false)
-          )
       ).finallyDo(() -> {
           conveyor.applySetpoint(Conveyor.IDLE);
           kicker.applySetpoint(Kicker.FEED_BACKWARDS);
@@ -256,12 +257,11 @@ public class Superstructure extends SubsystemBase {
                           ? State.SHOOTINTAKE
                           : State.SHOOTING;
               }),
-              waitUntilSafeToShoot(),
+              waitUntilSafeToShoot()),
               kicker.setpointCommand(Kicker.FEED_FORWARD),
               Commands.waitTime(Units.Milliseconds.of(800)),
               conveyor.setpointCommand(Conveyor.FEED_FORWARD),
               Commands.waitUntil(() -> false)
-          )
       ).finallyDo(() -> {
           conveyor.applySetpoint(Conveyor.IDLE);
           kicker.applySetpoint(Kicker.FEED_BACKWARDS);
@@ -283,12 +283,11 @@ public class Superstructure extends SubsystemBase {
                           ? State.SHOOTINTAKE
                           : State.SHOOTING;
               }),
-              waitUntilSafeToShoot(),
+              waitUntilSafeToShoot()),
               kicker.setpointCommand(Kicker.FEED_FORWARD),
               Commands.waitTime(Units.Milliseconds.of(800)),
               conveyor.setpointCommand(Conveyor.FEED_FORWARD),
               Commands.waitUntil(() -> false)
-          )
       ).finallyDo(() -> {
           conveyor.applySetpoint(Conveyor.IDLE);
           kicker.applySetpoint(Kicker.FEED_BACKWARDS);

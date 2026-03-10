@@ -248,9 +248,9 @@ public abstract class MotorIO implements Sendable {
 
 	@Override
 	public void initSendable(SendableBuilder builder) {
-		//builder.addBooleanProperty("Enabled", () -> getEnabled(), null);
-		// builder.addStringProperty("Setpoint Type:", () -> getSetpoint().mode.toString(), null);
-		// builder.addDoubleProperty("Setpoint Value as Double:", () -> getSetpointDoubleInUnits(), null);
+		builder.addBooleanProperty("Enabled", () -> getEnabled(), null);
+		builder.addStringProperty("Setpoint Type:", () -> getSetpoint().mode.toString(), null);
+		builder.addDoubleProperty("Setpoint Value as Double:", () -> getSetpointDoubleInUnits(), null);
 		// inputs.initSendable(builder);
 		// if (followerInputs.length > 0) {
 		// 	builder.addDoubleArrayProperty(
@@ -329,11 +329,11 @@ public abstract class MotorIO implements Sendable {
 
 		@Override
 		public void initSendable(SendableBuilder builder) {
-			// builder.addDoubleProperty(
-			// 		"Velocity " + unitType.name() + " per " + time.name() + ":",
-			// 		() -> velocity.in(unitType.per(time)),
-			// 		null);
-			// builder.addDoubleProperty("Position " + unitType.name() + ":", () -> position.in(unitType), null);
+			builder.addDoubleProperty(
+					"Velocity " + unitType.name() + " per " + time.name() + ":",
+					() -> velocity.in(unitType.per(time)),
+					null);
+			builder.addDoubleProperty("Position " + unitType.name() + ":", () -> position.in(unitType), null);
 			// builder.addDoubleProperty("Stator Current Amps:", () -> statorCurrent.in(Units.Amps), null);
 			// builder.addDoubleProperty("Supply Current Amps:", () -> supplyCurrent.in(Units.Amps), null);
 			// builder.addDoubleProperty("Motor Voltage:", () -> motorVoltage.in(Units.Volts), null);

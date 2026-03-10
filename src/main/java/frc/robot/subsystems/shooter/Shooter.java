@@ -14,26 +14,6 @@ public class Shooter extends FlywheelMotorSubsystem<MotorIOTalonFX> {
     public static final Setpoint STOP = Setpoint.withVelocitySetpoint(Units.RotationsPerSecond.of(0));
     public static final Setpoint KITBOT = Setpoint.withVelocitySetpoint(Units.RotationsPerSecond.of(10.0));
 
-    public void setShooterVelocity(double RPM) {
-        applySetpoint(Setpoint.withVelocitySetpoint(Units.RotationsPerSecond.of(RPM)));
-    }
-
-    public void incrementVelocity(double inc) {
-        applySetpoint(Setpoint.withVelocitySetpoint(getVelocity().plus(Units.RotationsPerSecond.of(inc))));
-    }
-
-    public Command trackTargetCommand(Setpoint setpoint) {
-        return followSetpointCommand(() -> setpoint).withName("Track Hub");
-    }
-
-    private void stop() {
-        applySetpoint(STOP);
-    }
-
-    public Command stopCommand() {
-        return runOnce(this::stop);
-    }
-
     public Shooter() {
         super(ShooterConstants.getMotorIO(),
             "Shooter", 

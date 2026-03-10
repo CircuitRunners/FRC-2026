@@ -6,6 +6,7 @@ import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Voltage;
@@ -20,19 +21,22 @@ import frc.robot.Robot;
 public class IntakeRollerConstants {
     private static final double kGearing = (24.0 / 18.0);
 
-    public static final Voltage kIntakeVoltage = Volts.of(7.0);
+    public static final Voltage kIntakeVoltage = Volts.of(12.0);
     public static final Voltage kExhaustVoltage = Volts.of(-5.0);
+
+    public static final double pulseOutTime = 0.20;
+	public static final double pulseInTime = 0.30;
 
     public static TalonFXConfiguration getFXConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
 
         config.CurrentLimits.StatorCurrentLimitEnable = Robot.isReal();
-        config.CurrentLimits.StatorCurrentLimit = 120;
+        config.CurrentLimits.StatorCurrentLimit = 60;
 
         config.CurrentLimits.SupplyCurrentLimitEnable = Robot.isReal();
-		config.CurrentLimits.SupplyCurrentLimit = 60.0;
+		config.CurrentLimits.SupplyCurrentLimit = 80.0;
 		config.CurrentLimits.SupplyCurrentLowerLimit = 60.0;
-		config.CurrentLimits.SupplyCurrentLowerTime = 0.1;
+		config.CurrentLimits.SupplyCurrentLowerTime = 0.3;
 
 		config.Voltage.PeakForwardVoltage = 12.0;
 		config.Voltage.PeakReverseVoltage = -12.0;
@@ -40,6 +44,8 @@ public class IntakeRollerConstants {
 		config.Feedback.SensorToMechanismRatio = kGearing;
 
 		config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+
+        config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
 		return config;
     }

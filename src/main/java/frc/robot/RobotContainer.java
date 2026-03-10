@@ -150,8 +150,8 @@ public class RobotContainer {
 			// conveyor,
 			// superstructure,
             // kicker,
-            //shooter,
-            //hood
+            shooter,
+            hood
 		}) {
 			SmartDashboard.putData(s);
 		}
