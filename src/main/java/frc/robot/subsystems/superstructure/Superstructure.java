@@ -223,7 +223,7 @@ public class Superstructure extends SubsystemBase {
               }),
               waitUntilSafeToShoot()),
               kicker.setpointCommand(Kicker.FEED_FORWARD),
-                  Commands.waitTime(Units.Milliseconds.of(800)),
+                  Commands.waitTime(Units.Milliseconds.of(150)),
                   conveyor.setpointCommand(Conveyor.FEED_FORWARD),
                   Commands.waitSeconds(1),
                   shakeIntake(),
@@ -252,17 +252,19 @@ public class Superstructure extends SubsystemBase {
           Commands.parallel(
               shooter.followSetpointCommand(() -> shooterSetpoint),
               hood.followSetpointCommand(() -> hoodSetpoint),
+              Commands.sequence(
               Commands.runOnce(() -> {
                   state = (state == State.INTAKING)
                           ? State.SHOOTINTAKE
                           : State.SHOOTING;
               }),
-              waitUntilSafeToShoot()),
+              waitUntilSafeToShoot(),
               kicker.setpointCommand(Kicker.FEED_FORWARD),
-              Commands.waitTime(Units.Milliseconds.of(800)),
+              Commands.waitTime(Units.Milliseconds.of(150)),
               conveyor.setpointCommand(Conveyor.FEED_FORWARD),
-              Commands.waitUntil(() -> false)
-      ).finallyDo(() -> {
+              intakeRollers.Pulse(),
+              Commands.waitUntil(() -> false))
+      )).finallyDo(() -> {
           conveyor.applySetpoint(Conveyor.IDLE);
           kicker.applySetpoint(Kicker.FEED_BACKWARDS);
           shooter.applySetpoint(Shooter.IDLE);
@@ -285,7 +287,7 @@ public class Superstructure extends SubsystemBase {
               }),
               waitUntilSafeToShoot()),
               kicker.setpointCommand(Kicker.FEED_FORWARD),
-              Commands.waitTime(Units.Milliseconds.of(800)),
+              Commands.waitTime(Units.Milliseconds.of(150)),
               conveyor.setpointCommand(Conveyor.FEED_FORWARD),
               Commands.waitUntil(() -> false)
       ).finallyDo(() -> {

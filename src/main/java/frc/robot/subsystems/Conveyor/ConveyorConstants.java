@@ -23,16 +23,19 @@ public class ConveyorConstants {
     public static final Voltage kFeedForwardVoltage = Volts.of(-12.0);
     public static final Voltage kFeedBackwardVoltage = Volts.of(2.0);
 
+	public static final double pulseOutTime = 0.20;
+	public static final double pulseInTime = 3.00;
+
     public static TalonFXConfiguration getFXConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
 
         config.CurrentLimits.StatorCurrentLimitEnable = Robot.isReal();
-        config.CurrentLimits.StatorCurrentLimit = 100;
+        config.CurrentLimits.StatorCurrentLimit = 120;
 
         config.CurrentLimits.SupplyCurrentLimitEnable = false;
 		config.CurrentLimits.SupplyCurrentLimit = 60.0;
 		config.CurrentLimits.SupplyCurrentLowerLimit = 60.0;
-		config.CurrentLimits.SupplyCurrentLowerTime = 0.1;
+		config.CurrentLimits.SupplyCurrentLowerTime = 0.3;
 
 		config.Voltage.PeakForwardVoltage = 12.0;
 		config.Voltage.PeakReverseVoltage = -12.0;

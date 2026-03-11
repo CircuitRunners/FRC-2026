@@ -48,6 +48,7 @@ import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.drive.TunerConstants;
 import frc.robot.subsystems.hood.Hood;
 import frc.robot.subsystems.intakeDeploy.IntakeDeploy;
+import frc.robot.subsystems.intakeDeploy.IntakeDeployConstants;
 import frc.robot.subsystems.intakeRollers.IntakeRollers;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.superstructure.Superstructure;
@@ -197,6 +198,10 @@ public class RobotContainer {
         // reset the field-centric heading on left bumper press
         //ControlBoardConstants.mDriverController.start().onTrue(drive.getDrivetrain().runOnce(() -> drive.getDrivetrain().seedFieldCentric()));
         ControlBoardConstants.mOperatorController.rightStick().onTrue(resetToVisionPose());
+    }
+    public Command zeroIntakeDisabled() {
+        return Commands.either(Commands.runOnce(() -> intakeDeploy.setCurrentPosition(IntakeDeployConstants.kStowPosition)), Commands.none(), 
+        () -> intakeDeploy.getPosition().gte(IntakeDeployConstants.kStowPosition));
     }
 
     public Command getAutonomousCommand() {

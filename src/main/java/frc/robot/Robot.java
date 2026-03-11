@@ -27,6 +27,8 @@ public class Robot extends TimedRobot {
   private Command mAutonomousCommand;
   private GcStatsCollector mGcStatsCollector = new GcStatsCollector();
   public static final Stopwatch autoTimer = new Stopwatch();
+
+  private long disabledLoopCount = 0;
   public Robot() {
     m_robotContainer = new RobotContainer();
     Epilogue.bind(this);
@@ -48,10 +50,14 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    disabledLoopCount = 0;
+  }
 
   @Override
   public void disabledPeriodic() {
+    disabledLoopCount++;
+
     if (DriverStation.getAlliance().isPresent()) {
 			RobotConstants.isRedAlliance = DriverStation.getAlliance().equals(Optional.of(Alliance.Red));
 		} else {
@@ -60,6 +66,10 @@ public class Robot extends TimedRobot {
 							|| DriverStationSim.getAllianceStationId().equals(AllianceStationID.Red2)
 							|| DriverStationSim.getAllianceStationId().equals(AllianceStationID.Red3);
 		}
+
+    if (disabledLoopCount % 50 == 0) {
+      m_robotContainer.zeroIntakeDisabled();
+    }
   }
 
   @Override
