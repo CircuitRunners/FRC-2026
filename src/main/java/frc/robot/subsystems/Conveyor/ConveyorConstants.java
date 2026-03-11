@@ -21,7 +21,7 @@ public class ConveyorConstants {
     private static final double kGearing = (36.0 / 12.0);
 
     public static final Voltage kFeedForwardVoltage = Volts.of(-12.0);
-    public static final Voltage kFeedBackwardVoltage = Volts.of(2.0);
+    public static final Voltage kFeedBackwardVoltage = Volts.of(4.0);
 
 	public static final double pulseOutTime = 0.20;
 	public static final double pulseInTime = 3.00;

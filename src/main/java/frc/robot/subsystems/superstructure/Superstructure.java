@@ -320,7 +320,7 @@ public class Superstructure extends SubsystemBase {
 
     public Command shakeIntake() {
       return Commands.sequence(
-        intakeDeploy.setpointCommandWithWait(IntakeDeploy.SHAKE), Commands.waitSeconds(0.5), intakeDeploy.setpointCommandWithWait(IntakeDeploy.DEPLOY)).alongWith(intakeRollers.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5))));
+        intakeDeploy.setpointCommandWithWait(IntakeDeploy.SHAKE));
     }
 
     public Command runIntakeIfDeployed() {
