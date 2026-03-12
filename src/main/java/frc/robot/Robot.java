@@ -32,21 +32,23 @@ public class Robot extends TimedRobot {
   public Robot() {
     m_robotContainer = new RobotContainer();
     Epilogue.bind(this);
+    DriverStation.silenceJoystickConnectionWarning(true);
   }
 
   @Override
   public void robotPeriodic() {
-    // try {
-		// 	Threads.setCurrentThreadPriority(true, 4);
-		// 	CommandScheduler.getInstance().run();
-		// 	Threads.setCurrentThreadPriority(false, 0);
-		// } catch (Exception e) {
-		// 	SmartDashboard.putString("Logged Robot/Latest Error", e.getMessage());
-		// }
-    CommandScheduler.getInstance().run(); 
+    try {
+			Threads.setCurrentThreadPriority(true, 4);
+			CommandScheduler.getInstance().run();
+			Threads.setCurrentThreadPriority(false, 0);
+		} catch (Exception e) {
+			SmartDashboard.putString("Logged Robot/Latest Error", e.getMessage());
+		}
+    // CommandScheduler.getInstance().run(); 
 
     // Clear shooting parameters
-    m_robotContainer.getShotCalculator().clearShootingParameters();
+    var shotCalculator = m_robotContainer.getShotCalculator();
+    shotCalculator.clearShootingParameters();
   }
 
   @Override
@@ -93,7 +95,9 @@ public class Robot extends TimedRobot {
     }
 
   @Override
-  public void autonomousExit() {}
+  public void autonomousExit() {
+    autoTimer.reset();
+  }
 
   @Override
   public void teleopInit() {

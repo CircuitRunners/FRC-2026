@@ -45,7 +45,7 @@ public class IntakeDeployConstants {
         config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
         config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
 
-        config.MotionMagic.MotionMagicCruiseVelocity = 0.8;
+        config.MotionMagic.MotionMagicCruiseVelocity = 0.6;
         config.MotionMagic.MotionMagicAcceleration = 15.0;
 
         config.Voltage.PeakForwardVoltage = 12;
