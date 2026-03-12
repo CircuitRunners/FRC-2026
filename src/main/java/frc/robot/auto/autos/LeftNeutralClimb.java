@@ -1,6 +1,5 @@
 package frc.robot.auto.autos;
 
-import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.ApplyChassisSpeeds;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import choreo.auto.AutoFactory;
@@ -9,10 +8,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.lib.drive.FollowNonstopTrajectory;
 import frc.lib.drive.PIDToPoseCommand;
 import frc.lib.util.FieldLayout;
 import frc.robot.RobotConstants;
@@ -27,56 +24,31 @@ import frc.robot.auto.AutoModeBase;
 public class LeftNeutralClimb extends AutoModeBase {
 
 	public LeftNeutralClimb(Drive drive, Superstructure superstructure, AutoFactory factory) {
-		super(drive, superstructure, factory, "Left Neutral Cycle + Climb");
+		super(drive, superstructure, factory, "left Neutral Cycle");
 
-		AutoTrajectory leftTrenchToNeutral = trajectory("leftTrenchToNeutral");
-		AutoTrajectory leftNeutralToFuel = trajectory("leftNuetralToFuel");
-		AutoTrajectory leftNeutralToTrench = trajectory("leftNeutralToTrench");
-		AutoTrajectory leftTrenchToShoot = trajectory("leftTrenchToShoot");
+		AutoTrajectory leftIntakeToShoot = trajectory("leftIntakeToShoot");
 
-		Pose2d startPose = leftTrenchToNeutral.getInitialPose().get();
+		AutoTrajectory leftTrenchToNeutralIntake = trajectory("leftTrenchToNeutralIntake");
 
-		//superstructure.updateSide(ObjectPoseEstimator.INTAKE_SIDE.LEFT);
+		Pose2d startPose = leftTrenchToNeutralIntake.getInitialPose().get();
+
+		//superstructure.updateSide(ObjectPoseEstimator.INTAKE_SIDE.left);
 
 
 		prepRoutine(
 			AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
-			Commands.parallel(leftTrenchToNeutral.cmd(), superstructure.deployIntake()),
 			Commands.deadline(
-			Commands.sequence(
-				//superstructure.collectFuel(leftNeutralToTrench.getInitialPose().get()).withTimeout(7),
-				// leftNeutralToFuel.cmd(),
-				new PIDToPoseCommand(drive, superstructure, FieldLayout.handleAllianceFlip(new Pose2d(new Translation2d(
-					7.620832920074463, FieldLayout.kFieldWidth.in(Units.Meters) - 1.069169521331787), Rotation2d.fromDegrees(-90)), RobotConstants.isRedAlliance),
-					Units.Inches.of(5.0), Units.Degrees.of(20.0)
-				),
-				// new FollowNonstopTrajectory(
-				// 	TrajectoryGenerator.generateTrajectory(
-				// 		leftTrenchToNeutral.getFinalPose().get(),
-				// 		new ArrayList<Translation2d>(), 
-				// 		FieldLayout.handleAllianceFlip(
-				// 			new Pose2d(
-				// 				new Translation2d(
-				// 					7.620832920074463, FieldLayout.kFieldWidth.in(Units.Meters) - 1.069169521331787),
-				// 			Rotation2d.fromDegrees(-90)),
-				// 		RobotConstants.isRedAlliance),
-				// 	AutoConstants.regularConfig),
-				// drive),
-				new PIDToPoseCommand(drive, superstructure, FieldLayout.handleAllianceFlip(new Pose2d(new Translation2d(
-					7.620832920074463, FieldLayout.kFieldWidth.in(Units.Meters) - 3.2354833126068115), Rotation2d.fromDegrees(-90)), RobotConstants.isRedAlliance),
-					Units.Inches.of(10.0), Units.Degrees.of(20.0),
-					DriveConstants.getIntakeAutoAlignTranslationController()
-				),
-
-				new PIDToPoseCommand(drive, superstructure, leftNeutralToTrench.getInitialPose().get(), Units.Inches.of(24.0), Units.Degrees.of(20.0))
-			), superstructure.runIntakeIfDeployed()),
-			leftNeutralToTrench.cmd(),
-			cmdWithAccuracy(leftTrenchToShoot),
-			Commands.runOnce(() -> drive.getDrivetrain().setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(new ChassisSpeeds()))),
-			Commands.sequence(
-							Commands.parallel(superstructure.shootRun(),
-							superstructure.hoodRun(),
-							superstructure.shootWhenReadyAuto())).withTimeout(AutoConstants.shootAllFuelTime)); //superstructure.climb()
+				leftTrenchToNeutralIntake.cmd(),
+				Commands.sequence(
+					superstructure.deployIntake(),
+					superstructure.runIntakeIfDeployed()
+				)
+			),
+			cmdWithAccuracy(leftIntakeToShoot),
+			superstructure.stopDrivetrain(),
+			superstructure.shootWhenReadyAuto()
+			
+		);
 
 
 	}

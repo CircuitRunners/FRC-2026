@@ -26,43 +26,28 @@ public class RightNeutralClimb extends AutoModeBase {
 	public RightNeutralClimb(Drive drive, Superstructure superstructure, AutoFactory factory) {
 		super(drive, superstructure, factory, "Right Neutral Cycle + Climb");
 
-		AutoTrajectory rightTrenchToNeutral = trajectory("rightTrenchToNeutral");
-		AutoTrajectory rightNeutralToFuel = trajectory("rightNuetralToFuel");
-		AutoTrajectory rightNeutralToTrench = trajectory("rightNeutralToTrench");
-		AutoTrajectory rightTrenchToShoot = trajectory("rightTrenchToShoot");
+		AutoTrajectory rightIntakeToShoot = trajectory("rightIntakeToShoot");
 
-		Pose2d startPose = rightTrenchToNeutral.getInitialPose().get();
+		AutoTrajectory rightTrenchToNeutralIntake = trajectory("rightTrenchToNeutralIntake");
+
+		Pose2d startPose = rightTrenchToNeutralIntake.getInitialPose().get();
 
 		//superstructure.updateSide(ObjectPoseEstimator.INTAKE_SIDE.RIGHT);
 
 
 		prepRoutine(
 			AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
-			Commands.parallel(rightTrenchToNeutral.cmd(), superstructure.deployIntake()),
 			Commands.deadline(
-			Commands.sequence(
-				//superstructure.collectFuel(rightNeutralToTrench.getInitialPose().get()).withTimeout(7),
-				// rightNeutralToFuel.cmd(),
-				new PIDToPoseCommand(drive, superstructure, FieldLayout.handleAllianceFlip(new Pose2d(new Translation2d(
-					7.620832920074463, 1.069169521331787), Rotation2d.fromDegrees(90)), RobotConstants.isRedAlliance),
-					Units.Inches.of(10.0), Units.Degrees.of(20.0)
-				),
-				new PIDToPoseCommand(drive, superstructure, FieldLayout.handleAllianceFlip(new Pose2d(new Translation2d(
-					7.620832920074463, 3.2354833126068115), Rotation2d.fromDegrees(90)), RobotConstants.isRedAlliance),
-					Units.Inches.of(10.0), Units.Degrees.of(20.0),
-					DriveConstants.getIntakeAutoAlignTranslationController()
-				),
-
-				new PIDToPoseCommand(drive, superstructure, rightNeutralToTrench.getInitialPose().get(), Units.Inches.of(24.0), Units.Degrees.of(20.0))
-			), superstructure.runIntakeIfDeployed()),
-			rightNeutralToTrench.cmd(),
-			cmdWithAccuracy(rightTrenchToShoot),
-			Commands.runOnce(() -> drive.getDrivetrain().setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(new ChassisSpeeds()))),
-			Commands.sequence(
-							Commands.parallel(superstructure.shootRun(),
-							superstructure.hoodRun(),
-							superstructure.shootWhenReadyAuto())).withTimeout(AutoConstants.shootAllFuelTime)
-			//superstructure.climb()
+				rightTrenchToNeutralIntake.cmd(),
+				Commands.sequence(
+					superstructure.deployIntake(),
+					superstructure.runIntakeIfDeployed()
+				)
+			),
+			cmdWithAccuracy(rightIntakeToShoot),
+			superstructure.stopDrivetrain(),
+			superstructure.shootWhenReadyAuto()
+			
 		);
 
 

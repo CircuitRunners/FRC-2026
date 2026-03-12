@@ -7,12 +7,181 @@
    "fieldY":{
     "dimension":"Length",
     "var":{
-     "exp":"8.07 m",
-     "val":8.07
+     "exp":"8.069 m",
+     "val":8.069
+    }
+   },
+   "intakeLength":{
+    "dimension":"Length",
+    "var":{
+     "exp":"2 m",
+     "val":2.0
+    }
+   },
+   "intakeLength2":{
+    "dimension":"Length",
+    "var":{
+     "exp":"2.5 m",
+     "val":2.5
+    }
+   },
+   "laneWidth":{
+    "dimension":"Length",
+    "var":{
+     "exp":"6.531715393066406 mm",
+     "val":0.006531715393066406
+    }
+   },
+   "maxIntakeAngularVelocity":{
+    "dimension":"AngVel",
+    "var":{
+     "exp":"0.01 rad / s",
+     "val":0.01
+    }
+   },
+   "maxIntakeSpeed":{
+    "dimension":"LinVel",
+    "var":{
+     "exp":"1 m / s",
+     "val":1.0
+    }
+   },
+   "maxIntakeSpeed2":{
+    "dimension":"LinVel",
+    "var":{
+     "exp":"1.6 m / s",
+     "val":1.6
     }
    }
   },
-  "poses":{}
+  "poses":{
+   "intakeBeginLeft":{
+    "x":{
+     "exp":"intakeBeginRight.x",
+     "val":8.127134323120117
+    },
+    "y":{
+     "exp":"fieldY - intakeBeginRight.y",
+     "val":7.131751531600953
+    },
+    "heading":{
+     "exp":"intakeBeginRight.heading - PI rad",
+     "val":-0.8760579354963625
+    }
+   },
+   "intakeBeginRight":{
+    "x":{
+     "exp":"8.127134323120117 m",
+     "val":8.127134323120117
+    },
+    "y":{
+     "exp":"0.9372484683990479 m",
+     "val":0.937248468399048
+    },
+    "heading":{
+     "exp":"129.80557768711432 deg",
+     "val":2.2655347180934307
+    }
+   },
+   "intakeBeginRight2":{
+    "x":{
+     "exp":"5.8844404220581055 m",
+     "val":5.8844404220581055
+    },
+    "y":{
+     "exp":"0.6505810022354126 m",
+     "val":0.6505810022354126
+    },
+    "heading":{
+     "exp":"90 deg",
+     "val":1.5707963267948966
+    }
+   },
+   "intakeEndLeft":{
+    "x":{
+     "exp":"intakeEndRight.x",
+     "val":8.127134323120117
+    },
+    "y":{
+     "exp":"fieldY - intakeEndRight.y",
+     "val":5.131751531600953
+    },
+    "heading":{
+     "exp":"intakeEndRight.heading - PI rad",
+     "val":-0.8760579354963625
+    }
+   },
+   "intakeEndRight":{
+    "x":{
+     "exp":"intakeBeginRight.x",
+     "val":8.127134323120117
+    },
+    "y":{
+     "exp":"intakeBeginRight.y + intakeLength",
+     "val":2.937248468399048
+    },
+    "heading":{
+     "exp":"intakeBeginRight.heading",
+     "val":2.2655347180934307
+    }
+   },
+   "intakeEndRight2":{
+    "x":{
+     "exp":"intakeBeginRight2.x",
+     "val":5.8844404220581055
+    },
+    "y":{
+     "exp":"intakeBeginRight2.y + intakeLength2",
+     "val":3.1505810022354126
+    },
+    "heading":{
+     "exp":"intakeBeginRight2.heading",
+     "val":1.5707963267948966
+    }
+   },
+   "leftStart":{
+    "x":{
+     "exp":"rightStart.x",
+     "val":4.344310760498047
+    },
+    "y":{
+     "exp":"fieldY - rightStart.y",
+     "val":7.620463544368745
+    },
+    "heading":{
+     "exp":"rightStart.heading - PI rad",
+     "val":-1.5697538925044106
+    }
+   },
+   "rightShoot":{
+    "x":{
+     "exp":"3.9356820583343506 m",
+     "val":3.9356820583343506
+    },
+    "y":{
+     "exp":"0.52803394317627 m",
+     "val":0.52803394317627
+    },
+    "heading":{
+     "exp":"1.371850369090507 rad",
+     "val":1.371850369090507
+    }
+   },
+   "rightStart":{
+    "x":{
+     "exp":"4.344310760498047 m",
+     "val":4.344310760498047
+    },
+    "y":{
+     "exp":"0.4485364556312561 m",
+     "val":0.4485364556312561
+    },
+    "heading":{
+     "exp":"1.5718387610853826 rad",
+     "val":1.5718387610853826
+    }
+   }
+  }
  },
  "config":{
   "frontLeft":{
@@ -69,12 +238,12 @@
     "val":0.6476999999999999
    },
    "side":{
-    "exp":"13.5 in",
-    "val":0.3429
+    "exp":"16.5 in",
+    "val":0.4191
    },
    "back":{
-    "exp":"13.5 in",
-    "val":0.3429
+    "exp":"16.5 in",
+    "val":0.4191
    }
   },
   "differentialTrackWidth":{

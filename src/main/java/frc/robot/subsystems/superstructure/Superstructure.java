@@ -8,6 +8,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import com.ctre.phoenix6.swerve.SwerveRequest;
+
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -499,7 +501,9 @@ public class Superstructure extends SubsystemBase {
           Set.of(drive, climber)
       ).withName("Climb Sequence");
     }
-
+    public Command stopDrivetrain() {
+      return Commands.runOnce(() -> drive.getDrivetrain().setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(new ChassisSpeeds())));
+    }
     public Command collectFuel(Pose2d pses) {
       return Commands.defer(() -> {
         objectPoseEstimator.updateSingleTrajectory(pses);
