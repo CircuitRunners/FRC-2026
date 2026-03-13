@@ -45,8 +45,8 @@ public class RightNeutralClimb extends AutoModeBase {
 				)
 			),
 			cmdWithAccuracy(rightIntakeToShoot),
-			superstructure.stopDrivetrain(),
-			superstructure.shootWhenReadyAuto()
+			drive.stopDrivetrain(),
+			superstructure.shootWhenReadyTeleop().withTimeout(AutoConstants.shootAllFuelTime)
 			
 		);
 

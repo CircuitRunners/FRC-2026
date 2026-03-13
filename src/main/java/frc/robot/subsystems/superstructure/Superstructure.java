@@ -501,9 +501,7 @@ public class Superstructure extends SubsystemBase {
           Set.of(drive, climber)
       ).withName("Climb Sequence");
     }
-    public Command stopDrivetrain() {
-      return Commands.runOnce(() -> drive.getDrivetrain().setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(new ChassisSpeeds())));
-    }
+    
     public Command collectFuel(Pose2d pses) {
       return Commands.defer(() -> {
         objectPoseEstimator.updateSingleTrajectory(pses);

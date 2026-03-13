@@ -192,4 +192,11 @@ public class Drive extends SubsystemBase {
     public Command brake() {
         return this.getDrivetrain().applyRequest(() -> new SwerveRequest.SwerveDriveBrake());
     }
+    /**
+     * Sets zero velocity
+     * @return command
+     */
+    public Command stopDrivetrain() {
+      return Commands.runOnce(() -> getDrivetrain().setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(new ChassisSpeeds())));
+    }
 }

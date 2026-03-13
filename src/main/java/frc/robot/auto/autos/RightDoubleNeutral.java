@@ -49,8 +49,8 @@ public class RightDoubleNeutral extends AutoModeBase {
 				)
 			),
 			cmdWithAccuracy(rightIntakeToShoot),
-			superstructure.stopDrivetrain(),
-			superstructure.shootWhenReadyAuto().withTimeout(AutoConstants.shootAllFuelTime),
+			drive.stopDrivetrain(),
+			superstructure.shootWhenReadyTeleop().withTimeout(AutoConstants.shootAllFuelTime),
 			
 			Commands.deadline(
 				rightShootToNeutralIntake.cmd(),
@@ -59,8 +59,8 @@ public class RightDoubleNeutral extends AutoModeBase {
 				)
 			),
 			cmdWithAccuracy(rightIntakeToShoot2),
-			superstructure.stopDrivetrain(),
-			superstructure.shootWhenReadyAuto().withTimeout(AutoConstants.shootAllFuelTime)
+			drive.stopDrivetrain(),
+			superstructure.shootWhenReadyTeleop().withTimeout(AutoConstants.shootAllFuelTime)
 			
 		);
 
