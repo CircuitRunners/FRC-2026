@@ -91,7 +91,7 @@ public class Superstructure extends SubsystemBase {
     public boolean shootOnTheMove = false;
     public boolean headingLockToggle = false;
     public boolean nearTrench = false;
-    TrajectoryConfig config = new TrajectoryConfig(DriveConstants.kDriveMaxSpeed, DriveConstants.kMaxAccelerationMetersPerSecondSquared);
+    TrajectoryConfig config = new TrajectoryConfig(DriveConstants.kDriveMaxSpeed, DriveConstants.kMaxAcceleration.in(Units.MetersPerSecondPerSecond));
 
 
     public double maintainHeadingEpsilon = 0.25;
