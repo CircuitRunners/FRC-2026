@@ -200,6 +200,10 @@ public class RobotContainer {
         //ControlBoardConstants.mDriverController.start().onTrue(drive.getDrivetrain().runOnce(() -> drive.getDrivetrain().seedFieldCentric()));
         ControlBoardConstants.mOperatorController.rightStick().onTrue(resetToVisionPose());
     }
+
+    public void updateDashboardOutputs() {
+
+    }
     public void zeroIntakeDisabled() {
         // return Commands.either(Commands.runOnce(() -> intakeDeploy.setCurrentPosition(IntakeDeployConstants.kStowPosition)), Commands.none(), 
         // () -> intakeDeploy.getPosition().gte(IntakeDeployConstants.kStowPosition));

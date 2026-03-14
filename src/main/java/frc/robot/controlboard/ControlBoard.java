@@ -162,7 +162,7 @@ public class ControlBoard {
 				rumbleCommand(Units.Seconds.of(0.1)),
 				Commands.waitSeconds(0.05),
 				rumbleCommand(Units.Seconds.of(0.1)).onlyIf(() -> s.shootOnTheMove == false)
-			)
+			).ignoringDisable(true)
 		));
 
 		driver.povDown().whileTrue(s.driveBrake().withName("Brake"));
@@ -172,7 +172,7 @@ public class ControlBoard {
 				rumbleCommand(Units.Seconds.of(0.1)),
 				Commands.waitSeconds(0.05),
 				rumbleCommand(Units.Seconds.of(0.1)).onlyIf(() -> s.headingLockToggle == false)
-			)
+			).ignoringDisable(true)
 		));
 
 		//driver.b().whileTrue(s.climb()).onFalse(s.setState(Superstructure.State.CLIMBING));

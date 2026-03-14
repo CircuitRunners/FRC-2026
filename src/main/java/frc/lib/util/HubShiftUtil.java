@@ -2,18 +2,16 @@
 // http://github.com/Mechanical-Advantage
 //
 // Use of this source code is governed by an MIT-style
-// license that can be found in the LICENSE file at
-// the root directory of this project.
+// license
 
 package frc.lib.util;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.shooting.ShotCalculator;
-
 import java.util.Optional;
 import java.util.function.Supplier;
+import frc.robot.shooting.ShotCalculator;
 
 public class HubShiftUtil {
   public enum ShiftEnum {
@@ -49,8 +47,9 @@ public class HubShiftUtil {
   public static final double teleopDuration = 140.0;
   private static final boolean[] activeSchedule = {true, true, false, true, false, true};
   private static final boolean[] inactiveSchedule = {true, false, true, false, true, true};
-
-  private static Supplier<Optional<Boolean>> allianceWinOverride = () -> Optional.empty();
+  private static final double timeResetThreshold = 3.0;
+  private static double shiftTimerOffset = 0.0;
+  /*@Setter*/ private static Supplier<Optional<Boolean>> allianceWinOverride = () -> Optional.empty();
 
   public static Optional<Boolean> getAllianceWinOverride() {
     return allianceWinOverride.get();
@@ -84,6 +83,7 @@ public class HubShiftUtil {
 
   /** Starts the timer at the begining of teleop. */
   public static void initialize() {
+    shiftTimerOffset = 0;
     shiftTimer.restart();
   }
 
@@ -99,11 +99,13 @@ public class HubShiftUtil {
 
   private static ShiftInfo getShiftInfo(
       boolean[] currentSchedule, double[] shiftStartTimes, double[] shiftEndTimes) {
-    double currentTime = shiftTimer.get();
-    double stateTimeElapsed = shiftTimer.get();
+    double timerValue = shiftTimer.get();
+    double currentTime = timerValue - shiftTimerOffset;
+    double stateTimeElapsed = currentTime;
     double stateTimeRemaining = 0.0;
     boolean active = false;
     ShiftEnum currentShift = ShiftEnum.DISABLED;
+    double fieldTeleopTime = 140.0 - DriverStation.getMatchTime();
 
     if (DriverStation.isAutonomousEnabled()) {
       stateTimeElapsed = currentTime;
@@ -111,6 +113,13 @@ public class HubShiftUtil {
       active = true;
       currentShift = ShiftEnum.AUTO;
     } else if (DriverStation.isEnabled()) {
+      // Adjust the current offset if the time difference above the theshold
+      if (Math.abs(fieldTeleopTime - currentTime) >= timeResetThreshold
+          && fieldTeleopTime <= 135
+          && DriverStation.isFMSAttached()) {
+        shiftTimerOffset += currentTime - fieldTeleopTime;
+        currentTime = timerValue + shiftTimerOffset;
+      }
       int currentShiftIndex = -1;
       for (int i = 0; i < shiftStartTimes.length; i++) {
         if (currentTime >= shiftStartTimes[i] && currentTime < shiftEndTimes[i]) {

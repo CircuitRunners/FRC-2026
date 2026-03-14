@@ -84,8 +84,8 @@ public class ShotCalculator {
     // Passing targets
     private static final Distance hubPassLine =
         FieldLayout.center.getMeasureY();
-    private static final Distance xPassTarget = Units.Inches.of(25);
-    private static final Distance yPassTarget = Units.Inches.of(50);
+    private static final Distance xPassTarget = Units.Inches.of(37);
+    private static final Distance yPassTarget = Units.Inches.of(65);
     // Boxes of bad
     // Under tower
     private static final Bounds towerBound =
@@ -112,9 +112,8 @@ public class ShotCalculator {
     static {
         minDistance = 1.2;
         maxDistance = 5.3;
-        // TODO: define actual values when we tune the map
-        passingMinDistance = 0.0;
-        passingMaxDistance = 12.0;
+        passingMinDistance = 5.4;
+        passingMaxDistance = 17.16;
         phaseDelay = 0.03;
 
     }
@@ -132,7 +131,7 @@ public class ShotCalculator {
             FieldLayout.distanceFromAllianceWall(Units.Meters.of(drive.getPose().getX()), RobotConstants.isRedAlliance)
             .gte(FieldLayout.kAllianceZoneX.plus(Units.Inches.of(14)));
         if (latestParameters != null) {
-        return latestParameters;
+            return latestParameters;
         }
 
         // Calculate estimated pose while accounting for phase delay
@@ -259,21 +258,6 @@ public class ShotCalculator {
     public Translation2d getPassingTarget() {
         Distance flippedY = FieldLayout.handleAllianceFlip(drive.getPose(), RobotConstants.isRedAlliance).getMeasureY();
         boolean mirror = flippedY.gte(FieldLayout.center.getMeasureY());
-
-        // Check if we need to interpolate
-        if (FieldLayout.kFieldWidth.minus(hubPassLine).gte(flippedY) && flippedY.gte(hubPassLine)) {
-        double interpolateZoneAmount =
-            ((mirror ? FieldLayout.kFieldWidth.minus(flippedY).in(Units.Meters) : flippedY.minus(hubPassLine).in(Units.Meters))
-                / (FieldLayout.center.getMeasureY().minus(hubPassLine).in(Units.Meters)));
-        var unflippedPoseY =
-            mirror
-                ? FieldLayout.kFieldWidth.in(Units.Meters)
-                     - (MathUtil.interpolate(yPassTarget.in(Units.Meters), passingMinDistance, interpolateZoneAmount))
-                : MathUtil.interpolate(yPassTarget.in(Units.Meters), passingMinDistance, interpolateZoneAmount);
-        Translation2d flippedGoalTranslation =
-            FieldLayout.handleAllianceFlip(new Translation2d(xPassTarget, Units.Meters.of(unflippedPoseY)), RobotConstants.isRedAlliance);
-        return flippedGoalTranslation;
-        }
 
         // Fixed passing target
         Translation2d flippedGoalTranslation =
