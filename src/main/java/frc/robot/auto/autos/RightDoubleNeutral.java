@@ -53,7 +53,7 @@ public class RightDoubleNeutral extends AutoModeBase {
 			superstructure.shootWhenReadyTeleop().withTimeout(AutoConstants.shootAllFuelTime),
 			
 			Commands.deadline(
-				rightShootToNeutralIntake.cmd(),
+				cmdWithAccuracy(rightShootToNeutralIntake),//.cmd(),
 				Commands.sequence(
 					superstructure.runIntakeIfDeployed()
 				)

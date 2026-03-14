@@ -22,6 +22,7 @@ public class ConveyorConstants {
 
     public static final Voltage kFeedForwardVoltage = Volts.of(-12.0);
     public static final Voltage kFeedBackwardVoltage = Volts.of(4.0);
+	public static final Voltage kJuggleVoltage = Volts.of(-4);
 
 	public static final double pulseOutTime = 0.20;
 	public static final double pulseInTime = 3.00;

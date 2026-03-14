@@ -248,6 +248,13 @@ public class Superstructure extends SubsystemBase {
       conveyor.setpointCommand(Conveyor.FEED_FORWARD));
     }
 
+    public Command juggle() {
+      return Commands.parallel(
+        shooter.setpointCommand(Shooter.JUGGLE),
+        kicker.setpointCommand(Kicker.JUGGLE),
+        conveyor.setpointCommand(Conveyor.JUGGLE));
+    }
+
     public Command shootWhenReadyTeleop() {
       return Commands.sequence(
           Commands.runOnce(() -> maintainHeadingEpsilon = 0.00),
@@ -323,6 +330,26 @@ public class Superstructure extends SubsystemBase {
     public Command shakeIntake() {
       return Commands.sequence(
         intakeDeploy.setpointCommandWithWait(IntakeDeploy.SHAKE));
+    }
+
+    public Command runIntakeIfDeployedJuggle() {
+      return Commands.sequence(Commands.either(
+          Commands.parallel(
+            intakeRollers.setpointCommand(IntakeRollers.INTAKE),
+            juggle()),
+          Commands.sequence(
+              deployIntake(),
+              intakeRollers.setpointCommand(IntakeRollers.INTAKE)),
+          () -> intakeDeployed),
+          Commands.either(setState(State.SHOOTINTAKE), setState(State.INTAKING), () -> state == State.SHOOTING),
+          Commands.waitUntil(() -> false))
+          .withName("Intaking").finallyDo(() -> {
+            intakeRollers.applySetpoint(IntakeRollers.IDLE);
+            conveyor.applySetpoint(Conveyor.IDLE);
+            kicker.applySetpoint(Kicker.IDLE);
+            shooter.applySetpoint(Shooter.IDLE);
+            state = (state == State.SHOOTINTAKE) ? State.SHOOTING : State.DEPLOYED;})
+            .withName("End Intaking");
     }
 
     public Command runIntakeIfDeployed() {

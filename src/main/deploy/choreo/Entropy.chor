@@ -14,8 +14,8 @@
    "intakeLength":{
     "dimension":"Length",
     "var":{
-     "exp":"2 m",
-     "val":2.0
+     "exp":"2.15 m",
+     "val":2.15
     }
    },
    "intakeLength2":{
@@ -66,7 +66,7 @@
     },
     "heading":{
      "exp":"intakeBeginRight.heading - PI rad",
-     "val":-0.8760579354963625
+     "val":-1.1415926535897931
     }
    },
    "intakeBeginRight":{
@@ -79,8 +79,8 @@
      "val":0.937248468399048
     },
     "heading":{
-     "exp":"129.80557768711432 deg",
-     "val":2.2655347180934307
+     "exp":"2 rad",
+     "val":2.0
     }
    },
    "intakeBeginRight2":{
@@ -104,11 +104,11 @@
     },
     "y":{
      "exp":"fieldY - intakeEndRight.y",
-     "val":5.131751531600953
+     "val":4.981751531600953
     },
     "heading":{
-     "exp":"intakeEndRight.heading - PI rad",
-     "val":-0.8760579354963625
+     "exp":"180 deg - intakeEndRight.heading - PI rad",
+     "val":-2.0
     }
    },
    "intakeEndRight":{
@@ -118,11 +118,11 @@
     },
     "y":{
      "exp":"intakeBeginRight.y + intakeLength",
-     "val":2.937248468399048
+     "val":3.087248468399048
     },
     "heading":{
      "exp":"intakeBeginRight.heading",
-     "val":2.2655347180934307
+     "val":2.0
     }
    },
    "intakeEndRight2":{
@@ -137,6 +137,20 @@
     "heading":{
      "exp":"intakeBeginRight2.heading",
      "val":1.5707963267948966
+    }
+   },
+   "leftShoot":{
+    "x":{
+     "exp":"rightShoot.x",
+     "val":3.9356820583343506
+    },
+    "y":{
+     "exp":"fieldY - rightShoot.y",
+     "val":7.510966056823731
+    },
+    "heading":{
+     "exp":"-rightShoot.heading",
+     "val":-1.371850369090507
     }
    },
    "leftStart":{
@@ -221,8 +235,8 @@
    "val":0.04927599999999999
   },
   "vmax":{
-   "exp":"5784 RPM",
-   "val":605.6990636121121
+   "exp":"5400 RPM",
+   "val":565.4866776461628
   },
   "tmax":{
    "exp":"1.1 N * m",

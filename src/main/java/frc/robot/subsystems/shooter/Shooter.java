@@ -14,6 +14,8 @@ public class Shooter extends FlywheelMotorSubsystem<MotorIOTalonFX> {
     public static final Setpoint STOP = Setpoint.withVelocitySetpoint(Units.RotationsPerSecond.of(0));
     public static final Setpoint KITBOT = Setpoint.withVelocitySetpoint(Units.RotationsPerSecond.of(10.0));
 
+    public static final Setpoint JUGGLE = Setpoint.withVelocitySetpoint(ShooterConstants.kJuggleVelocity);
+
     public Shooter() {
         super(ShooterConstants.getMotorIO(),
             "Shooter", 

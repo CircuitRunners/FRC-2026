@@ -25,7 +25,7 @@ public class ShooterConstants {
     public static final double kGearing = 1.0 / 1.0;
     public static Transform2d robotToShooter = new Transform2d(Units.Inches.of(-6.881), Units.Inches.of(0), Rotation2d.kZero);
 
-    public static final AngularVelocity kMinVelocity = Units.RotationsPerSecond.of(30.0);
+    public static final AngularVelocity kJuggleVelocity = Units.RotationsPerSecond.of(6.0);
 
     public static final AngularVelocity kEpsilonThreshold = Units.RotationsPerSecond.of(1.0);
 

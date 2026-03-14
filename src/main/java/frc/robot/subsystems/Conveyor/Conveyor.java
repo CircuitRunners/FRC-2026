@@ -13,6 +13,7 @@ public class Conveyor extends MotorSubsystem<MotorIOTalonFX>{
     public static final Setpoint IDLE = Setpoint.withNeutralSetpoint();
     public static final Setpoint FEED_FORWARD = Setpoint.withVoltageSetpoint(ConveyorConstants.kFeedForwardVoltage);
     public static final Setpoint FEED_BACKWARDS = Setpoint.withVoltageSetpoint(ConveyorConstants.kFeedBackwardVoltage);
+    public static final Setpoint JUGGLE = Setpoint.withVoltageSetpoint(ConveyorConstants.kJuggleVoltage);
 
     private boolean pulseIn = true;
     private final Timer pulseTimer = new Timer();

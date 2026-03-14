@@ -20,7 +20,7 @@ public class AutoConstants {
 
 	public static enum AutoEndBehavior {
 	}
-	public static double shootAllFuelTime = 6;
+	public static double shootAllFuelTime = 4;
 
 	public static TrajectoryConfig intakeConfig = (new TrajectoryConfig(DriveConstants.kDriveMaxSpeedIntake, DriveConstants.kMaxAcceleration.in(Units.MetersPerSecondPerSecond)))
 		.setEndVelocity(DriveConstants.kDriveMaxSpeedIntake);

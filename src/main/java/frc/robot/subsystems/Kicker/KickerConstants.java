@@ -22,6 +22,7 @@ public class KickerConstants {
 
     public static final Voltage kFeedForwardVoltage = Volts.of(-9.0);
     public static final Voltage kFeedBackwardVoltage = Volts.of(2.0);
+	public static final Voltage kJuggleVoltage = Volts.of(-2);
 
     public static TalonFXConfiguration getFXConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
