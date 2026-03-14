@@ -1,4 +1,4 @@
-package frc.robot.auto.autos;
+package frc.robot.auto.autos.doubleSwipe;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -21,44 +21,44 @@ import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.vision.objectdetection.ObjectPoseEstimator;
 import frc.robot.auto.AutoModeBase;
 
-public class RightDoubleNeutral extends AutoModeBase {
+public class LeftDoubleNeutral extends AutoModeBase {
 
-	public RightDoubleNeutral(Drive drive, Superstructure superstructure, AutoFactory factory) {
-		super(drive, superstructure, factory, "Right Double Neutral");
+	public LeftDoubleNeutral(Drive drive, Superstructure superstructure, AutoFactory factory) {
+		super(drive, superstructure, factory, "Left Double Neutral");
 
-		AutoTrajectory rightIntakeToShoot = trajectory("rightIntakeToShoot");
-		AutoTrajectory rightIntakeToShoot2 = trajectory("rightIntakeToShoot2");
-
-
-		AutoTrajectory rightTrenchToNeutralIntake = trajectory("rightTrenchToNeutralIntake");
-		AutoTrajectory rightShootToNeutralIntake = trajectory("rightShootToNeutralIntake");
+		AutoTrajectory leftIntakeToShoot = trajectory("leftIntakeToShoot");
+		AutoTrajectory leftIntakeToShoot2 = trajectory("leftIntakeToShoot2");
 
 
-		Pose2d startPose = rightTrenchToNeutralIntake.getInitialPose().get();
+		AutoTrajectory leftTrenchToNeutralIntake = trajectory("leftTrenchToNeutralIntake");
+		AutoTrajectory leftShootToNeutralIntake = trajectory("leftShootToNeutralIntake");
 
-		//superstructure.updateSide(ObjectPoseEstimator.INTAKE_SIDE.RIGHT);
+
+		Pose2d startPose = leftTrenchToNeutralIntake.getInitialPose().get();
+
+		//superstructure.updateSide(ObjectPoseEstimator.INTAKE_SIDE.left);
 
 
 		prepRoutine(
 			AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
 			Commands.deadline(
-				rightTrenchToNeutralIntake.cmd(),
+				leftTrenchToNeutralIntake.cmd(),
 				Commands.sequence(
 					superstructure.deployIntake(),
 					superstructure.runIntakeIfDeployed()
 				)
 			),
-			cmdWithAccuracy(rightIntakeToShoot),
+			cmdWithAccuracy(leftIntakeToShoot),
 			drive.stopDrivetrain(),
 			superstructure.shootWhenReadyTeleop().withTimeout(AutoConstants.shootAllFuelTime),
 			
 			Commands.deadline(
-				cmdWithAccuracy(rightShootToNeutralIntake),//.cmd(),
+				cmdWithAccuracy(leftShootToNeutralIntake),//.cmd(),
 				Commands.sequence(
 					superstructure.runIntakeIfDeployed()
 				)
 			),
-			cmdWithAccuracy(rightIntakeToShoot2),
+			cmdWithAccuracy(leftIntakeToShoot2),
 			drive.stopDrivetrain(),
 			superstructure.shootWhenReadyTeleop().withTimeout(AutoConstants.shootAllFuelTime)
 			

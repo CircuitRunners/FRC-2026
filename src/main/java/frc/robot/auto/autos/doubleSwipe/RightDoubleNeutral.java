@@ -1,4 +1,4 @@
-package frc.robot.auto.autos;
+package frc.robot.auto.autos.doubleSwipe;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -21,14 +21,18 @@ import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.vision.objectdetection.ObjectPoseEstimator;
 import frc.robot.auto.AutoModeBase;
 
-public class RightNeutralClimb extends AutoModeBase {
+public class RightDoubleNeutral extends AutoModeBase {
 
-	public RightNeutralClimb(Drive drive, Superstructure superstructure, AutoFactory factory) {
-		super(drive, superstructure, factory, "Right Neutral Cycle + Climb");
+	public RightDoubleNeutral(Drive drive, Superstructure superstructure, AutoFactory factory) {
+		super(drive, superstructure, factory, "Right Double Neutral");
 
 		AutoTrajectory rightIntakeToShoot = trajectory("rightIntakeToShoot");
+		AutoTrajectory rightIntakeToShoot2 = trajectory("rightIntakeToShoot2");
+
 
 		AutoTrajectory rightTrenchToNeutralIntake = trajectory("rightTrenchToNeutralIntake");
+		AutoTrajectory rightShootToNeutralIntake = trajectory("rightShootToNeutralIntake");
+
 
 		Pose2d startPose = rightTrenchToNeutralIntake.getInitialPose().get();
 
@@ -45,6 +49,16 @@ public class RightNeutralClimb extends AutoModeBase {
 				)
 			),
 			cmdWithAccuracy(rightIntakeToShoot),
+			drive.stopDrivetrain(),
+			superstructure.shootWhenReadyTeleop().withTimeout(AutoConstants.shootAllFuelTime),
+			
+			Commands.deadline(
+				cmdWithAccuracy(rightShootToNeutralIntake),//.cmd(),
+				Commands.sequence(
+					superstructure.runIntakeIfDeployed()
+				)
+			),
+			cmdWithAccuracy(rightIntakeToShoot2),
 			drive.stopDrivetrain(),
 			superstructure.shootWhenReadyTeleop().withTimeout(AutoConstants.shootAllFuelTime)
 			

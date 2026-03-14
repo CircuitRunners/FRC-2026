@@ -6,13 +6,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
-import frc.robot.auto.autos.RightDoubleNeutral;
-// import frc.robot.auto.autos.CenterPreloadClimbLeft;
-// import frc.robot.auto.autos.CenterPreloadClimbRight;
-// import frc.robot.auto.autos.LeftDoubleNeutral;
-// import frc.robot.auto.autos.LeftNeutralClimb;
-// import frc.robot.auto.autos.RightDoubleNeutral;
-import frc.robot.auto.autos.RightNeutralClimb;
+import frc.robot.auto.autos.centerPreload.CenterPreloadClimbLeft;
+import frc.robot.auto.autos.centerPreload.CenterPreloadClimbRight;
+import frc.robot.auto.autos.doubleSwipe.LeftDoubleNeutral;
+import frc.robot.auto.autos.doubleSwipe.RightDoubleNeutral;
+import frc.robot.auto.singleSwipe.LeftNeutralClimb;
+import frc.robot.auto.singleSwipe.RightNeutralClimb;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.superstructure.Superstructure;
 public class AutoModeSelector {
@@ -22,11 +21,11 @@ public class AutoModeSelector {
 	
 	
 	public AutoModeSelector(Drive drive, Superstructure superstructure, AutoFactory factory) {
-		// mAutoChooser.addRoutine("Left Neutral Cycle + Climb", () -> new LeftNeutralClimb(drive, superstructure, factory).getRoutine());
+		mAutoChooser.addRoutine("Left Neutral Cycle", () -> new LeftNeutralClimb(drive, superstructure, factory).getRoutine());
 		mAutoChooser.addRoutine("Right Neutral Cycle", () -> new RightNeutralClimb(drive, superstructure, factory).getRoutine());
-		// mAutoChooser.addRoutine("Center Preload + Left Climb", () -> new CenterPreloadClimbLeft(drive, superstructure, factory).getRoutine());
-		// mAutoChooser.addRoutine("Center Preload + Right Climb", () -> new CenterPreloadClimbRight(drive, superstructure, factory).getRoutine());
-		// mAutoChooser.addRoutine("Left Double Neutral Cycle", () -> new LeftDoubleNeutral(drive, superstructure, factory).getRoutine());
+		mAutoChooser.addRoutine("Center Preload + Left Climb", () -> new CenterPreloadClimbLeft(drive, superstructure, factory).getRoutine());
+		mAutoChooser.addRoutine("Center Preload + Right Climb", () -> new CenterPreloadClimbRight(drive, superstructure, factory).getRoutine());
+		mAutoChooser.addRoutine("Left Double Neutral", () -> new LeftDoubleNeutral(drive, superstructure, factory).getRoutine());
 		mAutoChooser.addRoutine("Right Double Neutral", () -> new RightDoubleNeutral(drive, superstructure, factory).getRoutine());
 
 		
