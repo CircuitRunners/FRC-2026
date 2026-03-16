@@ -1,4 +1,4 @@
-package frc.robot.auto.singleSwipe;
+package frc.robot.auto.autos.singleSwipe;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 

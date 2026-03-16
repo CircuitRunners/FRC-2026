@@ -10,8 +10,8 @@ import frc.robot.auto.autos.centerPreload.CenterPreloadClimbLeft;
 import frc.robot.auto.autos.centerPreload.CenterPreloadClimbRight;
 import frc.robot.auto.autos.doubleSwipe.LeftDoubleNeutral;
 import frc.robot.auto.autos.doubleSwipe.RightDoubleNeutral;
-import frc.robot.auto.singleSwipe.LeftNeutralClimb;
-import frc.robot.auto.singleSwipe.RightNeutralClimb;
+import frc.robot.auto.autos.singleSwipe.LeftNeutralClimb;
+import frc.robot.auto.autos.singleSwipe.RightNeutralClimb;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.superstructure.Superstructure;
 public class AutoModeSelector {
