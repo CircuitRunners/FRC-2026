@@ -44,7 +44,7 @@ public class LeftNeutralClimb extends AutoModeBase {
 					superstructure.runIntakeIfDeployed()
 				)
 			),
-			cmdWithAccuracy(leftIntakeToShoot),
+			cmdWithAccuracy(leftIntakeToShoot).alongWith(superstructure.shooterIdleSpinup()),
 			drive.stopDrivetrain(),
 			superstructure.shootWhenReadyTeleop().withTimeout(AutoConstants.shootAllFuelTime)
 			

@@ -218,21 +218,19 @@ public class Superstructure extends SubsystemBase {
           Commands.parallel(
               shooter.followSetpointCommand(() -> shooterSetpoint),
               hood.followSetpointCommand(() -> hoodSetpoint),
+              Commands.sequence(
               Commands.runOnce(() -> {
                   state = (state == State.INTAKING)
                           ? State.SHOOTINTAKE
                           : State.SHOOTING;
               }),
-              waitUntilSafeToShoot()),
+              waitUntilSafeToShoot(),
               kicker.setpointCommand(Kicker.FEED_FORWARD),
-                  Commands.waitTime(Units.Milliseconds.of(150)),
-                  conveyor.setpointCommand(Conveyor.FEED_FORWARD),
-                  Commands.waitSeconds(1),
-                  shakeIntake(),
-                  Commands.waitSeconds(0.5),
-                  shakeIntake(),
-                  Commands.waitUntil(() -> false)
-      ).finallyDo(() -> {
+              Commands.waitTime(Units.Milliseconds.of(150)),
+              conveyor.setpointCommand(Conveyor.FEED_FORWARD),
+              intakeRollers.Pulse(),
+              Commands.waitUntil(() -> false))
+      )).finallyDo(() -> {
           conveyor.applySetpoint(Conveyor.IDLE);
           kicker.applySetpoint(Kicker.FEED_BACKWARDS);
           shooter.applySetpoint(Shooter.IDLE);
@@ -309,12 +307,37 @@ public class Superstructure extends SubsystemBase {
       });
     }
 
-    public Command shootRun() {
-      return shooter.followSetpointCommand(() -> shooterSetpoint);
+    public Command shootAndIntake() {
+      return Commands.sequence(
+          Commands.runOnce(() -> maintainHeadingEpsilon = 0.00),
+          Commands.parallel(
+              shooter.followSetpointCommand(() -> shooterSetpoint),
+              hood.followSetpointCommand(() -> hoodSetpoint),
+              intakeRollers.setpointCommand(IntakeRollers.INTAKE),
+              Commands.sequence(
+              Commands.runOnce(() -> {
+                  state = (state == State.INTAKING)
+                          ? State.SHOOTINTAKE
+                          : State.SHOOTING;
+              }),
+              waitUntilSafeToShoot(),
+              kicker.setpointCommand(Kicker.FEED_FORWARD),
+              Commands.waitTime(Units.Milliseconds.of(150)),
+              conveyor.setpointCommand(Conveyor.FEED_FORWARD),
+              Commands.waitUntil(() -> false))
+      )).finallyDo(() -> {
+          conveyor.applySetpoint(Conveyor.IDLE);
+          kicker.applySetpoint(Kicker.FEED_BACKWARDS);
+          shooter.applySetpoint(Shooter.IDLE);
+          hood.applySetpoint(Hood.ZERO);
+          intakeRollers.applySetpoint(IntakeRollers.IDLE);
+          maintainHeadingEpsilon = 0.25;
+          state = (state == State.SHOOTINTAKE) ? State.INTAKING : State.DEPLOYED;
+      });
     }
 
-    public Command hoodRun() {
-      return hood.followSetpointCommand(() -> hoodSetpoint);
+    public Command shooterIdleSpinup() {
+      return shooter.setpointCommand(Shooter.SPINUP);
     }
 
     public Command deployIntake() {

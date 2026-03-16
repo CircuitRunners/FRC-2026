@@ -20,10 +20,13 @@ import frc.lib.sim.RollerSim.RollerSimConstants;
 import frc.lib.util.TunableNumber;
 import frc.robot.Ports;
 import frc.robot.Robot;
+import frc.robot.shooting.ShotCalculator;
 
 public class ShooterConstants {
     public static final double kGearing = 1.0 / 1.0;
     public static Transform2d robotToShooter = new Transform2d(Units.Inches.of(-6.881), Units.Inches.of(0), Rotation2d.kZero);
+
+	public static final AngularVelocity kIdleSpinup = Units.RotationsPerSecond.of((Units.RPM.of(1500).in(Units.RotationsPerSecond)));
 
     public static final AngularVelocity kJuggleVelocity = Units.RotationsPerSecond.of(6.0);
 
@@ -35,13 +38,13 @@ public class ShooterConstants {
 		config.Slot1.kV = 0.052;
         config.Slot1.kP = 7.0;
 
-        config.CurrentLimits.StatorCurrentLimitEnable = Robot.isReal();
+        config.CurrentLimits.StatorCurrentLimitEnable = false;//Robot.isReal();
         config.CurrentLimits.StatorCurrentLimit = 120.0;
 
 		config.CurrentLimits.SupplyCurrentLimitEnable = Robot.isReal();	
-		config.CurrentLimits.SupplyCurrentLimit = 60.0;
+		config.CurrentLimits.SupplyCurrentLimit = 80.0;
 		config.CurrentLimits.SupplyCurrentLowerLimit = 60.0;
-		config.CurrentLimits.SupplyCurrentLowerTime = 0.1;
+		config.CurrentLimits.SupplyCurrentLowerTime = 0.3;
 
         config.TorqueCurrent.PeakForwardTorqueCurrent = 800;
         config.TorqueCurrent.PeakReverseTorqueCurrent = -800;

@@ -31,10 +31,10 @@ public class HoodConstants {
 
     public static TalonFXConfiguration getFXConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
-        config.Slot0.kP = 160.0;
+        config.Slot0.kP = 85.0;
         config.Slot0.kD = 0.0;
         config.Slot0.kS = 0.33;
-        config.Slot0.kG = 0.4;
+        config.Slot0.kG = 0.3;
 
         config.Slot0.GravityType = GravityTypeValue.Elevator_Static;
 		config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;

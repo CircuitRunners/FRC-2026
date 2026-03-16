@@ -137,7 +137,7 @@ public class ControlBoard {
 
  		driver.leftTrigger(0.1)
  				.whileTrue(
- 						s.runIntakeIfDeployed());
+ 						s.runIntakeIfDeployed()).and(driver.x().negate());
  						//.withName("Deploy and/or Intake"));
 
 		// driver.rightBumper().onTrue(Commands.parallel(conveyor.setpointCommand(Conveyor.FEED_FORWARD),
@@ -146,7 +146,9 @@ public class ControlBoard {
 
 		// SHOOTING ##############################################################################
 
- 		driver.x().whileTrue(s.shootWhenReadyTeleop());
+		driver.leftTrigger(0.1).and(driver.x()).whileTrue(s.shootAndIntake());
+
+ 		driver.x().whileTrue(s.shootWhenReadyTeleop()).and(driver.leftTrigger(0.1).negate());
 
 		driver.y().whileTrue(s.shootWhenReadyPreset(Units.RotationsPerSecond.of(Units.RPM.of(2000).in(Units.RotationsPerSecond)), Units.Degrees.of(15.5)));
 
@@ -198,7 +200,7 @@ public class ControlBoard {
 		operator.povUp().onTrue(climber.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5)))).onFalse(climber.setpointCommand(Setpoint.withNeutralSetpoint()));
 		operator.povDown().onTrue(climber.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(-5)))).onFalse(climber.setpointCommand(Setpoint.withNeutralSetpoint()));
 
-		operator.x().onTrue(shooter.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5)))).onFalse(shooter.setpointCommand(Setpoint.withNeutralSetpoint()));
+		operator.x().onTrue(shooter.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(4)))).onFalse(shooter.setpointCommand(Setpoint.withNeutralSetpoint()));
 		operator.b().onTrue(shooter.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(-5)))).onFalse(shooter.setpointCommand(Setpoint.withNeutralSetpoint()));
 
 		operator.a().onTrue(kicker.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5)))).onFalse(kicker.setpointCommand(Setpoint.withNeutralSetpoint()));
@@ -209,7 +211,11 @@ public class ControlBoard {
 
 		operator.leftStick().onTrue(superstructure.zero());
 
-		operator.povLeft().onTrue(superstructure.shakeIntake());
+		operator.povLeft().onTrue(
+			conveyor.setpointCommand(Conveyor.FEED_FORWARD)
+			.alongWith(kicker.setpointCommand(Kicker.FEED_FORWARD).alongWith(intakeRollers.Pulse()))
+		).onFalse(conveyor.setpointCommand(Conveyor.IDLE)
+			.alongWith(kicker.setpointCommand(Kicker.IDLE)).alongWith(intakeRollers.setpointCommand(IntakeRollers.IDLE)));
 	}
 
 	public Command rumbleCommand(Time duration) {

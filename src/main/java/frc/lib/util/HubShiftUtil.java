@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.Timer;
 import java.util.Optional;
 import java.util.function.Supplier;
 import frc.robot.shooting.ShotCalculator;
+import lombok.Setter;
 
 public class HubShiftUtil {
   public enum ShiftEnum {
@@ -49,7 +50,7 @@ public class HubShiftUtil {
   private static final boolean[] inactiveSchedule = {true, false, true, false, true, true};
   private static final double timeResetThreshold = 3.0;
   private static double shiftTimerOffset = 0.0;
-  /*@Setter*/ private static Supplier<Optional<Boolean>> allianceWinOverride = () -> Optional.empty();
+  @Setter private static Supplier<Optional<Boolean>> allianceWinOverride = () -> Optional.empty();
 
   public static Optional<Boolean> getAllianceWinOverride() {
     return allianceWinOverride.get();

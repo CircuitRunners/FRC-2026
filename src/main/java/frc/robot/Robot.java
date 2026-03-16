@@ -23,14 +23,14 @@ import frc.lib.logging.LoggedTracer;
 import frc.lib.util.Stopwatch;
 @Logged
 public class Robot extends TimedRobot {
-  private final RobotContainer m_robotContainer;
+  private final RobotContainer mRobotContainer;
   private Command mAutonomousCommand;
   private GcStatsCollector mGcStatsCollector = new GcStatsCollector();
   public static final Stopwatch autoTimer = new Stopwatch();
 
   private long disabledLoopCount = 0;
   public Robot() {
-    m_robotContainer = new RobotContainer();
+    mRobotContainer = new RobotContainer();
     Epilogue.bind(this);
     DriverStation.silenceJoystickConnectionWarning(true);
   }
@@ -46,8 +46,11 @@ public class Robot extends TimedRobot {
 		}
     // CommandScheduler.getInstance().run(); 
 
+    // Update RobotContainer dashboard outputs
+    mRobotContainer.updateDashboardOutputs();
+
     // Clear shooting parameters
-    var shotCalculator = m_robotContainer.getShotCalculator();
+    var shotCalculator = mRobotContainer.getShotCalculator();
     shotCalculator.clearShootingParameters();
   }
 
@@ -70,7 +73,7 @@ public class Robot extends TimedRobot {
 		}
 
     if (disabledLoopCount % 50 == 0) {
-      m_robotContainer.zeroIntakeDisabled();
+      mRobotContainer.zeroIntakeDisabled();
     }
   }
 
@@ -79,7 +82,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    mAutonomousCommand = m_robotContainer.getAutoModeSelector().getSelectedCommand();
+    mAutonomousCommand = mRobotContainer.getAutoModeSelector().getSelectedCommand();
     //mAutonomousCommand = m_robotContainer.trajectoryTest();
 
 		autoTimer.start();

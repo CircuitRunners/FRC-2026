@@ -30,10 +30,10 @@ public class ConveyorConstants {
     public static TalonFXConfiguration getFXConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
 
-        config.CurrentLimits.StatorCurrentLimitEnable = Robot.isReal();
+        config.CurrentLimits.StatorCurrentLimitEnable = false;//Robot.isReal();
         config.CurrentLimits.StatorCurrentLimit = 150;
 
-        config.CurrentLimits.SupplyCurrentLimitEnable = true;
+        config.CurrentLimits.SupplyCurrentLimitEnable = false;//true;
 		config.CurrentLimits.SupplyCurrentLimit = 80.0;
 		config.CurrentLimits.SupplyCurrentLowerLimit = 60.0;
 		config.CurrentLimits.SupplyCurrentLowerTime = 0.3;

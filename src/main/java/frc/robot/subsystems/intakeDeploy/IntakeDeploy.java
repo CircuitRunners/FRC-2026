@@ -19,7 +19,7 @@ public class IntakeDeploy extends ServoMotorSubsystem<MotorIOTalonFX> {
             IntakeDeployConstants.kEpsilonThreshold//,
             //IntakeDeployConstants.getServoHomingConfig()
         );
-        setCurrentPosition(IntakeDeployConstants.kStowPosition);
+        setCurrentPosition(IntakeDeployConstants.kDeployPosition);
         //applySetpoint(STOW);
     }
 }

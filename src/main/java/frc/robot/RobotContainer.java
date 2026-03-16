@@ -2,6 +2,8 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.util.Optional;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -16,6 +18,8 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -28,10 +32,12 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.lib.drive.PIDToPosesCommand;
 import frc.lib.logging.LoggedTracer;
 import frc.lib.util.FieldLayout;
+import frc.lib.util.HubShiftUtil;
 import frc.lib.drive.DriveMaintainingHeading;
 import frc.lib.drive.FollowNonstopTrajectory;
 import frc.lib.drive.FollowTrajectoryCommand;
@@ -101,6 +107,10 @@ public class RobotContainer {
     private final ControlBoard controlBoard = ControlBoard.getInstance(drive, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, climber, superstructure);
     private final ShotCalculator shotCalculator = ShotCalculator.getInstance(drive);
 
+    private Optional<Boolean> autoWinOverride = Optional.empty();
+    // private final Trigger lostAutoOverride = 
+    // private final Trigger wonAutoOverride = 
+
     public ShotCalculator getShotCalculator() {
         return shotCalculator;
     }
@@ -135,8 +145,29 @@ public class RobotContainer {
         // AutoHelpers.bindEventMarkers(RobotConstants.mAutoFactory)
         mAutoModeSelector = new AutoModeSelector(drive, superstructure, RobotConstants.mAutoFactory);
 		mPreviousAutoName = mAutoModeSelector.getSelectedCommand().getName();
-        SmartDashboard.putData("Auto Chooser", mAutoModeSelector.getAutoChooser());
+        SmartDashboard.putData("Auto Chooser", mAutoModeSelector.getAutoChooser());  
+
+        SmartDashboard.putData("Auto Overrides/Force Win",
+            new InstantCommand(() -> autoWinOverride = Optional.of(true)));
+
+        SmartDashboard.putData("Auto Overrides/Force Loss",
+            new InstantCommand(() -> autoWinOverride = Optional.of(false)));
+
+        SmartDashboard.putData("Auto Overrides/Clear",
+            new InstantCommand(() -> autoWinOverride = Optional.empty()));
+
+        HubShiftUtil.setAllianceWinOverride(() -> autoWinOverride);
         
+        // HubShiftUtil.setAllianceWinOverride(
+        // () -> {
+        //   if (lostAutoOverride.getAsBoolean()) {
+        //     return Optional.of(false);
+        //   }
+        //   if (wonAutoOverride.getAsBoolean()) {
+        //     return Optional.of(true);
+        //   }
+        //   return Optional.empty();
+        // });
 
         // pretty sure we don't need this, or we need to change it a bit cuz heading lock
         // RobotModeTriggers.autonomous()
@@ -157,6 +188,13 @@ public class RobotContainer {
 		}) {
 			SmartDashboard.putData(s);
 		}
+    }
+
+    private String getAutoOverrideState() {
+        if (autoWinOverride.isEmpty()) {
+            return "No Override";
+        }
+        return autoWinOverride.get() ? "FORCED WIN" : "FORCED LOSS";
     }
 
     private void configureBindings() {
@@ -199,10 +237,30 @@ public class RobotContainer {
         // reset the field-centric heading on left bumper press
         //ControlBoardConstants.mDriverController.start().onTrue(drive.getDrivetrain().runOnce(() -> drive.getDrivetrain().seedFieldCentric()));
         ControlBoardConstants.mOperatorController.rightStick().onTrue(resetToVisionPose());
+
+        RobotModeTriggers.teleop().onTrue(Commands.runOnce(HubShiftUtil::initialize));
+        RobotModeTriggers.autonomous().onTrue(Commands.runOnce(HubShiftUtil::initialize));
+        RobotModeTriggers.disabled()
+        .onTrue(Commands.runOnce(HubShiftUtil::initialize).ignoringDisable(true));
     }
 
     public void updateDashboardOutputs() {
+        // Publish match time
+        SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
 
+        // Update from HubShiftUtil
+        SmartDashboard.putString(
+            "Shifts/Remaining Shift Time",
+            String.format("%.1f", Math.max(HubShiftUtil.getShiftedShiftInfo().remainingTime(), 0.0)));
+        SmartDashboard.putBoolean("Shifts/Shift Active", HubShiftUtil.getShiftedShiftInfo().active());
+        SmartDashboard.putString(
+            "Shifts/Game State", HubShiftUtil.getShiftedShiftInfo().currentShift().toString());
+        SmartDashboard.putBoolean(
+            "Shifts/Active First?",
+            DriverStation.getAlliance().orElse(Alliance.Blue) == HubShiftUtil.getFirstActiveAlliance());
+
+        SmartDashboard.putString("Auto Overrides/Current State", getAutoOverrideState());
+        SmartDashboard.putBoolean("Auto Overrides/Override Active", autoWinOverride.isPresent());
     }
     public void zeroIntakeDisabled() {
         // return Commands.either(Commands.runOnce(() -> intakeDeploy.setCurrentPosition(IntakeDeployConstants.kStowPosition)), Commands.none(), 
