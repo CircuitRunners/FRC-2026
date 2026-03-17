@@ -27,6 +27,7 @@ import frc.robot.subsystems.hood.Hood;
 import frc.robot.subsystems.shooter.ShooterConstants;
 import frc.robot.RobotConstants;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -49,6 +50,9 @@ public class ShotCalculator {
         this.drive = drive;
     }
 
+    private final LinearFilter driveAngleFilter =
+      LinearFilter.movingAverage((int) (0.1 / 0.02));
+
     private double lastHoodAngle;
     private Rotation2d lastDriveAngle;
 
@@ -60,6 +64,7 @@ public class ShotCalculator {
     public record ShotParameters(
         boolean isValid,
         Rotation2d heading,
+        double driveVelocity,
         double hoodAngle,
         double flywheelSpeed,
         double distance,
@@ -197,6 +202,10 @@ public class ShotCalculator {
                 : Units.Degrees.of(getHoodSetpointForShot(lookaheadLauncherToTargetDistance)).in(Units.Degrees);
         if (lastDriveAngle == null) lastDriveAngle = driveAngle;
         if (Double.isNaN(lastHoodAngle)) lastHoodAngle = hoodAngle; //NaN might be not possible, but i dont belive it
+        double driveVelocity =
+            driveAngleFilter.calculate(
+                driveAngle.minus(lastDriveAngle).getRadians() / 0.02);
+        lastDriveAngle = driveAngle;
         lastDriveAngle = driveAngle;
 
         // Check if inside a box of bad
@@ -219,6 +228,7 @@ public class ShotCalculator {
                     && lookaheadLauncherToTargetDistance
                         <= (passing ? passingMaxDistance : maxDistance),
                 driveAngle,
+                driveVelocity,
                 hoodAngle,
                 shooterVelocity,
                 lookaheadLauncherToTargetDistance,

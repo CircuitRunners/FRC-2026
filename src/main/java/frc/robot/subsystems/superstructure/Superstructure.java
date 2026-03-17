@@ -115,9 +115,6 @@ public class Superstructure extends SubsystemBase {
         updateShooterSetpoint();
         updateHoodSetpoint();
         updateHeadingSetpoint();
-        // SmartDashboard.putBoolean("Near Trench", nearTrench);
-        // SmartDashboard.putNumber("Distance From Hub", drive.getPose().getTranslation().getDistance(FieldLayout.handleAllianceFlip(FieldLayout.blueHubCenter, RobotConstants.isRedAlliance)));
-        // SmartDashboard.putBoolean("Shooter Spun Up", shooter.spunUp());
     }
 
     public void updateShooterSetpoint() {
@@ -128,7 +125,6 @@ public class Superstructure extends SubsystemBase {
               ShotCalculator.getInstance(drive)
               .getParameters()
               .flywheelSpeed()).plus(shooterIncrement)).in(Units.RotationsPerSecond)));
-        //ControlBoard.getInstance(drive, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, climber, this).setRumble(false);
     }
 
     public void updateHoodSetpoint() {
@@ -598,7 +594,7 @@ public class Superstructure extends SubsystemBase {
     }
 
     public boolean shouldHeadingLock() {
-      return (headingLockToggle && state != State.INTAKING /*&& (visionValid() || Robot.isSimulation())*/);
+      return (headingLockToggle && state != State.INTAKING  /*&& (!nearTrench|| state == State.SHOOTING). && (visionValid() || Robot.isSimulation())*/);
     }
 
     public void setPathFollowing(boolean isFollowing) {

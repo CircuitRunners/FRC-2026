@@ -92,9 +92,9 @@ public class FlywheelMotorSubsystem<IO extends MotorIO> extends MotorSubsystem<I
 	}
 
 	/**
-	 * Creates a Command that waits until the mechanism is near a given position.
+	 * Creates a Command that waits until the mechanism is near a given velocity.
 	 *
-	 * @param mechanismPosition Position to evaluate proximity to.
+	 * @param mechanismVelocity Velocity to evaluate proximity to.
 	 * @return A wait command.
 	 */
 	public Command waitForVelocityCommand(AngularVelocity mechanismVelocity) {
@@ -104,9 +104,9 @@ public class FlywheelMotorSubsystem<IO extends MotorIO> extends MotorSubsystem<I
 	}
 
 	/**
-	 * Creates a Command that goes to a setpoint and then waits until the mechanism is the setpoint's position.
+	 * Creates a Command that goes to a setpoint and then waits until the mechanism is the setpoint's velocity.
 	 *
-	 * @param mechanismPosition Position to evaluate proximity to.
+	 * @param mechanismVelocity Velocity to evaluate proximity to.
 	 * @return A new Command to apply setpoint and wait.
 	 */
 	public Command setpointCommandWithWait(Setpoint setpoint) {

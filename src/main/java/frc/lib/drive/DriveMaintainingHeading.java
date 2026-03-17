@@ -80,7 +80,8 @@ public class DriveMaintainingHeading extends Command{
     private final SwerveRequest.FieldCentricFacingAngle driveWithHeading = 
         new SwerveRequest.FieldCentricFacingAngle()
         .withDeadband(DriveConstants.kDriveMaxSpeed * DriveConstants.kDriveJoystickDeadband)
-        .withDriveRequestType(SwerveModule.DriveRequestType.Velocity);
+        .withDriveRequestType(SwerveModule.DriveRequestType.Velocity)
+        .withTargetRateFeedforward(ShotCalculator.getInstance(mDrivetrain).getParameters().driveVelocity());
 
 
     @Override
