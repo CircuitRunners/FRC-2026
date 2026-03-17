@@ -4,10 +4,15 @@ import static edu.wpi.first.units.Units.Minute;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Volts;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import frc.lib.io.MotorIOTalonFX;
 import frc.lib.io.MotorIOTalonFX.MotorIOTalonFXConfig;
@@ -20,40 +25,51 @@ import frc.robot.Robot;
 public class KickerConstants {
     private static final double kGearing = (18.0 / 18.0);
 
-    public static final Voltage kFeedForwardVoltage = Volts.of(-9.0);
-    public static final Voltage kFeedBackwardVoltage = Volts.of(2.0);
+    public static final Voltage kFeedForwardVoltage = Volts.of(9.0);
+    public static final Voltage kFeedBackwardVoltage = Volts.of(-2.0);
 	public static final Voltage kJuggleVoltage = Volts.of(-2);
+
+	public static final AngularVelocity kFeedForwardVelocity = Units.RotationsPerSecond.of(Units.RPM.of(4500).in(Units.RotationsPerSecond));
+	public static final AngularVelocity kFeedBackwardVelocity = Units.RotationsPerSecond.of(Units.RPM.of(-1000).in(Units.RotationsPerSecond));
+
+	public static final AngularVelocity kEpsilonThreshold = Units.RotationsPerSecond.of(2.0);
 
     public static TalonFXConfiguration getFXConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
+        config.Slot1.kS = 5.6;
+		config.Slot1.kV = 0.11;
+        config.Slot1.kP = 3.0;
 
-        config.CurrentLimits.StatorCurrentLimitEnable = Robot.isReal();
-        config.CurrentLimits.StatorCurrentLimit = 120;
+        config.CurrentLimits.StatorCurrentLimitEnable = false;//Robot.isReal();
+        config.CurrentLimits.StatorCurrentLimit = 120.0;
 
-        config.CurrentLimits.SupplyCurrentLimitEnable = Robot.isReal();
-		config.CurrentLimits.SupplyCurrentLimit = 60.0;
+		config.CurrentLimits.SupplyCurrentLimitEnable = Robot.isReal();	
+		config.CurrentLimits.SupplyCurrentLimit = 80.0;
 		config.CurrentLimits.SupplyCurrentLowerLimit = 60.0;
-		config.CurrentLimits.SupplyCurrentLowerTime = 0.1;
+		config.CurrentLimits.SupplyCurrentLowerTime = 0.3;
 
-		config.Voltage.PeakForwardVoltage = 12.0;
-		config.Voltage.PeakReverseVoltage = -12.0;
+        config.TorqueCurrent.PeakForwardTorqueCurrent = 800;
+        config.TorqueCurrent.PeakReverseTorqueCurrent = -800;
+        config.TorqueCurrent.TorqueNeutralDeadband = 0;
 
-		config.Feedback.SensorToMechanismRatio = kGearing;
+        config.Feedback.SensorToMechanismRatio = kGearing;
 
-		config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+		config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+
+		config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
 		return config;
     }
 
     public static MotorIOTalonFXConfig getIOConfig() {
-        MotorIOTalonFXConfig config = new MotorIOTalonFXConfig();
-        config.mainConfig = getFXConfig();
-        config.time = Minute;
-        config.unit = Rotations; 
-        config.mainID = Ports.KICKER.id;
-        config.mainBus = Ports.KICKER.bus;
-        return config;
-    }
+		MotorIOTalonFXConfig config = new MotorIOTalonFXConfig();
+		config.mainConfig = getFXConfig();
+		config.time = Units.Second;
+		config.unit = Units.Rotations;
+		config.mainID = Ports.KICKER.id;
+		config.mainBus = Ports.KICKER.bus;
+		return config;
+	}
 
     public static MotorIOTalonFX getMotorIO() {
 		//if (Robot.isReal()) {

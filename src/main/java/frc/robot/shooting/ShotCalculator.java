@@ -33,11 +33,13 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.lib.util.FieldLayout;
 import frc.lib.util.Util;
+import frc.lib.io.MotorIO.Setpoint;
 import frc.lib.util.Bounds;
 
 public class ShotCalculator {
@@ -78,6 +80,8 @@ public class ShotCalculator {
     public static final double towerPresetDistance = 2.5;
     public static final double trenchPresetDistance = 3.03;
     public static final double outpostPresetDistance = 4.84;
+
+    public static final Setpoint passingIdleSpeed = Setpoint.withVelocitySetpoint(Units.RotationsPerSecond.of(Units.RPM.of(0).in(Units.RotationsPerSecond)));
     
 
 

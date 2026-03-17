@@ -4,6 +4,8 @@ import edu.wpi.first.units.BaseUnits;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.io.MotorIO;
 import frc.lib.io.MotorIO.Setpoint;
 import frc.lib.util.Util;
@@ -87,6 +89,29 @@ public class FlywheelMotorSubsystem<IO extends MotorIO> extends MotorSubsystem<I
 	public void initSendable(SendableBuilder builder) {
 		super.initSendable(builder);
 		io.initSendable(builder);
+	}
+
+	/**
+	 * Creates a Command that waits until the mechanism is near a given position.
+	 *
+	 * @param mechanismPosition Position to evaluate proximity to.
+	 * @return A wait command.
+	 */
+	public Command waitForVelocityCommand(AngularVelocity mechanismVelocity) {
+		return Commands.waitUntil(() -> {
+			return nearVelocity(mechanismVelocity);
+		});
+	}
+
+	/**
+	 * Creates a Command that goes to a setpoint and then waits until the mechanism is the setpoint's position.
+	 *
+	 * @param mechanismPosition Position to evaluate proximity to.
+	 * @return A new Command to apply setpoint and wait.
+	 */
+	public Command setpointCommandWithWait(Setpoint setpoint) {
+		return waitForVelocityCommand(BaseUnits.AngleUnit.per(BaseUnits.TimeUnit).of(setpoint.baseUnits))
+				.deadlineFor(setpointCommand(setpoint));
 	}
 
 }

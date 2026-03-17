@@ -17,6 +17,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.lib.io.MotorIO.Setpoint;
 import frc.lib.util.FieldLayout;
+import frc.lib.util.HubShiftUtil;
+import frc.robot.shooting.ShotCalculator;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.conveyor.Conveyor;
 import frc.robot.subsystems.drive.Drive;
@@ -77,6 +79,9 @@ public class ControlBoard {
 
 	private Trigger rightBumper = driver.rightBumper();
 
+	private Trigger hubActiveOrPassing =
+        new Trigger(() -> HubShiftUtil.getShiftedShiftInfo().active() || ShotCalculator.getInstance(drive).getParameters().passing());
+
 	// public static enum OverrideBehavior {
 	// 	NET_SCORE(() -> superstructure.netScore().andThen(superstructure.tuck())),
 	// 	PROCESSOR_SCORE(
@@ -135,9 +140,9 @@ public class ControlBoard {
 
  		driver.leftBumper().onTrue(s.tuck());
 
- 		driver.leftTrigger(0.1)
+ 		driver.leftTrigger(0.1).and(driver.x().negate())
  				.whileTrue(
- 						s.runIntakeIfDeployed()).and(driver.x().negate());
+ 						s.runIntakeIfDeployed());
  						//.withName("Deploy and/or Intake"));
 
 		// driver.rightBumper().onTrue(Commands.parallel(conveyor.setpointCommand(Conveyor.FEED_FORWARD),
@@ -148,7 +153,7 @@ public class ControlBoard {
 
 		driver.leftTrigger(0.1).and(driver.x()).whileTrue(s.shootAndIntake());
 
- 		driver.x().whileTrue(s.shootWhenReadyTeleop()).and(driver.leftTrigger(0.1).negate());
+ 		driver.x()/*and(hubActiveOrPassing)*/.and(driver.leftTrigger(0.1).negate()).whileTrue(s.shootWhenReadyTeleop());
 
 		driver.y().whileTrue(s.shootWhenReadyPreset(Units.RotationsPerSecond.of(Units.RPM.of(2000).in(Units.RotationsPerSecond)), Units.Degrees.of(15.5)));
 

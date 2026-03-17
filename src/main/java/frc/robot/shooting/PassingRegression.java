@@ -17,9 +17,9 @@ public class PassingRegression {
 
                         // @x --> distance from target (in meters)
                         // @y --> shooter velocity (in rpm)
-                        { 5.46, 1500.0 },
-                        { 6.62, 1700.0 },
-                        { 7.8,  1900.0 },
+                        { 5.46, 2000.0 },
+                        { 6.62, 2200.0 },
+                        { 7.8,  2400.0 },
                         { 17.16,3400.0 }
         };
 

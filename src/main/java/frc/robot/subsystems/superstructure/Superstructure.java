@@ -11,6 +11,7 @@ import java.util.Set;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.hal.DriverStationJNI;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -22,7 +23,12 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.drive.RobotDriveBase;
+import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -35,6 +41,7 @@ import frc.lib.drive.PIDToPosesCommand;
 import frc.lib.io.MotorIO.Setpoint;
 import frc.lib.logging.LoggedTracer;
 import frc.lib.util.FieldLayout;
+import frc.lib.util.HubShiftUtil;
 import frc.lib.util.TunableNumber;
 import frc.robot.Robot;
 import frc.robot.RobotConstants;
@@ -86,7 +93,6 @@ public class Superstructure extends SubsystemBase {
     private boolean isPathFollowing = false;
     private boolean superstructureDone = false;
     private boolean driveReady = false;
-    private boolean kitbotMode = false;
     private boolean intakeDeployed = false;
     public boolean shootOnTheMove = false;
     public boolean headingLockToggle = false;
@@ -116,8 +122,6 @@ public class Superstructure extends SubsystemBase {
 
     public void updateShooterSetpoint() {
       //shooterSetpoint = Setpoint.withVelocitySetpoint(Units.RotationsPerSecond.of(Units.RPM.of(new TunableNumber("Shooter Vel", 1800.0, true).get()).in(Units.RotationsPerSecond)));
-      if (true) {
-        kitbotMode = false;
         shooterSetpoint = 
             Setpoint.withVelocitySetpoint(
               Units.RotationsPerSecond.of((Units.RPM.of(
@@ -125,12 +129,6 @@ public class Superstructure extends SubsystemBase {
               .getParameters()
               .flywheelSpeed()).plus(shooterIncrement)).in(Units.RotationsPerSecond)));
         //ControlBoard.getInstance(drive, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, climber, this).setRumble(false);
-      }
-      else {
-        shooterSetpoint = Shooter.KITBOT;
-        kitbotMode = true;
-        //ControlBoard.getInstance(drive, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, climber, this).setRumble(true);
-      }
     }
 
     public void updateHoodSetpoint() {
@@ -143,9 +141,6 @@ public class Superstructure extends SubsystemBase {
               ShotCalculator.getInstance(drive)
               .getParameters()
               .hoodAngle()));
-      }
-      else {
-        hoodSetpoint = Hood.KITBOT;
       }
     }
 
@@ -198,11 +193,9 @@ public class Superstructure extends SubsystemBase {
     }
 
     public Command waitUntilSafeToShoot() {
-      SmartDashboard.putBoolean("spun up", shooter.spunUp());
-      SmartDashboard.putBoolean("hood pos", hood.nearPositionSetpoint());
       return Commands.waitUntil(() -> (shooter.spunUp() || Robot.isSimulation())
-      && hood.nearPositionSetpoint() 
-      && (!headingLockToggle || kitbotMode || drive.getRotation().getMeasure().isNear(headingSetpoint.getMeasure(), Units.Degrees.of(5.0)) || RobotState.isAutonomous()));
+      && hood.nearPositionSetpoint()
+      && (!headingLockToggle || drive.getRotation().getMeasure().isNear(headingSetpoint.getMeasure(), Units.Degrees.of(5.0)) || RobotState.isAutonomous()));
     }
 
     public Command shoot() {
@@ -266,8 +259,7 @@ public class Superstructure extends SubsystemBase {
                           : State.SHOOTING;
               }),
               waitUntilSafeToShoot(),
-              kicker.setpointCommand(Kicker.FEED_FORWARD),
-              Commands.waitTime(Units.Milliseconds.of(150)),
+              kicker.setpointCommandWithWait(Kicker.VELOCITY_FORWARD),
               conveyor.setpointCommand(Conveyor.FEED_FORWARD),
               intakeRollers.Pulse(),
               Commands.waitUntil(() -> false))

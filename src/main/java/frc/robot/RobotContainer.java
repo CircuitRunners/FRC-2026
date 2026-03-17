@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -110,6 +111,7 @@ public class RobotContainer {
     private Optional<Boolean> autoWinOverride = Optional.empty();
     // private final Trigger lostAutoOverride = 
     // private final Trigger wonAutoOverride = 
+    private boolean ignoreHubState = false;
 
     public ShotCalculator getShotCalculator() {
         return shotCalculator;
@@ -156,6 +158,9 @@ public class RobotContainer {
         SmartDashboard.putData("Auto Overrides/Clear",
             new InstantCommand(() -> autoWinOverride = Optional.empty()));
 
+        SmartDashboard.putData("Hub State/Ignore",
+        new InstantCommand(() -> ignoreHubState = !ignoreHubState));
+
         HubShiftUtil.setAllianceWinOverride(() -> autoWinOverride);
         
         // HubShiftUtil.setAllianceWinOverride(
@@ -173,7 +178,21 @@ public class RobotContainer {
         // RobotModeTriggers.autonomous()
 		// 		.onFalse(Commands.runOnce(() -> drive.getDrivetrain().setControl(new SwerveRequest.ApplyFieldSpeeds()))
 		// 				.ignoringDisable(true));
-        //shooter.setDefaultCommand(shooter.trackTargetCommand(superstructure.shooterSetpoint));
+        shooter.setDefaultCommand(
+            shooter.followSetpointCommand(() -> {
+                var parameters = ShotCalculator.getInstance(drive).getParameters();
+                var shift = HubShiftUtil.getShiftedShiftInfo();
+
+                if (false&&!parameters.passing()
+                        && (shift.active()
+                        || shift.remainingTime() < 5.0
+                        || ignoreHubState)) {
+                    return superstructure.shooterSetpoint;
+                } else {
+                    return ShotCalculator.passingIdleSpeed;
+                }
+            })
+        );
         //hood.setDefaultCommand(Commands.defer(() -> hood.trackTargetCommand(superstructure.hoodSetpoint), Set.of(hood)));
 
         for (SubsystemBase s : new SubsystemBase[] {
@@ -261,6 +280,8 @@ public class RobotContainer {
 
         SmartDashboard.putString("Auto Overrides/Current State", getAutoOverrideState());
         SmartDashboard.putBoolean("Auto Overrides/Override Active", autoWinOverride.isPresent());
+
+        SmartDashboard.putBoolean("Hub State/Current Ignore State", ignoreHubState);
     }
     public void zeroIntakeDisabled() {
         // return Commands.either(Commands.runOnce(() -> intakeDeploy.setCurrentPosition(IntakeDeployConstants.kStowPosition)), Commands.none(), 
