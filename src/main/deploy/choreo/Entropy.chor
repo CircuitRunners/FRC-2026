@@ -14,8 +14,8 @@
    "intakeLength":{
     "dimension":"Length",
     "var":{
-     "exp":"2.15 m",
-     "val":2.15
+     "exp":"2.4 m",
+     "val":2.4
     }
    },
    "intakeLength2":{
@@ -42,8 +42,8 @@
    "maxIntakeSpeed":{
     "dimension":"LinVel",
     "var":{
-     "exp":"1 m / s",
-     "val":1.0
+     "exp":"1.3 m / s",
+     "val":1.3
     }
    },
    "maxIntakeSpeed2":{
@@ -118,7 +118,7 @@
     },
     "y":{
      "exp":"fieldY - intakeEndRight.y",
-     "val":4.981751531600953
+     "val":4.731751531600953
     },
     "heading":{
      "exp":"180 deg - intakeEndRight.heading - PI rad",
@@ -146,7 +146,7 @@
     },
     "y":{
      "exp":"intakeBeginRight.y + intakeLength",
-     "val":3.087248468399048
+     "val":3.337248468399048
     },
     "heading":{
      "exp":"intakeBeginRight.heading",

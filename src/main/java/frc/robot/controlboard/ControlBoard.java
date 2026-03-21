@@ -153,7 +153,7 @@ public class ControlBoard {
 
 		driver.leftTrigger(0.1).and(driver.x()).whileTrue(s.shootAndIntake());
 
- 		driver.x()/*and(hubActiveOrPassing)*/.and(driver.leftTrigger(0.1).negate()).whileTrue(s.shootWhenReadyTeleop());
+ 		driver.x().and(() -> s.ignoreHubState || hubActiveOrPassing.getAsBoolean()).and(driver.leftTrigger(0.1).negate()).whileTrue(s.shootWhenReadyTeleop());
 
 		driver.y().whileTrue(s.shootWhenReadyPreset(Units.RotationsPerSecond.of(Units.RPM.of(2000).in(Units.RotationsPerSecond)), Units.Degrees.of(15.5)));
 

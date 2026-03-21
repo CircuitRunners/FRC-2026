@@ -97,6 +97,7 @@ public class Superstructure extends SubsystemBase {
     public boolean shootOnTheMove = false;
     public boolean headingLockToggle = false;
     public boolean nearTrench = false;
+    public boolean ignoreHubState = false;
     TrajectoryConfig config = new TrajectoryConfig(DriveConstants.kMaxSpeed, DriveConstants.kMaxAcceleration);
 
 
@@ -118,26 +119,26 @@ public class Superstructure extends SubsystemBase {
     }
 
     public void updateShooterSetpoint() {
-      shooterSetpoint = Setpoint.withVelocitySetpoint(Units.RotationsPerSecond.of(Units.RPM.of(new TunableNumber("Shooter Vel", 1800.0, true).get()).in(Units.RotationsPerSecond)));
-        // shooterSetpoint = 
-        //     Setpoint.withVelocitySetpoint(
-        //       Units.RotationsPerSecond.of((Units.RPM.of(
-        //       ShotCalculator.getInstance(drive)
-        //       .getParameters()
-        //       .flywheelSpeed()).plus(shooterIncrement)).in(Units.RotationsPerSecond)));
+      //shooterSetpoint = Setpoint.withVelocitySetpoint(Units.RotationsPerSecond.of(Units.RPM.of(new TunableNumber("Shooter Vel", 1800.0, true).get()).in(Units.RotationsPerSecond)));
+        shooterSetpoint = 
+            Setpoint.withVelocitySetpoint(
+              Units.RotationsPerSecond.of((Units.RPM.of(
+              ShotCalculator.getInstance(drive)
+              .getParameters()
+              .flywheelSpeed()).plus(shooterIncrement)).in(Units.RotationsPerSecond)));
     }
 
     public void updateHoodSetpoint() {
-    hoodSetpoint = Setpoint.withMotionMagicSetpoint(Units.Degrees.of(new TunableNumber("Hood Angle", 11.8, true).get()));
-      // nearTrench = FieldLayout.nearTrench(drive.getPose(), drive.getFieldRelativeChassisSpeeds());
-      // if (true /*&& !nearTrench*/) {
-      //   hoodSetpoint = 
-      //       Setpoint.withMotionMagicSetpoint(
-      //         Units.Degrees.of(
-      //         ShotCalculator.getInstance(drive)
-      //         .getParameters()
-      //         .hoodAngle()));
-      // }
+    //hoodSetpoint = Setpoint.withMotionMagicSetpoint(Units.Degrees.of(new TunableNumber("Hood Angle", 11.8, true).get()));
+      nearTrench = FieldLayout.nearTrench(drive.getPose(), drive.getFieldRelativeChassisSpeeds());
+      if (true /*&& !nearTrench*/) {
+        hoodSetpoint = 
+            Setpoint.withMotionMagicSetpoint(
+              Units.Degrees.of(
+              ShotCalculator.getInstance(drive)
+              .getParameters()
+              .hoodAngle()));
+      }
     }
 
     public void updateHeadingSetpoint() {
@@ -235,6 +236,10 @@ public class Superstructure extends SubsystemBase {
       conveyor.setpointCommand(Conveyor.FEED_FORWARD));
     }
 
+    public Command idleIntake() {
+      return intakeDeploy.setpointCommand(IntakeDeploy.IDLE);
+    }
+
     public Command juggle() {
       return Commands.parallel(
         shooter.setpointCommand(Shooter.JUGGLE),
@@ -309,8 +314,7 @@ public class Superstructure extends SubsystemBase {
                           : State.SHOOTING;
               }),
               waitUntilSafeToShoot(),
-              kicker.setpointCommand(Kicker.FEED_FORWARD),
-              Commands.waitTime(Units.Milliseconds.of(150)),
+              kicker.setpointCommandWithWait(Kicker.VELOCITY_FORWARD),
               conveyor.setpointCommand(Conveyor.FEED_FORWARD),
               Commands.waitUntil(() -> false))
       )).finallyDo(() -> {
@@ -340,7 +344,10 @@ public class Superstructure extends SubsystemBase {
 
     public Command shakeIntake() {
       return Commands.sequence(
-        intakeDeploy.setpointCommandWithWait(IntakeDeploy.SHAKE));
+        intakeDeploy.setpointCommandWithWait(IntakeDeploy.SHAKE),
+        Commands.waitSeconds(0.5),
+        intakeDeploy.setpointCommand(IntakeDeploy.DEPLOY))
+        .finallyDo(() -> intakeDeploy.applySetpoint(IntakeDeploy.IDLE));
     }
 
     public Command runIntakeIfDeployedJuggle() {
@@ -594,7 +601,7 @@ public class Superstructure extends SubsystemBase {
     }
 
     public boolean shouldHeadingLock() {
-      return (headingLockToggle && /*(state == State.SHOOTING || state == State.SHOOTINTAKE) &&*/ state != State.INTAKING  /*&& (!nearTrench|| state == State.SHOOTING). && (visionValid() || Robot.isSimulation())*/);
+      return (headingLockToggle && (state == State.SHOOTING || state == State.SHOOTINTAKE) && state != State.INTAKING  /*&& (!nearTrench|| state == State.SHOOTING). && (visionValid() || Robot.isSimulation())*/);
     }
 
     public void setPathFollowing(boolean isFollowing) {

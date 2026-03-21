@@ -111,7 +111,6 @@ public class RobotContainer {
     private Optional<Boolean> autoWinOverride = Optional.empty();
     // private final Trigger lostAutoOverride = 
     // private final Trigger wonAutoOverride = 
-    private boolean ignoreHubState = false;
 
     public ShotCalculator getShotCalculator() {
         return shotCalculator;
@@ -159,7 +158,7 @@ public class RobotContainer {
             new InstantCommand(() -> autoWinOverride = Optional.empty()));
 
         SmartDashboard.putData("Hub State/Ignore",
-        new InstantCommand(() -> ignoreHubState = !ignoreHubState));
+        new InstantCommand(() -> superstructure.ignoreHubState = !superstructure.ignoreHubState));
 
         HubShiftUtil.setAllianceWinOverride(() -> autoWinOverride);
         
@@ -183,10 +182,10 @@ public class RobotContainer {
                 var parameters = ShotCalculator.getInstance(drive).getParameters();
                 var shift = HubShiftUtil.getShiftedShiftInfo();
 
-                if (false&&!parameters.passing()
+                if (!parameters.passing()
                         && (shift.active()
                         || shift.remainingTime() < 5.0
-                        || ignoreHubState)) {
+                        || superstructure.ignoreHubState)) {
                     return superstructure.shooterSetpoint;
                 } else {
                     return ShotCalculator.passingIdleSpeed;
@@ -281,7 +280,7 @@ public class RobotContainer {
         SmartDashboard.putString("Auto Overrides/Current State", getAutoOverrideState());
         SmartDashboard.putBoolean("Auto Overrides/Override Active", autoWinOverride.isPresent());
 
-        SmartDashboard.putBoolean("Hub State/Current Ignore State", ignoreHubState);
+        SmartDashboard.putBoolean("Hub State/Current Ignore State", superstructure.ignoreHubState);
     }
     public void zeroIntakeDisabled() {
         // return Commands.either(Commands.runOnce(() -> intakeDeploy.setCurrentPosition(IntakeDeployConstants.kStowPosition)), Commands.none(), 

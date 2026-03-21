@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
+import frc.robot.auto.autos.sillyAuto;
 import frc.robot.auto.autos.centerPreload.CenterPreloadClimbLeft;
 import frc.robot.auto.autos.centerPreload.CenterPreloadClimbRight;
 import frc.robot.auto.autos.doubleSwipe.LeftDoubleNeutral;
@@ -27,6 +28,7 @@ public class AutoModeSelector {
 		mAutoChooser.addRoutine("Center Preload + Right Climb", () -> new CenterPreloadClimbRight(drive, superstructure, factory).getRoutine());
 		mAutoChooser.addRoutine("Left Double Neutral", () -> new LeftDoubleNeutral(drive, superstructure, factory).getRoutine());
 		mAutoChooser.addRoutine("Right Double Neutral", () -> new RightDoubleNeutral(drive, superstructure, factory).getRoutine());
+		mAutoChooser.addRoutine("left silly", () -> new sillyAuto(drive, superstructure, factory).getRoutine());
 
 		
 

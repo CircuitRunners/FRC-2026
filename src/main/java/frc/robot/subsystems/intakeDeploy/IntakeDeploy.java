@@ -6,6 +6,7 @@ import frc.lib.io.MotorIOTalonFX;
 
 public class IntakeDeploy extends ServoMotorSubsystem<MotorIOTalonFX> {
     
+    public static final Setpoint IDLE = Setpoint.withCoastSetpoint();
     public static final Setpoint STOW = Setpoint.withMotionMagicSetpoint(IntakeDeployConstants.kStowPosition);
 	public static final Setpoint DEPLOY = Setpoint.withMotionMagicSetpoint(IntakeDeployConstants.kDeployPosition);
 	public static final Setpoint EXHAUST = Setpoint.withMotionMagicSetpoint(IntakeDeployConstants.kExhaustPosition);
