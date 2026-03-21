@@ -237,7 +237,7 @@ public class MotorIOTalonFX extends MotorIO {
 
 	public static class ControlRequestGetter {
 		public ControlRequest getVoltageRequest(Voltage voltage) {
-			return new VoltageOut(voltage.in(Units.Volts)).withEnableFOC(false);
+			return new VoltageOut(voltage.in(Units.Volts)).withEnableFOC(true); // foc true might be dangerous cuz limp mode
 		}
 
 		public ControlRequest getDutyCycleRequest(Dimensionless percent) {

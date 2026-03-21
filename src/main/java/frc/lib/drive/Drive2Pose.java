@@ -7,6 +7,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.util.SynchronousPIDF;
 import frc.robot.subsystems.drive.Drive;
@@ -21,10 +22,10 @@ public class Drive2Pose extends Command {
     private final PIDController xController = new PIDController(t.getP(), t.getI(), t.getD());
     private final PIDController yController = new PIDController(t.getP(), t.getI(), t.getD());
     private final ProfiledPIDController thetaController =
-        new ProfiledPIDController(h.getP(), h.getI(), h.getD(), new TrapezoidProfile.Constraints(DriveConstants.kDriveMaxAngularRate, 20));
+        new ProfiledPIDController(h.getP(), h.getI(), h.getD(), new TrapezoidProfile.Constraints(DriveConstants.kMaxAngularRate.in(Units.RadiansPerSecond), 20));
     private final SwerveRequest.FieldCentricFacingAngle driveWithHeading = 
         new SwerveRequest.FieldCentricFacingAngle()
-        .withDeadband(DriveConstants.kDriveMaxSpeed * DriveConstants.kDriveJoystickDeadband)
+        .withDeadband(DriveConstants.kMaxSpeed.times(DriveConstants.kDriveJoystickDeadband))
         .withDriveRequestType(SwerveModule.DriveRequestType.Velocity);
     public Drive2Pose(Drive drive, Pose2d targetPose) {
         this.drive = drive;

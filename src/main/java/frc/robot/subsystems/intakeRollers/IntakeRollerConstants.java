@@ -4,8 +4,10 @@ import static edu.wpi.first.units.Units.Minute;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Volts;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -24,14 +26,14 @@ public class IntakeRollerConstants {
     public static final Voltage kIntakeVoltage = Volts.of(6.0);
     public static final Voltage kExhaustVoltage = Volts.of(-5.0);
 
-    public static final double pulseOutTime = 0.20;
+    public static final double pulseOutTime = 0.15;
 	public static final double pulseInTime = 0.30;
 
     public static TalonFXConfiguration getFXConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
 
         config.CurrentLimits.StatorCurrentLimitEnable = Robot.isReal();
-        config.CurrentLimits.StatorCurrentLimit = 120;
+        config.CurrentLimits.StatorCurrentLimit = 100;
 
         config.CurrentLimits.SupplyCurrentLimitEnable = Robot.isReal();
 		config.CurrentLimits.SupplyCurrentLimit = 80.0;
@@ -57,6 +59,10 @@ public class IntakeRollerConstants {
         config.unit = Rotations;
         config.mainID = Ports.INTAKE_ROLLERS.id;
         config.mainBus = Ports.INTAKE_ROLLERS.bus;
+        config.followerConfig = getFXConfig();
+        config.followerIDs = new int[] {Ports.INTAKE_ROLLERS_FOLLOWER.id};
+        config.followerMotorAlignment = new MotorAlignmentValue[] {MotorAlignmentValue.Opposed};
+        config.followerBuses = new CANBus[] {Ports.INTAKE_ROLLERS_FOLLOWER.bus};
         return config;
     }
 

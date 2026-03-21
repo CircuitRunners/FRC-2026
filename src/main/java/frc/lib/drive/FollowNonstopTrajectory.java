@@ -20,6 +20,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.drive.Drive;
@@ -101,11 +102,11 @@ public class FollowNonstopTrajectory extends Command {
 														pose.getRotation().getRadians())
 												+ omega);
 
-        xOutput = MathUtil.clamp(xOutput, -DriveConstants.kDriveMaxSpeed, DriveConstants.kDriveMaxSpeed);
-        yOutput = MathUtil.clamp(yOutput, -DriveConstants.kDriveMaxSpeed, DriveConstants.kDriveMaxSpeed);
+        xOutput = MathUtil.clamp(xOutput, DriveConstants.kMaxSpeed.unaryMinus().in(Units.MetersPerSecond), DriveConstants.kMaxSpeed.in(Units.MetersPerSecond));
+        yOutput = MathUtil.clamp(yOutput, DriveConstants.kMaxSpeed.unaryMinus().in(Units.MetersPerSecond), DriveConstants.kMaxSpeed.in(Units.MetersPerSecond));
         thetaOutput = MathUtil.clamp(thetaOutput,
-            -DriveConstants.kDriveMaxAngularRate,
-            DriveConstants.kDriveMaxAngularRate);
+            DriveConstants.kMaxAngularRate.unaryMinus().in(Units.RadiansPerSecond),
+            DriveConstants.kMaxAngularRate.in(Units.RadiansPerSecond));
 
 		drive.getDrivetrain().setControl(
 			new SwerveRequest.FieldCentric()

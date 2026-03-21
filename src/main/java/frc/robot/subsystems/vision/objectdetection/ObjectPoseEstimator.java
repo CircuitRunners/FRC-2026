@@ -52,9 +52,9 @@ public class ObjectPoseEstimator extends SubsystemBase {
     private final ObjectDetectionCamera camera;
     private final Drive drive;
     public static final Field2d field = new Field2d();
-    public static TrajectoryConfig t_reposition = new TrajectoryConfig(DriveConstants.kDriveMaxSpeed, DriveConstants.kMaxAcceleration.in(Units.MetersPerSecondPerSecond));
-    public static TrajectoryConfig t_end = new TrajectoryConfig(DriveConstants.kDriveMaxSpeed, DriveConstants.kMaxAcceleration.in(Units.MetersPerSecondPerSecond));
-    public static TrajectoryConfig t_intake = new TrajectoryConfig(DriveConstants.kDriveMaxSpeedIntake, DriveConstants.kMaxAcceleration.in(Units.MetersPerSecondPerSecond));
+    public static TrajectoryConfig t_reposition = new TrajectoryConfig(DriveConstants.kMaxSpeed, DriveConstants.kMaxAcceleration);
+    public static TrajectoryConfig t_end = new TrajectoryConfig(DriveConstants.kMaxSpeed, DriveConstants.kMaxAcceleration);
+    public static TrajectoryConfig t_intake = new TrajectoryConfig(DriveConstants.kIntakeMaxSpeed, DriveConstants.kMaxAcceleration);
     public final List<Pose2d> fuels = new ArrayList<>();
     public List<Trajectory> trajectories = new ArrayList<>();
     public Trajectory singleTrajectory = null;
@@ -82,7 +82,7 @@ public class ObjectPoseEstimator extends SubsystemBase {
         this.objectPositionsToDetectionTimestamp = new HashMap<>();
         if (RobotBase.isSimulation() || AutoModeSelector.useObjectDetections.getSelected() == false) SimulatedGamePieceConstants.initializeFuel();
         SmartDashboard.putData("ObjectDetectionField", field);
-        t_reposition.setEndVelocity(DriveConstants.kDriveMaxSpeed - 2);
+        t_reposition.setEndVelocity(DriveConstants.kMaxSpeed.minus(Units.MetersPerSecond.of(2)));
         // t_intake.setStartVelocity(DriveConstants.kDriveMaxSpeed);
        
     }

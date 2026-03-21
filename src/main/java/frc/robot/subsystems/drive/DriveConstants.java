@@ -26,18 +26,15 @@ import frc.lib.util.Util;
 import frc.robot.RobotConstants;
 
 public class DriveConstants {
-    public static final double kDriveMaxAngularRate = 8.2 * 0.70; // 254
-    public static final AngularVelocity kMaxAngularRate = Units.RadiansPerSecond.of(2.75 * Math.PI); // 1678
-    public static final double kMaxAngularSpeedRadiansPerSecondSquared = 20.0;
-    public static final double kDriveMaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // 254
-    public static final double kDriveMaxSpeedIntake = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond) -2; // 254
+    public static final AngularVelocity kMaxAngularRate = Units.RadiansPerSecond.of(8.2 * 0.70);//254 //(2.75 * Math.PI); 1678
 
-    public static final LinearVelocity kMaxSpeed = TunerConstants.kSpeedAt12Volts; // 1678
+    public static final LinearVelocity kMaxSpeed = TunerConstants.kSpeedAt12Volts;
+	public static final LinearVelocity kIntakeMaxSpeed = kMaxSpeed.minus(Units.MetersPerSecond.of(2));
     public static final double kSteerJoystickDeadband = 0.05;
 	public static final double kDriveJoystickDeadband = 0.05;
-    public static final double kHeadingControllerP = 5.0;
-    public static final double kHeadingControllerI = 0;
-    public static final double kHeadingControllerD = 0;
+	public static final double kHeadingLockControllerP = 5.0;
+    public static final double kHeadingLockControllerI = 0.0;
+    public static final double kHeadingLockControllerD = 0.0;
     public static final double kMidlineBuffer = 1.0;
 
     public static final LinearAcceleration kMaxAcceleration = Units.MetersPerSecondPerSecond.of(10.0);
@@ -171,7 +168,7 @@ public class DriveConstants {
 
 	public static SynchronousPIDF getObjectDetectionTranslationController() {
 		SynchronousPIDF controller = new SynchronousPIDF(5, 0.0, 0.0);
-		controller.setMaxAbsoluteOutput(kDriveMaxSpeedIntake);
+		controller.setMaxAbsoluteOutput(kIntakeMaxSpeed.in(Units.MetersPerSecond));
 		return controller;
 	}
 

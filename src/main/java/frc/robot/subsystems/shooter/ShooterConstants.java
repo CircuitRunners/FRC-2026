@@ -34,9 +34,9 @@ public class ShooterConstants {
 
     public static TalonFXConfiguration getFXConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
-        config.Slot1.kS = 8.1;
-		config.Slot1.kV = 0.052;
-        config.Slot1.kP = 7.0;
+        config.Slot1.kS = 5.25;
+		config.Slot1.kV = 0.04;
+        config.Slot1.kP = 10.0;
 
         config.CurrentLimits.StatorCurrentLimitEnable = false;//Robot.isReal();
         config.CurrentLimits.StatorCurrentLimit = 120.0;

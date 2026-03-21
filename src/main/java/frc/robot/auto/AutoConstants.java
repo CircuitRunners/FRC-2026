@@ -22,10 +22,10 @@ public class AutoConstants {
 	}
 	public static double shootAllFuelTime = 4;
 
-	public static TrajectoryConfig intakeConfig = (new TrajectoryConfig(DriveConstants.kDriveMaxSpeedIntake, DriveConstants.kMaxAcceleration.in(Units.MetersPerSecondPerSecond)))
-		.setEndVelocity(DriveConstants.kDriveMaxSpeedIntake);
-	public static TrajectoryConfig regularConfig = new TrajectoryConfig(DriveConstants.kDriveMaxSpeed, DriveConstants.kMaxAcceleration.in(Units.MetersPerSecondPerSecond))
-		.setEndVelocity(DriveConstants.kDriveMaxSpeed);
+	public static TrajectoryConfig intakeConfig = new TrajectoryConfig(DriveConstants.kIntakeMaxSpeed, DriveConstants.kMaxAcceleration)
+		.setEndVelocity(DriveConstants.kIntakeMaxSpeed);
+	public static TrajectoryConfig regularConfig = new TrajectoryConfig(DriveConstants.kMaxSpeed, DriveConstants.kMaxAcceleration)
+		.setEndVelocity(DriveConstants.kIntakeMaxSpeed);
 
 
 }

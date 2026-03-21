@@ -97,7 +97,7 @@ public class Superstructure extends SubsystemBase {
     public boolean shootOnTheMove = false;
     public boolean headingLockToggle = false;
     public boolean nearTrench = false;
-    TrajectoryConfig config = new TrajectoryConfig(DriveConstants.kDriveMaxSpeed, DriveConstants.kMaxAcceleration.in(Units.MetersPerSecondPerSecond));
+    TrajectoryConfig config = new TrajectoryConfig(DriveConstants.kMaxSpeed, DriveConstants.kMaxAcceleration);
 
 
     public double maintainHeadingEpsilon = 0.25;
@@ -118,26 +118,26 @@ public class Superstructure extends SubsystemBase {
     }
 
     public void updateShooterSetpoint() {
-      //shooterSetpoint = Setpoint.withVelocitySetpoint(Units.RotationsPerSecond.of(Units.RPM.of(new TunableNumber("Shooter Vel", 1800.0, true).get()).in(Units.RotationsPerSecond)));
-        shooterSetpoint = 
-            Setpoint.withVelocitySetpoint(
-              Units.RotationsPerSecond.of((Units.RPM.of(
-              ShotCalculator.getInstance(drive)
-              .getParameters()
-              .flywheelSpeed()).plus(shooterIncrement)).in(Units.RotationsPerSecond)));
+      shooterSetpoint = Setpoint.withVelocitySetpoint(Units.RotationsPerSecond.of(Units.RPM.of(new TunableNumber("Shooter Vel", 1800.0, true).get()).in(Units.RotationsPerSecond)));
+        // shooterSetpoint = 
+        //     Setpoint.withVelocitySetpoint(
+        //       Units.RotationsPerSecond.of((Units.RPM.of(
+        //       ShotCalculator.getInstance(drive)
+        //       .getParameters()
+        //       .flywheelSpeed()).plus(shooterIncrement)).in(Units.RotationsPerSecond)));
     }
 
     public void updateHoodSetpoint() {
-    //hoodSetpoint = Setpoint.withMotionMagicSetpoint(Units.Degrees.of(new TunableNumber("Hood Angle", 11.8, true).get()));
-      nearTrench = FieldLayout.nearTrench(drive.getPose(), drive.getFieldRelativeChassisSpeeds());
-      if (true /*&& !nearTrench*/) {
-        hoodSetpoint = 
-            Setpoint.withMotionMagicSetpoint(
-              Units.Degrees.of(
-              ShotCalculator.getInstance(drive)
-              .getParameters()
-              .hoodAngle()));
-      }
+    hoodSetpoint = Setpoint.withMotionMagicSetpoint(Units.Degrees.of(new TunableNumber("Hood Angle", 11.8, true).get()));
+      // nearTrench = FieldLayout.nearTrench(drive.getPose(), drive.getFieldRelativeChassisSpeeds());
+      // if (true /*&& !nearTrench*/) {
+      //   hoodSetpoint = 
+      //       Setpoint.withMotionMagicSetpoint(
+      //         Units.Degrees.of(
+      //         ShotCalculator.getInstance(drive)
+      //         .getParameters()
+      //         .hoodAngle()));
+      // }
     }
 
     public void updateHeadingSetpoint() {
@@ -594,7 +594,7 @@ public class Superstructure extends SubsystemBase {
     }
 
     public boolean shouldHeadingLock() {
-      return (headingLockToggle && state != State.INTAKING  /*&& (!nearTrench|| state == State.SHOOTING). && (visionValid() || Robot.isSimulation())*/);
+      return (headingLockToggle && /*(state == State.SHOOTING || state == State.SHOOTINTAKE) &&*/ state != State.INTAKING  /*&& (!nearTrench|| state == State.SHOOTING). && (visionValid() || Robot.isSimulation())*/);
     }
 
     public void setPathFollowing(boolean isFollowing) {
