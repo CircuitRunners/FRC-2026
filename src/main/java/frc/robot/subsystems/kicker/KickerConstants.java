@@ -29,7 +29,7 @@ public class KickerConstants {
     public static final Voltage kFeedBackwardVoltage = Volts.of(-2.0);
 	public static final Voltage kJuggleVoltage = Volts.of(-2);
 
-	public static final AngularVelocity kFeedForwardVelocity = Units.RotationsPerSecond.of(Units.RPM.of(5000).in(Units.RotationsPerSecond));
+	public static final AngularVelocity kFeedForwardVelocity = Units.RotationsPerSecond.of(Units.RPM.of(4200).in(Units.RotationsPerSecond));
 	public static final AngularVelocity kFeedBackwardVelocity = Units.RotationsPerSecond.of(Units.RPM.of(-1000).in(Units.RotationsPerSecond));
 
 	public static final AngularVelocity kEpsilonThreshold = Units.RotationsPerSecond.of(2.0);

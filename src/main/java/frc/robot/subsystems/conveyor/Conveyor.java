@@ -1,10 +1,10 @@
 package frc.robot.subsystems.conveyor;
 
-    import edu.wpi.first.wpilibj.Timer;
-    import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.bases.MotorSubsystem;
-    import frc.lib.io.MotorIOTalonFX;
+import frc.lib.io.MotorIOTalonFX;
 import frc.robot.subsystems.intakeRollers.IntakeRollerConstants;
 import frc.lib.io.MotorIO.Setpoint;
 

@@ -6,6 +6,9 @@ import java.util.Date;
 import java.util.Map;
 
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import choreo.trajectory.SwerveSample;
@@ -25,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.util.FieldLayout;
 import frc.lib.util.MathHelpers;
+import frc.robot.Robot;
 import frc.robot.RobotConstants;
 import frc.robot.subsystems.superstructure.SuperstructureConstants;
 
@@ -83,6 +87,10 @@ public class Drive extends SubsystemBase {
         SmartDashboard.putData("Drive", this);
         elasticPose.setRobotPose(getPose());
         SmartDashboard.putData("Elastic Field 2D", elasticPose);
+        // energy draw
+        for (SwerveModule<TalonFX, TalonFX, CANcoder> module : getDrivetrain().getModules()) {
+            Robot.batteryLogger.reportCurrentUsage("Drivebase", module.getDriveMotor().getSupplyCurrent().getValueAsDouble() + module.getSteerMotor().getSupplyCurrent().getValueAsDouble());
+        }
     }
 
      /**

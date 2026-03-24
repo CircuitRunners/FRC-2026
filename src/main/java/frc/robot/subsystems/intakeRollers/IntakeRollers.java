@@ -13,6 +13,10 @@ public class IntakeRollers extends MotorSubsystem<MotorIOTalonFX> {
     public static final Setpoint INTAKE = Setpoint.withVoltageSetpoint(IntakeRollerConstants.kIntakeVoltage);
 	public static final Setpoint EXHAUST = Setpoint.withVoltageSetpoint(IntakeRollerConstants.kExhaustVoltage);
 
+    public static final Setpoint PULSEIN = Setpoint.withVoltageSetpoint(IntakeRollerConstants.kPulseInVoltage);
+    public static final Setpoint PULSEOUT = Setpoint.withVoltageSetpoint(IntakeRollerConstants.kPulseOutVoltage);
+
+
     private boolean pulseIn = true;
     private final Timer pulseTimer = new Timer();
     public boolean isPulsing = false;
@@ -24,7 +28,7 @@ public class IntakeRollers extends MotorSubsystem<MotorIOTalonFX> {
     private void startPulse(boolean in) {
         pulseIn = in;
         pulseTimer.restart();
-        this.applySetpoint(Setpoint.withVoltageSetpoint(pulseIn ? IntakeRollerConstants.kIntakeVoltage : IntakeRollerConstants.kExhaustVoltage));
+        this.applySetpoint(Setpoint.withVoltageSetpoint(pulseIn ? IntakeRollerConstants.kPulseInVoltage : IntakeRollerConstants.kPulseOutVoltage));
         isPulsing = true;
     }
 

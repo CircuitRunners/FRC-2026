@@ -94,8 +94,8 @@ public class Superstructure extends SubsystemBase {
     private boolean superstructureDone = false;
     private boolean driveReady = false;
     private boolean intakeDeployed = false;
-    public boolean shootOnTheMove = false;
-    public boolean headingLockToggle = false;
+    public boolean shootOnTheMove = true;
+    public boolean headingLockToggle = true;
     public boolean nearTrench = false;
     public boolean ignoreHubState = false;
     TrajectoryConfig config = new TrajectoryConfig(DriveConstants.kMaxSpeed, DriveConstants.kMaxAcceleration);
@@ -392,7 +392,7 @@ public class Superstructure extends SubsystemBase {
 
     public Command tuck() {
       return Commands.sequence(
-          intakeDeploy.setpointCommand(IntakeDeploy.STOW),
+          intakeDeploy.setpointCommand(IntakeDeploy.STOW).onlyIf(() -> state != State.SHOOTING && state != State.SHOOTINTAKE),
           setIntakeStatus(false),
           setState(State.TUCK))
         .withName("Tuck");

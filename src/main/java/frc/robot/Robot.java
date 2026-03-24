@@ -21,12 +21,16 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.logging.LogUtil.GcStatsCollector;
 import frc.lib.logging.LoggedTracer;
 import frc.lib.util.Stopwatch;
+import frc.robot.energy.BatteryLogger;
 @Logged
 public class Robot extends TimedRobot {
   private final RobotContainer mRobotContainer;
   private Command mAutonomousCommand;
   private GcStatsCollector mGcStatsCollector = new GcStatsCollector();
   public static final Stopwatch autoTimer = new Stopwatch();
+
+  public static final BatteryLogger batteryLogger = new BatteryLogger();
+  private final BatteryIOInputs batteryInputs = new BatteryIOInputs();
 
   private long disabledLoopCount = 0;
   public Robot() {
@@ -44,6 +48,12 @@ public class Robot extends TimedRobot {
 		} catch (Exception e) {
 			SmartDashboard.putString("Logged Robot/Latest Error", e.getMessage());
 		}
+
+    batteryLogger.setBatteryVoltage(batteryInputs.batteryVoltage);
+    batteryLogger.setRioCurrent(batteryInputs.rioCurrent);
+
+    batteryLogger.periodic();
+
     // CommandScheduler.getInstance().run(); 
 
     // Update RobotContainer dashboard outputs
@@ -128,4 +138,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void simulationPeriodic() {}
+
+  public static class BatteryIOInputs {
+    public double batteryVoltage = 12.0;
+    public double rioCurrent = 0.0;
+  }
 }

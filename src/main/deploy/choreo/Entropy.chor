@@ -72,7 +72,7 @@
    "intakeBeginLeft2":{
     "x":{
      "exp":"intakeBeginRight2.x",
-     "val":6.243540287017822
+     "val":7.043540287017822
     },
     "y":{
      "exp":"fieldY - intakeBeginRight2.y",
@@ -99,8 +99,8 @@
    },
    "intakeBeginRight2":{
     "x":{
-     "exp":"6.243540287017822 m",
-     "val":6.243540287017822
+     "exp":"7.043540287017822 m",
+     "val":7.043540287017822
     },
     "y":{
      "exp":"0.6238496899604797 m",
@@ -128,7 +128,7 @@
    "intakeEndLeft2":{
     "x":{
      "exp":"intakeBeginLeft2.x",
-     "val":6.243540287017822
+     "val":7.043540287017822
     },
     "y":{
      "exp":"intakeBeginLeft2.y - intakeLength2",
@@ -156,7 +156,7 @@
    "intakeEndRight2":{
     "x":{
      "exp":"intakeBeginRight2.x",
-     "val":6.243540287017822
+     "val":7.043540287017822
     },
     "y":{
      "exp":"intakeBeginRight2.y + intakeLength2",
