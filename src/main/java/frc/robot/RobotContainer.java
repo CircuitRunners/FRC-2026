@@ -36,7 +36,9 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.lib.drive.PIDToPosesCommand;
+import frc.lib.logging.LogUtil;
 import frc.lib.logging.LoggedTracer;
+import frc.lib.util.ContinuousConditionalCommand;
 import frc.lib.util.FieldLayout;
 import frc.lib.util.HubShiftUtil;
 import frc.lib.drive.DriveMaintainingHeading;
@@ -109,6 +111,7 @@ public class RobotContainer {
     private final ShotCalculator shotCalculator = ShotCalculator.getInstance(drive);
 
     private Optional<Boolean> autoWinOverride = Optional.empty();
+    private boolean disableAutoSpinup = true;
     // private final Trigger lostAutoOverride = 
     // private final Trigger wonAutoOverride = 
 
@@ -160,6 +163,9 @@ public class RobotContainer {
         SmartDashboard.putData("Hub State/Ignore",
         new InstantCommand(() -> superstructure.ignoreHubState = !superstructure.ignoreHubState));
 
+        SmartDashboard.putData("Shooter Idle/Toggle",
+        new InstantCommand(() -> disableAutoSpinup = !disableAutoSpinup));
+
         HubShiftUtil.setAllianceWinOverride(() -> autoWinOverride);
         
         // HubShiftUtil.setAllianceWinOverride(
@@ -177,6 +183,23 @@ public class RobotContainer {
         // RobotModeTriggers.autonomous()
 		// 		.onFalse(Commands.runOnce(() -> drive.getDrivetrain().setControl(new SwerveRequest.ApplyFieldSpeeds()))
 		// 				.ignoringDisable(true));
+        // shooter.setDefaultCommand(
+        // new ContinuousConditionalCommand(
+        //     shooter.setpointCommand(Shooter.IDLE),
+        //     shooter.followSetpointCommand(
+        //         () -> {
+        //           var parameters = ShotCalculator.getInstance(drive).getParameters();
+        //           var shift = HubShiftUtil.getShiftedShiftInfo();
+        //           if (!parameters.passing()
+        //               && (shift.active()
+        //                   || shift.remainingTime() < 5.0
+        //                   || superstructure.ignoreHubState)) {
+        //             return superstructure.shooterSetpoint;
+        //           } else {
+        //             return ShotCalculator.passingIdleSpeed;
+        //           }
+        //         }),
+        //     () -> disableAutoSpinup));
         shooter.setDefaultCommand(
             shooter.followSetpointCommand(() -> {
                 var parameters = ShotCalculator.getInstance(drive).getParameters();
@@ -267,9 +290,9 @@ public class RobotContainer {
         SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
 
         // Update from HubShiftUtil
-        SmartDashboard.putString(
+        SmartDashboard.putNumber(
             "Shifts/Remaining Shift Time",
-            String.format("%.1f", Math.max(HubShiftUtil.getShiftedShiftInfo().remainingTime(), 0.0)));
+            Math.max(HubShiftUtil.getShiftedShiftInfo().remainingTime(), 0.0));
         SmartDashboard.putBoolean("Shifts/Shift Active", HubShiftUtil.getShiftedShiftInfo().active());
         SmartDashboard.putString(
             "Shifts/Game State", HubShiftUtil.getShiftedShiftInfo().currentShift().toString());
@@ -281,10 +304,12 @@ public class RobotContainer {
         SmartDashboard.putBoolean("Auto Overrides/Override Active", autoWinOverride.isPresent());
 
         SmartDashboard.putBoolean("Hub State/Current Ignore State", superstructure.ignoreHubState);
+
+        SmartDashboard.putBoolean("Shooter Idle/State", disableAutoSpinup);
+
+        LogUtil.recordPose2d("Vision pose", vision.getLatestVisionPose());
     }
     public void zeroIntakeDisabled() {
-        // return Commands.either(Commands.runOnce(() -> intakeDeploy.setCurrentPosition(IntakeDeployConstants.kStowPosition)), Commands.none(), 
-        // () -> intakeDeploy.getPosition().gte(IntakeDeployConstants.kStowPosition));
         if (intakeDeploy.getPosition().gte(IntakeDeployConstants.kStowPosition)) {
             intakeDeploy.setCurrentPosition(IntakeDeployConstants.kStowPosition);
         }
@@ -295,7 +320,7 @@ public class RobotContainer {
     }
 
     private final DriveMaintainingHeading driveCommand = 
-        new DriveMaintainingHeading(drive, superstructure, () -> ControlBoardConstants.mDriverController.getLeftY(), () -> ControlBoardConstants.mDriverController.getLeftX(), () -> -ControlBoardConstants.mDriverController.getRightX(), () -> superstructure.maintainHeadingEpsilon);
+        new DriveMaintainingHeading(drive, superstructure, () -> ControlBoardConstants.mDriverController.getLeftY() * 0.8, () -> ControlBoardConstants.mDriverController.getLeftX() * 0.8, () -> -ControlBoardConstants.mDriverController.getRightX(), () -> superstructure.maintainHeadingEpsilon);
     
     public Command resetToVisionPose() {
         return Commands.runOnce(() -> drive.getDrivetrain().resetPose(vision.getLatestVisionPose()));

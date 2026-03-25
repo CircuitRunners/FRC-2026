@@ -9,8 +9,10 @@ import java.util.Optional;
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.hal.AllianceStationID;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
@@ -62,6 +64,11 @@ public class Robot extends TimedRobot {
     // Clear shooting parameters
     var shotCalculator = mRobotContainer.getShotCalculator();
     shotCalculator.clearShootingParameters();
+  }
+
+  @Override
+  public void robotInit() {
+    RobotController.setBrownoutVoltage(Units.Volts.of(6.5));
   }
 
   @Override

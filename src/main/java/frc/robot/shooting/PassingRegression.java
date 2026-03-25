@@ -20,7 +20,7 @@ public class PassingRegression {
                         { 5.46, 2000.0 },
                         { 6.62, 2200.0 },
                         { 7.8,  2400.0 },
-                        { 17.16,3400.0 }
+                        { 17.16,3700.0 }
         };
 
         public static double[][] kPassingTimeOfFlightMap = {

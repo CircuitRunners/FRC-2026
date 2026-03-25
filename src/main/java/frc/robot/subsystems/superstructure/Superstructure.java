@@ -280,17 +280,18 @@ public class Superstructure extends SubsystemBase {
           Commands.parallel(
               shooter.setpointCommand(Setpoint.withVelocitySetpoint(rpm)),
               hood.setpointCommand(Setpoint.withMotionMagicSetpoint(angle)),
+              Commands.sequence(
               Commands.runOnce(() -> {
                   state = (state == State.INTAKING)
                           ? State.SHOOTINTAKE
                           : State.SHOOTING;
               }),
-              waitUntilSafeToShoot()),
-              kicker.setpointCommand(Kicker.FEED_FORWARD),
-              Commands.waitTime(Units.Milliseconds.of(150)),
+              waitUntilSafeToShoot(),
+              kicker.setpointCommandWithWait(Kicker.VELOCITY_FORWARD),
               conveyor.setpointCommand(Conveyor.FEED_FORWARD),
-              Commands.waitUntil(() -> false)
-      ).finallyDo(() -> {
+              intakeRollers.Pulse(),
+              Commands.waitUntil(() -> false))
+      )).finallyDo(() -> {
           conveyor.applySetpoint(Conveyor.IDLE);
           kicker.applySetpoint(Kicker.FEED_BACKWARDS);
           shooter.applySetpoint(Shooter.IDLE);

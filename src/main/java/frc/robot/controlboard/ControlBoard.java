@@ -155,22 +155,15 @@ public class ControlBoard {
 
  		driver.x().and(() -> s.ignoreHubState || hubActiveOrPassing.getAsBoolean()).and(driver.leftTrigger(0.1).negate()).whileTrue(s.shootWhenReadyTeleop());
 
-		driver.y().whileTrue(s.shootWhenReadyPreset(Units.RotationsPerSecond.of(Units.RPM.of(2000).in(Units.RotationsPerSecond)), Units.Degrees.of(15.5)));
+		driver.y().whileTrue(s.shootWhenReadyPreset(Units.RotationsPerSecond.of(Units.RPM.of(2000).in(Units.RotationsPerSecond)), Units.Degrees.of(13.0)));
 
-		driver.a().whileTrue(s.shootWhenReadyPreset(Units.RotationsPerSecond.of(Units.RPM.of(1750).in(Units.RotationsPerSecond)), Units.Degrees.of(11.8)));
+		driver.a().whileTrue(s.shootWhenReadyPreset(Units.RotationsPerSecond.of(Units.RPM.of(1625).in(Units.RotationsPerSecond)), Units.Degrees.of(11.8)));
 
-		driver.b().onTrue(Commands.runOnce(() -> s.shooterIncrement = s.shooterIncrement.minus(Units.RPM.of(50))));
+		driver.b().onTrue(Commands.runOnce(() -> s.shooterIncrement = s.shooterIncrement.minus(Units.RPM.of(25))));
 
-		driver.back().onTrue(Commands.runOnce(() -> s.shooterIncrement = s.shooterIncrement.plus(Units.RPM.of(50))).andThen(Commands.runOnce(() -> SmartDashboard.putNumber("Shooter Inc", s.shooterIncrement.in(Units.RPM)))));
+		driver.back().onTrue(Commands.runOnce(() -> s.shooterIncrement = s.shooterIncrement.plus(Units.RPM.of(25))).andThen(Commands.runOnce(() -> SmartDashboard.putNumber("Shooter Inc", s.shooterIncrement.in(Units.RPM)))));
 
 		// TOGGLES ####################################################################################
-		driver.povLeft().onTrue(s.toggleSOTM().withName("SOTM Toggle").andThen(
-			Commands.sequence(
-				rumbleCommand(Units.Seconds.of(0.1)),
-				Commands.waitSeconds(0.05),
-				rumbleCommand(Units.Seconds.of(0.1)).onlyIf(() -> s.shootOnTheMove == false)
-			).ignoringDisable(true)
-		));
 
 		driver.povDown().whileTrue(s.driveBrake().withName("Brake"));
 
