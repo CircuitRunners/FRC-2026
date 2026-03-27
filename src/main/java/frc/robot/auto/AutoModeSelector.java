@@ -2,13 +2,17 @@ package frc.robot.auto;
 
 import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
-import frc.robot.auto.autos.sillyAuto;
-import frc.robot.auto.autos.centerPreload.CenterPreloadClimbLeft;
-import frc.robot.auto.autos.centerPreload.CenterPreloadClimbRight;
+import frc.robot.auto.autos.LeftDoubleNeutralSilly;
+import frc.robot.auto.autos.RightDoubleNeutralSilly;
+import frc.robot.auto.autos.centerPreload.CenterPreload;
+// import frc.robot.auto.autos.centerPreload.CenterPreload;
 import frc.robot.auto.autos.doubleSwipe.LeftDoubleNeutral;
 import frc.robot.auto.autos.doubleSwipe.RightDoubleNeutral;
 import frc.robot.auto.autos.singleSwipe.LeftNeutralClimb;
@@ -20,15 +24,17 @@ public class AutoModeSelector {
 
 	public static SendableChooser<Boolean> useObjectDetections = new SendableChooser<>();
 	
-	
+
 	public AutoModeSelector(Drive drive, Superstructure superstructure, AutoFactory factory) {
 		mAutoChooser.addRoutine("Left Neutral Cycle", () -> new LeftNeutralClimb(drive, superstructure, factory).getRoutine());
 		mAutoChooser.addRoutine("Right Neutral Cycle", () -> new RightNeutralClimb(drive, superstructure, factory).getRoutine());
-		mAutoChooser.addRoutine("Center Preload + Left Climb", () -> new CenterPreloadClimbLeft(drive, superstructure, factory).getRoutine());
-		mAutoChooser.addRoutine("Center Preload + Right Climb", () -> new CenterPreloadClimbRight(drive, superstructure, factory).getRoutine());
+		mAutoChooser.addRoutine("Center Preload", () -> new CenterPreload(drive, superstructure, factory).getRoutine());
+		// mAutoChooser.addRoutine("Center Preload + Right Climb", () -> new CenterPreload(drive, superstructure, factory).getRoutine());
 		mAutoChooser.addRoutine("Left Double Neutral", () -> new LeftDoubleNeutral(drive, superstructure, factory).getRoutine());
 		mAutoChooser.addRoutine("Right Double Neutral", () -> new RightDoubleNeutral(drive, superstructure, factory).getRoutine());
-		mAutoChooser.addRoutine("left silly", () -> new sillyAuto(drive, superstructure, factory).getRoutine());
+		mAutoChooser.addRoutine("right silly", () -> new RightDoubleNeutralSilly(drive, superstructure, factory).getRoutine());
+		mAutoChooser.addRoutine("left silly", () -> new LeftDoubleNeutralSilly(drive, superstructure, factory).getRoutine());
+
 
 		
 

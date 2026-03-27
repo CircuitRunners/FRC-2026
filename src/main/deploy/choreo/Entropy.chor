@@ -167,6 +167,34 @@
      "val":1.7607846474334776
     }
    },
+   "leftIntermediate":{
+    "x":{
+     "exp":"rightIntermediate.x",
+     "val":6.818950080871582
+    },
+    "y":{
+     "exp":"fieldY - rightIntermediate.y",
+     "val":7.463620320796967
+    },
+    "heading":{
+     "exp":"rightIntermediate.heading",
+     "val":0.0
+    }
+   },
+   "leftIntermediate2":{
+    "x":{
+     "exp":"rightIntermediate2.x",
+     "val":6.146090030670166
+    },
+    "y":{
+     "exp":"fieldY - rightIntermediate2.y",
+     "val":7.523110264778138
+    },
+    "heading":{
+     "exp":"-rightIntermediate2.heading",
+     "val":-1.7607846474334776
+    }
+   },
    "leftShoot":{
     "x":{
      "exp":"rightShoot.x",
@@ -193,6 +221,34 @@
     "heading":{
      "exp":"rightStart.heading - PI rad",
      "val":-1.5697538925044106
+    }
+   },
+   "rightIntermediate":{
+    "x":{
+     "exp":"6.818950080871582 m",
+     "val":6.818950080871582
+    },
+    "y":{
+     "exp":"0.6053796792030334 m",
+     "val":0.6053796792030334
+    },
+    "heading":{
+     "exp":"0 rad",
+     "val":0.0
+    }
+   },
+   "rightIntermediate2":{
+    "x":{
+     "exp":"6.146090030670166 m",
+     "val":6.146090030670166
+    },
+    "y":{
+     "exp":"0.5458897352218628 m",
+     "val":0.5458897352218628
+    },
+    "heading":{
+     "exp":"intakeBeginRight2.heading",
+     "val":1.7607846474334776
     }
    },
    "rightShoot":{

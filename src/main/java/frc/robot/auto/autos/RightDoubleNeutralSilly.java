@@ -22,16 +22,16 @@ import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.vision.objectdetection.ObjectPoseEstimator;
 import frc.robot.auto.AutoModeBase;
 
-public class sillyAuto extends AutoModeBase {
+public class RightDoubleNeutralSilly extends AutoModeBase {
 
-	public sillyAuto(Drive drive, Superstructure superstructure, AutoFactory factory) {
-		super(drive, superstructure, factory, "silly");
+	public RightDoubleNeutralSilly(Drive drive, Superstructure superstructure, AutoFactory factory) {
+		super(drive, superstructure, factory, "silly right");
 
-        AutoTrajectory leftIntakeToShoot = trajectory("leftIntakeToShoot");
+        AutoTrajectory leftIntakeToShoot = trajectory("rightIntakeToShoot");
 
-		AutoTrajectory leftTrenchToNeutralIntake = trajectory("leftTrenchToNeutralIntake");
+		AutoTrajectory leftTrenchToNeutralIntake = trajectory("rightTrenchToNeutralIntake");
 
-        AutoTrajectory sillyStuff = trajectory("sillystuff");
+        AutoTrajectory sillyStuff = trajectory("sillystuffRIGHT");
 
 		Pose2d startPose = leftTrenchToNeutralIntake.getInitialPose().get();
 
