@@ -24,7 +24,7 @@ import frc.robot.Robot;
 public class IntakeRollerConstants {
     private static final double kGearing = (24.0 / 18.0);
 
-    public static final Voltage kIntakeVoltage = Volts.of(4.0);
+    public static final Voltage kIntakeVoltage = Volts.of(5.0);
     public static final Voltage kExhaustVoltage = Volts.of(-6.0);
 
     public static final Voltage kPulseInVoltage = Volts.of(6.0);

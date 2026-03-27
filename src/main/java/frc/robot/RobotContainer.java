@@ -81,10 +81,10 @@ public class RobotContainer {
         drive.getDrivetrain().getVisionConsumer(),
         (RobotBase.isSimulation())
         ? new VisionIOPhotonVisionSim(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose)
-        : new VisionIOPhotonVision(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose)
-        // (RobotBase.isSimulation())
-        // ? new VisionIOPhotonVisionSim(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
-        // : new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
+        : new VisionIOPhotonVision(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose),
+        (RobotBase.isSimulation())
+        ? new VisionIOPhotonVisionSim(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
+        : new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
     );
     public final ObjectPoseEstimator objectDetector = null;
     // new ObjectPoseEstimator(
@@ -111,7 +111,7 @@ public class RobotContainer {
     private final ShotCalculator shotCalculator = ShotCalculator.getInstance(drive);
 
     private Optional<Boolean> autoWinOverride = Optional.empty();
-    private boolean disableAutoSpinup = true;
+    private boolean disableAutoSpinup = false;
     // private final Trigger lostAutoOverride = 
     // private final Trigger wonAutoOverride = 
 
@@ -183,38 +183,38 @@ public class RobotContainer {
         // RobotModeTriggers.autonomous()
 		// 		.onFalse(Commands.runOnce(() -> drive.getDrivetrain().setControl(new SwerveRequest.ApplyFieldSpeeds()))
 		// 				.ignoringDisable(true));
-        // shooter.setDefaultCommand(
-        // new ContinuousConditionalCommand(
-        //     shooter.setpointCommand(Shooter.IDLE),
-        //     shooter.followSetpointCommand(
-        //         () -> {
-        //           var parameters = ShotCalculator.getInstance(drive).getParameters();
-        //           var shift = HubShiftUtil.getShiftedShiftInfo();
-        //           if (!parameters.passing()
-        //               && (shift.active()
-        //                   || shift.remainingTime() < 5.0
-        //                   || superstructure.ignoreHubState)) {
-        //             return superstructure.shooterSetpoint;
-        //           } else {
-        //             return ShotCalculator.passingIdleSpeed;
-        //           }
-        //         }),
-        //     () -> disableAutoSpinup));
         shooter.setDefaultCommand(
-            shooter.followSetpointCommand(() -> {
-                var parameters = ShotCalculator.getInstance(drive).getParameters();
-                var shift = HubShiftUtil.getShiftedShiftInfo();
-
-                if (!parameters.passing()
-                        && (shift.active()
-                        || shift.remainingTime() < 5.0
-                        || superstructure.ignoreHubState)) {
+        new ContinuousConditionalCommand(
+            shooter.setpointCommand(Shooter.IDLE),
+            shooter.followSetpointCommand(
+                () -> {
+                  var parameters = ShotCalculator.getInstance(drive).getParameters();
+                  var shift = HubShiftUtil.getShiftedShiftInfo();
+                  if (!parameters.passing()
+                      && (shift.active()
+                          || shift.remainingTime() < 5.0
+                          || superstructure.ignoreHubState)) {
                     return superstructure.shooterSetpoint;
-                } else {
+                  } else {
                     return ShotCalculator.passingIdleSpeed;
-                }
-            })
-        );
+                  }
+                }),
+            () -> disableAutoSpinup));
+        // shooter.setDefaultCommand(
+        //     shooter.followSetpointCommand(() -> {
+        //         var parameters = ShotCalculator.getInstance(drive).getParameters();
+        //         var shift = HubShiftUtil.getShiftedShiftInfo();
+
+        //         if (!parameters.passing()
+        //                 && (shift.active()
+        //                 || shift.remainingTime() < 5.0
+        //                 || superstructure.ignoreHubState)) {
+        //             return superstructure.shooterSetpoint;
+        //         } else {
+        //             return ShotCalculator.passingIdleSpeed;
+        //         }
+        //     })
+        // );
         //hood.setDefaultCommand(Commands.defer(() -> hood.trackTargetCommand(superstructure.hoodSetpoint), Set.of(hood)));
 
         for (SubsystemBase s : new SubsystemBase[] {
