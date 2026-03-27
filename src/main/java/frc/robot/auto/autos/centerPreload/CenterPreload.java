@@ -24,21 +24,25 @@ package frc.robot.auto.autos.centerPreload;
  import frc.robot.subsystems.vision.objectdetection.ObjectPoseEstimator;
 
 
- public class CenterPreloadClimbRight extends AutoModeBase {
- 	public CenterPreloadClimbRight(Drive drive, Superstructure superstructure, AutoFactory factory) {
- 		super(drive, superstructure, factory, "Center Preload + Right Climb");
- 		AutoTrajectory centerPreloadClimb = trajectory("centerPreloadClimb");
+ public class CenterPreload extends AutoModeBase {
+ 	public CenterPreload(Drive drive, Superstructure superstructure, AutoFactory factory) {
+ 		super(drive, superstructure, factory, "Center Preload");
 
- 		Pose2d startPose = centerPreloadClimb.getInitialPose().get();
 		
 
 
  		prepRoutine(
- 			AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
- 			cmdWithAccuracy(centerPreloadClimb),
- 			superstructure.deployIntake(),
- 			superstructure.shootWhenReadyAuto().withTimeout(AutoConstants.shootAllFuelTime),
- 			superstructure.climbRight()
+ 			AutoHelpers.resetPoseIfWithoutEstimate(AutoConstants.centerPreloadStart, drive),
+			Commands.deadline(
+				Commands.sequence(
+					new PIDToPoseCommand(drive, superstructure, AutoConstants.centerPreloadShoot),
+					drive.stopDrivetrain(),
+					superstructure.shootWhenReadyAuto().withTimeout(AutoConstants.shootAllFuelTime)
+				),
+				superstructure.deployIntake()
+			)
+
+			
          );
 
 

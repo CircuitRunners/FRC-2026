@@ -1,5 +1,8 @@
 package frc.robot.auto;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
@@ -14,7 +17,8 @@ public class AutoConstants {
 	public static final Angle kAutoAngleEpsilon = Units.Degrees.of(1.0);
 	public static final Time kDelayTime = Units.Milliseconds.of(80);
 	public static final Time kDefaultTrajectoryTimeout = Units.Seconds.of(1.0);
-
+	public static Pose2d centerPreloadStart = new Pose2d(new Translation2d(3.5490357875823975, 4.020486831665039), Rotation2d.kZero);
+	public static Pose2d centerPreloadShoot = new Pose2d(new Translation2d(1.7453689575195312, 4.020486831665039), Rotation2d.kZero);
     public static enum AutoType {
 	}
 
