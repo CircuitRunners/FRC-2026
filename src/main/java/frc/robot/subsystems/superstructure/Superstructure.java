@@ -74,10 +74,10 @@ public class Superstructure extends SubsystemBase {
     private final IntakeRollers intakeRollers;
     private final Kicker kicker;
     private final Conveyor conveyor;
-    private final Climber climber;
+    //private final Climber climber;
     private final ObjectPoseEstimator objectPoseEstimator;
 
-    public Superstructure(Drive drive, Vision vision, Shooter shooter, Hood hood, IntakeDeploy intakeDeploy, IntakeRollers intakeRollers, Kicker kicker, Conveyor conveyor, Climber climber, ObjectPoseEstimator objectPoseEstimator) {
+    public Superstructure(Drive drive, Vision vision, Shooter shooter, Hood hood, IntakeDeploy intakeDeploy, IntakeRollers intakeRollers, Kicker kicker, Conveyor conveyor, /*Climber climber,*/ ObjectPoseEstimator objectPoseEstimator) {
         this.drive = drive;
         this.vision = vision;
         this.shooter = shooter;
@@ -86,7 +86,7 @@ public class Superstructure extends SubsystemBase {
         this.intakeRollers = intakeRollers;
         this.kicker = kicker;
         this.conveyor = conveyor;
-        this.climber = climber;
+        //this.climber = climber;
         this.objectPoseEstimator = objectPoseEstimator;
     }
 
@@ -109,7 +109,7 @@ public class Superstructure extends SubsystemBase {
     public Setpoint shooterSetpoint = Shooter.STOP;
     public Rotation2d headingSetpoint = new Rotation2d();
 
-    public AngularVelocity shooterIncrement = Units.RPM.of(0.0);
+    public AngularVelocity shooterIncrement = Units.RPM.of(25.0);
 
     @Override
     public void periodic() {
@@ -168,7 +168,7 @@ public class Superstructure extends SubsystemBase {
       return Commands.runOnce(() -> {
             intakeDeploy.setCurrentPosition(IntakeDeployConstants.kStowPosition);
             hood.setCurrentPosition(HoodConstants.kMinAngle);
-            climber.setCurrentPosition(ClimberConstants.kZeroHeight);
+            //climber.setCurrentPosition(ClimberConstants.kZeroHeight);
           })
       .withName("Zero");
     }
@@ -275,10 +275,10 @@ public class Superstructure extends SubsystemBase {
     }
 
     public Command shootWhenReadyPreset(AngularVelocity rpm, Angle angle) {
-      return Commands.sequence(
+      return Commands.defer(() -> Commands.sequence(
           Commands.runOnce(() -> maintainHeadingEpsilon = 0.00),
           Commands.parallel(
-              shooter.setpointCommand(Setpoint.withVelocitySetpoint(rpm)),
+              shooter.setpointCommand(Setpoint.withVelocitySetpoint(rpm.plus(shooterIncrement))),
               hood.setpointCommand(Setpoint.withMotionMagicSetpoint(angle)),
               Commands.sequence(
               Commands.runOnce(() -> {
@@ -298,7 +298,7 @@ public class Superstructure extends SubsystemBase {
           hood.applySetpoint(Hood.ZERO);
           maintainHeadingEpsilon = 0.25;
           state = (state == State.SHOOTINTAKE) ? State.INTAKING : State.DEPLOYED;
-      });
+      }), Set.of(conveyor, kicker, shooter, hood, intakeRollers));
     }
 
     public Command shootAndIntake() {
@@ -406,147 +406,147 @@ public class Superstructure extends SubsystemBase {
       );
     }
 
-    public Command climb() {
-      return Commands.defer(
-          () -> {
-            Pose2d ladderSide =
-                FieldLayout.handleAllianceFlip(drive.getPose().nearest(List.of(FieldLayout.handleAllianceFlip(FieldLayout.leftTower, RobotConstants.isRedAlliance), FieldLayout.handleAllianceFlip(FieldLayout.rightTower, RobotConstants.isRedAlliance))), RobotConstants.isRedAlliance);
+    // public Command climb() {
+    //   return Commands.defer(
+    //       () -> {
+    //         Pose2d ladderSide =
+    //             FieldLayout.handleAllianceFlip(drive.getPose().nearest(List.of(FieldLayout.handleAllianceFlip(FieldLayout.leftTower, RobotConstants.isRedAlliance), FieldLayout.handleAllianceFlip(FieldLayout.rightTower, RobotConstants.isRedAlliance))), RobotConstants.isRedAlliance);
 
-            boolean isLeftTower = ladderSide.equals(FieldLayout.leftTower);
+    //         boolean isLeftTower = ladderSide.equals(FieldLayout.leftTower);
 
-            Pose2d initialPose = FieldLayout.handleAllianceFlip(
-                ladderSide.transformBy(
-                    new Transform2d(
-                        SuperstructureConstants.climberOffset
-                            .toTranslation2d()
-                            .plus(new Translation2d(
-                                Units.Inches.of(!isLeftTower ? -5.0 : 5.0),
-                                Units.Inches.of(0.0))),
-                                Rotation2d.kZero)), 
-                        RobotConstants.isRedAlliance);
+    //         Pose2d initialPose = FieldLayout.handleAllianceFlip(
+    //             ladderSide.transformBy(
+    //                 new Transform2d(
+    //                     SuperstructureConstants.climberOffset
+    //                         .toTranslation2d()
+    //                         .plus(new Translation2d(
+    //                             Units.Inches.of(!isLeftTower ? -5.0 : 5.0),
+    //                             Units.Inches.of(0.0))),
+    //                             Rotation2d.kZero)), 
+    //                     RobotConstants.isRedAlliance);
 
-            Pose2d finalPose = initialPose 
-                  .transformBy(
-                    new Transform2d(
-                        Units.Inches.of(!isLeftTower ? 5.0 : -5.0),
-                        Units.Inches.of(!isLeftTower ? 5.875 / 2.0 : -5.875 / 2.0),
-                        !isLeftTower ? Rotation2d.kZero : Rotation2d.k180deg));
-            if (isLeftTower) finalPose = finalPose.transformBy(new Transform2d(SuperstructureConstants.climberOffset.getMeasureX().times(2.0), Units.Inches.of(0.0), Rotation2d.kZero));
+    //         Pose2d finalPose = initialPose 
+    //               .transformBy(
+    //                 new Transform2d(
+    //                     Units.Inches.of(!isLeftTower ? 5.0 : -5.0),
+    //                     Units.Inches.of(!isLeftTower ? 5.875 / 2.0 : -5.875 / 2.0),
+    //                     !isLeftTower ? Rotation2d.kZero : Rotation2d.k180deg));
+    //         if (isLeftTower) finalPose = finalPose.transformBy(new Transform2d(SuperstructureConstants.climberOffset.getMeasureX().times(2.0), Units.Inches.of(0.0), Rotation2d.kZero));
               
-            if (isLeftTower) {
-              return Commands.sequence(
-                  setState(State.CLIMBING),
-                  climber.setpointCommand(Climber.CLIMB).withName("Climber Raise"),
-                  new PIDToPoseCommand(drive, this, finalPose).withName("Final Align"),
-                  climber.setpointCommand(Climber.ZERO).withName("Climbing")
-              );
-            } else {
-              return Commands.sequence(
-                  setState(State.CLIMBING),
-                  new PIDToPoseCommand(drive, this, initialPose).withName("Initial Align"),
-                  climber.setpointCommand(Climber.CLIMB).withName("Climber Raise"),
-                  new PIDToPoseCommand(drive, this, finalPose).withName("Final Align"),
-                  climber.setpointCommand(Climber.ZERO).withName("Climbing")
-              );
-            }
-          },
-          Set.of(drive, climber)
-      ).withName("Climb Sequence");
-    }
-    public Command climbLeft() {
-      return Commands.defer(
-          () -> {
-            Pose2d ladderSide =
-                FieldLayout.handleAllianceFlip(FieldLayout.leftTower, RobotConstants.isRedAlliance);
+    //         if (isLeftTower) {
+    //           return Commands.sequence(
+    //               setState(State.CLIMBING),
+    //               climber.setpointCommand(Climber.CLIMB).withName("Climber Raise"),
+    //               new PIDToPoseCommand(drive, this, finalPose).withName("Final Align"),
+    //               climber.setpointCommand(Climber.ZERO).withName("Climbing")
+    //           );
+    //         } else {
+    //           return Commands.sequence(
+    //               setState(State.CLIMBING),
+    //               new PIDToPoseCommand(drive, this, initialPose).withName("Initial Align"),
+    //               climber.setpointCommand(Climber.CLIMB).withName("Climber Raise"),
+    //               new PIDToPoseCommand(drive, this, finalPose).withName("Final Align"),
+    //               climber.setpointCommand(Climber.ZERO).withName("Climbing")
+    //           );
+    //         }
+    //       },
+    //       Set.of(drive, climber)
+    //   ).withName("Climb Sequence");
+    // }
+    // public Command climbLeft() {
+    //   return Commands.defer(
+    //       () -> {
+    //         Pose2d ladderSide =
+    //             FieldLayout.handleAllianceFlip(FieldLayout.leftTower, RobotConstants.isRedAlliance);
 
-            boolean isLeftTower = ladderSide.equals(FieldLayout.leftTower);
+    //         boolean isLeftTower = ladderSide.equals(FieldLayout.leftTower);
 
-            Pose2d initialPose = FieldLayout.handleAllianceFlip(
-                ladderSide.transformBy(
-                    new Transform2d(
-                        SuperstructureConstants.climberOffset
-                            .toTranslation2d()
-                            .plus(new Translation2d(
-                                Units.Inches.of(!isLeftTower ? -5.0 : 5.0),
-                                Units.Inches.of(0.0))),
-                                Rotation2d.kZero)), 
-                        RobotConstants.isRedAlliance);
+    //         Pose2d initialPose = FieldLayout.handleAllianceFlip(
+    //             ladderSide.transformBy(
+    //                 new Transform2d(
+    //                     SuperstructureConstants.climberOffset
+    //                         .toTranslation2d()
+    //                         .plus(new Translation2d(
+    //                             Units.Inches.of(!isLeftTower ? -5.0 : 5.0),
+    //                             Units.Inches.of(0.0))),
+    //                             Rotation2d.kZero)), 
+    //                     RobotConstants.isRedAlliance);
 
-            Pose2d finalPose = initialPose 
-                  .transformBy(
-                    new Transform2d(
-                        Units.Inches.of(!isLeftTower ? 5.0 : -5.0),
-                        Units.Inches.of(!isLeftTower ? 5.875 / 2.0 : -5.875 / 2.0),
-                        !isLeftTower ? Rotation2d.kZero : Rotation2d.k180deg));
-            if (isLeftTower) finalPose = finalPose.transformBy(new Transform2d(SuperstructureConstants.climberOffset.getMeasureX().times(2.0), Units.Inches.of(0.0), Rotation2d.kZero));
+    //         Pose2d finalPose = initialPose 
+    //               .transformBy(
+    //                 new Transform2d(
+    //                     Units.Inches.of(!isLeftTower ? 5.0 : -5.0),
+    //                     Units.Inches.of(!isLeftTower ? 5.875 / 2.0 : -5.875 / 2.0),
+    //                     !isLeftTower ? Rotation2d.kZero : Rotation2d.k180deg));
+    //         if (isLeftTower) finalPose = finalPose.transformBy(new Transform2d(SuperstructureConstants.climberOffset.getMeasureX().times(2.0), Units.Inches.of(0.0), Rotation2d.kZero));
               
-            if (isLeftTower) {
-              return Commands.sequence(
-                  setState(State.CLIMBING),
-                  climber.setpointCommand(Climber.CLIMB).withName("Climber Raise"),
-                  new PIDToPoseCommand(drive, this, finalPose).withName("Final Align"),
-                  climber.setpointCommand(Climber.ZERO).withName("Climbing")
-              );
-            } else {
-              return Commands.sequence(
-                  setState(State.CLIMBING),
-                  new PIDToPoseCommand(drive, this, initialPose).withName("Initial Align"),
-                  climber.setpointCommand(Climber.CLIMB).withName("Climber Raise"),
-                  new PIDToPoseCommand(drive, this, finalPose).withName("Final Align"),
-                  climber.setpointCommand(Climber.ZERO).withName("Climbing")
-              );
-            }
-          },
-          Set.of(drive, climber)
-      ).withName("Climb Sequence");
-    }
-    public Command climbRight() {
-      return Commands.defer(
-          () -> {
-            Pose2d ladderSide =
-                FieldLayout.handleAllianceFlip(FieldLayout.rightTower, RobotConstants.isRedAlliance);
+    //         if (isLeftTower) {
+    //           return Commands.sequence(
+    //               setState(State.CLIMBING),
+    //               climber.setpointCommand(Climber.CLIMB).withName("Climber Raise"),
+    //               new PIDToPoseCommand(drive, this, finalPose).withName("Final Align"),
+    //               climber.setpointCommand(Climber.ZERO).withName("Climbing")
+    //           );
+    //         } else {
+    //           return Commands.sequence(
+    //               setState(State.CLIMBING),
+    //               new PIDToPoseCommand(drive, this, initialPose).withName("Initial Align"),
+    //               climber.setpointCommand(Climber.CLIMB).withName("Climber Raise"),
+    //               new PIDToPoseCommand(drive, this, finalPose).withName("Final Align"),
+    //               climber.setpointCommand(Climber.ZERO).withName("Climbing")
+    //           );
+    //         }
+    //       },
+    //       Set.of(drive, climber)
+    //   ).withName("Climb Sequence");
+    // }
+    // public Command climbRight() {
+    //   return Commands.defer(
+    //       () -> {
+    //         Pose2d ladderSide =
+    //             FieldLayout.handleAllianceFlip(FieldLayout.rightTower, RobotConstants.isRedAlliance);
 
-            boolean isLeftTower = ladderSide.equals(FieldLayout.leftTower);
+    //         boolean isLeftTower = ladderSide.equals(FieldLayout.leftTower);
 
-            Pose2d initialPose = FieldLayout.handleAllianceFlip(
-                ladderSide.transformBy(
-                    new Transform2d(
-                        SuperstructureConstants.climberOffset
-                            .toTranslation2d()
-                            .plus(new Translation2d(
-                                Units.Inches.of(!isLeftTower ? -5.0 : 5.0),
-                                Units.Inches.of(0.0))),
-                                Rotation2d.kZero)), 
-                        RobotConstants.isRedAlliance);
+    //         Pose2d initialPose = FieldLayout.handleAllianceFlip(
+    //             ladderSide.transformBy(
+    //                 new Transform2d(
+    //                     SuperstructureConstants.climberOffset
+    //                         .toTranslation2d()
+    //                         .plus(new Translation2d(
+    //                             Units.Inches.of(!isLeftTower ? -5.0 : 5.0),
+    //                             Units.Inches.of(0.0))),
+    //                             Rotation2d.kZero)), 
+    //                     RobotConstants.isRedAlliance);
 
-            Pose2d finalPose = initialPose 
-                  .transformBy(
-                    new Transform2d(
-                        Units.Inches.of(!isLeftTower ? 5.0 : -5.0),
-                        Units.Inches.of(!isLeftTower ? 5.875 / 2.0 : -5.875 / 2.0),
-                        !isLeftTower ? Rotation2d.kZero : Rotation2d.k180deg));
-            if (isLeftTower) finalPose = finalPose.transformBy(new Transform2d(SuperstructureConstants.climberOffset.getMeasureX().times(2.0), Units.Inches.of(0.0), Rotation2d.kZero));
+    //         Pose2d finalPose = initialPose 
+    //               .transformBy(
+    //                 new Transform2d(
+    //                     Units.Inches.of(!isLeftTower ? 5.0 : -5.0),
+    //                     Units.Inches.of(!isLeftTower ? 5.875 / 2.0 : -5.875 / 2.0),
+    //                     !isLeftTower ? Rotation2d.kZero : Rotation2d.k180deg));
+    //         if (isLeftTower) finalPose = finalPose.transformBy(new Transform2d(SuperstructureConstants.climberOffset.getMeasureX().times(2.0), Units.Inches.of(0.0), Rotation2d.kZero));
               
-            if (isLeftTower) {
-              return Commands.sequence(
-                  setState(State.CLIMBING),
-                  climber.setpointCommand(Climber.CLIMB).withName("Climber Raise"),
-                  new PIDToPoseCommand(drive, this, finalPose).withName("Final Align"),
-                  climber.setpointCommand(Climber.ZERO).withName("Climbing")
-              );
-            } else {
-              return Commands.sequence(
-                  setState(State.CLIMBING),
-                  new PIDToPoseCommand(drive, this, initialPose).withName("Initial Align"),
-                  climber.setpointCommand(Climber.CLIMB).withName("Climber Raise"),
-                  new PIDToPoseCommand(drive, this, finalPose).withName("Final Align"),
-                  climber.setpointCommand(Climber.ZERO).withName("Climbing")
-              );
-            }
-          },
-          Set.of(drive, climber)
-      ).withName("Climb Sequence");
-    }
+    //         if (isLeftTower) {
+    //           return Commands.sequence(
+    //               setState(State.CLIMBING),
+    //               climber.setpointCommand(Climber.CLIMB).withName("Climber Raise"),
+    //               new PIDToPoseCommand(drive, this, finalPose).withName("Final Align"),
+    //               climber.setpointCommand(Climber.ZERO).withName("Climbing")
+    //           );
+    //         } else {
+    //           return Commands.sequence(
+    //               setState(State.CLIMBING),
+    //               new PIDToPoseCommand(drive, this, initialPose).withName("Initial Align"),
+    //               climber.setpointCommand(Climber.CLIMB).withName("Climber Raise"),
+    //               new PIDToPoseCommand(drive, this, finalPose).withName("Final Align"),
+    //               climber.setpointCommand(Climber.ZERO).withName("Climbing")
+    //           );
+    //         }
+    //       },
+    //       Set.of(drive, climber)
+    //   ).withName("Climb Sequence");
+    // }
     
     public Command collectFuel(Pose2d pses) {
       return Commands.defer(() -> {

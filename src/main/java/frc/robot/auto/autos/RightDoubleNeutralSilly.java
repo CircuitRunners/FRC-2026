@@ -27,13 +27,13 @@ public class RightDoubleNeutralSilly extends AutoModeBase {
 	public RightDoubleNeutralSilly(Drive drive, Superstructure superstructure, AutoFactory factory) {
 		super(drive, superstructure, factory, "silly right");
 
-        AutoTrajectory leftIntakeToShoot = trajectory("rightIntakeToShoot");
+        AutoTrajectory rightIntakeToShoot = trajectoryMirroredLeftRight("leftIntakeToShoot");
 
-		AutoTrajectory leftTrenchToNeutralIntake = trajectory("rightTrenchToNeutralIntake");
+		AutoTrajectory rightTrenchToNeutralIntake = trajectoryMirroredLeftRight("leftTrenchToNeutralIntake");
 
-        AutoTrajectory sillyStuff = trajectory("sillystuffRIGHT");
+        AutoTrajectory sillyStuff = trajectoryMirroredLeftRight("sillystuff");
 
-		Pose2d startPose = leftTrenchToNeutralIntake.getInitialPose().get();
+		Pose2d startPose = rightTrenchToNeutralIntake.getInitialPose().get();
 
 
 		//superstructure.updateSide(ObjectPoseEstimator.INTAKE_SIDE.left);
@@ -42,13 +42,13 @@ public class RightDoubleNeutralSilly extends AutoModeBase {
 		prepRoutine(
             AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
 			Commands.deadline(
-				leftTrenchToNeutralIntake.cmd(),
+				rightTrenchToNeutralIntake.cmd(),
 				Commands.sequence(
 					superstructure.deployIntake(),
 					superstructure.runIntakeIfDeployed()
 				)
 			),
-			cmdWithAccuracy(leftIntakeToShoot).alongWith(superstructure.shooterIdleSpinup()),
+			cmdWithAccuracy(rightIntakeToShoot).alongWith(superstructure.shooterIdleSpinup()),
 			drive.stopDrivetrain(),
 			superstructure.shootWhenReadyTeleop().withTimeout(AutoConstants.shootAllFuelTime),
 			Commands.deadline(
